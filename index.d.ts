@@ -6,3 +6,6 @@ export * from "./nativescript-background-gps.ios";
 
 // Export any shared classes, constants, etc.
 export * from "./nativescript-background-gps.common";
+
+export * from "./location";
+export * from "./location-monitor";

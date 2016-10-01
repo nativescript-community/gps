@@ -1,23 +1,22 @@
-import * as app from "application";
-import * as dialogs from "ui/dialogs";
+import {Location as LocationDef} from "./location";
 
-export class Common {
-  public message: string;
+export class Location implements LocationDef {
+  public latitude: number;
+  public longitude: number;
 
-  constructor() {
-    this.message = Utils.SUCCESS_MSG();
-  }
+  public altitude: number;
+
+  public horizontalAccuracy: number;
+  public verticalAccuracy: number;
+
+  public speed: number; // in m/s ?
+
+  public direction: number; // in degrees
+
+  public timestamp: Date;
+
+  public android: android.location.Location;  // android Location
+  public ios: CLLocation;      // iOS native location
 }
 
-export class Utils {
-  public static SUCCESS_MSG(): string {
-    let msg = `Your plugin is working on ${app.android ? "Android" : "iOS"}.`;
-
-    setTimeout(() => {
-      dialogs.alert(`${msg} For real. It's really working :)`).then(() => console.log(`Dialog closed.`));
-    }, 2000);
-
-    return msg;
-  }
-}
-
+export var defaultGetLocationTimeout = 5 * 60 * 1000; // 5 minutes

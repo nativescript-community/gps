@@ -30,15 +30,15 @@
     "iOS"
   ],
   "author": {
-    "name": "Your Name",
-    "email": "youremail@yourdomain.com"
+    "name": "Nick Coury",
+    "email": "nickcoury@gmail.com"
   },
   "bugs": {
     "url": "https://github.com/nickcoury/nativescript-background-gps/issues"
   },
   "license": "MIT",
   "homepage": "https://github.com/nickcoury/nativescript-background-gps",
-  "readmeFilename": "README.md",
+  "readmeFilename": "../README.md",
   "devDependencies": {
     "tns-core-modules": "^2.3.0",
     "tns-platform-declarations": "^2.3.0",
