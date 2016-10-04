@@ -28,6 +28,11 @@ export interface Options {
     * how long to wait for a location in ms.
     */
     timeout?: number;
+
+   /**
+    * monitor the location in the background.
+    */
+    background?: boolean;
 }
 
 declare type successCallbackType = (location: Location) => void;

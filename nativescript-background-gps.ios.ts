@@ -204,10 +204,17 @@ export function getCurrentLocation(options: Options): Promise<LocationDef> {
 export function watchLocation(successCallback: successCallbackType,
                               errorCallback: errorCallbackType,
                               options: Options): number {
-
+    console.log('Starting watch location');
+    options = options || {};
     let locListener = LocationListenerImpl.initWithLocationError(successCallback, errorCallback);
     try {
         let iosLocManager = LocationMonitor.createiOSLocationManager(locListener, options);
+        if (options.background) {
+            console.log('Setting background options');
+            iosLocManager.allowsBackgroundLocationUpdates = true;
+            iosLocManager.pausesLocationUpdatesAutomatically = true;
+            iosLocManager.activityType = CLActivityType.Fitness;
+        }
         iosLocManager.startUpdatingLocation();
         return locListener.id;
     }
