@@ -1,5 +1,9 @@
 # Nativescript Background GPS Plugin
 
+## NOTE
+This plugin does not currently work in the background.  The project is exploratory to create a simple background GPS service, but thus far it is not working.
+
+
 This is a plugin to receive gps location updates regardless of the app state.
 
 ## Getting started
