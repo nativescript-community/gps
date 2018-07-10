@@ -1,7 +1,7 @@
 /**
 * A data class that encapsulates common properties for a geolocation.
 */
-export class Location {
+export interface GeoLocation {
    /**
     * The latitude of the geolocation, in degrees.
     */
@@ -45,10 +45,10 @@ export class Location {
    /**
     * The android-specific [location](http://developer.android.com/reference/android/location/Location.html) object.
     */
-    android: any;
+   android?: android.location.Location;
 
    /**
     * The ios-specific [CLLocation](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocation_Class/) object.
     */
-    ios: any;
+    ios?: CLLocation;
 }

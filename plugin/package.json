@@ -2,8 +2,8 @@
   "name": "nativescript-background-gps",
   "version": "0.0.2",
   "description": "Track GPS location updates in the background.",
-  "main": "nativescript-background-gps.js",
-  "typings": "index.d.ts",
+  "main": "src/nativescript-background-gps.js",
+  "typings": "src/nativescript-background-gps.d.ts",
   "nativescript": {
     "platforms": {
       "android": "2.3.0",
@@ -40,9 +40,9 @@
   "homepage": "https://github.com/nickcoury/nativescript-background-gps",
   "readmeFilename": "../README.md",
   "devDependencies": {
-    "tns-core-modules": "^2.3.0",
-    "tns-platform-declarations": "^2.3.0",
-    "typescript": "^1.8.10",
+    "tns-core-modules": "^4.1.0",
+    "tns-platform-declarations": "^4.1.0",
+    "typescript": "~2.7.2",
     "prompt": "^1.0.0",
     "rimraf": "^2.5.0"
   }

@@ -1,6 +1,5 @@
-import {Location as LocationDef} from "./location";
-
-export class Location implements LocationDef {
+import {GeoLocation as LocationDef} from "./location";
+export class GeoLocation implements LocationDef {
   public latitude: number;
   public longitude: number;
 
@@ -15,8 +14,8 @@ export class Location implements LocationDef {
 
   public timestamp: Date;
 
-  public android: android.location.Location;  // android Location
-  public ios: CLLocation;      // iOS native location
+  public android?: any;  // android Location
+  public ios?: any;      // iOS native location
 }
 
 export var defaultGetLocationTimeout = 5 * 60 * 1000; // 5 minutes

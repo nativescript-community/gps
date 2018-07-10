@@ -1,5 +1,5 @@
-import { Location as LocationDef } from "./location";
-export declare class Location implements LocationDef {
+import { GeoLocation as LocationDef } from "./location";
+export declare class GeoLocation implements LocationDef {
     latitude: number;
     longitude: number;
     altitude: number;
@@ -8,7 +8,7 @@ export declare class Location implements LocationDef {
     speed: number;
     direction: number;
     timestamp: Date;
-    android: android.location.Location;
-    ios: CLLocation;
+    android?: any;
+    ios?: any;
 }
 export declare var defaultGetLocationTimeout: number;

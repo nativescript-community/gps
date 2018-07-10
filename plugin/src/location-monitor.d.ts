@@ -1,4 +1,4 @@
-import {Location} from "./location";
+import {GeoLocation} from "./location";
 
 /**
 * Provides options for location monitoring.
@@ -32,17 +32,39 @@ export interface Options {
    /**
     * monitor the location in the background.
     */
-    background?: boolean;
+    skipPermissionCheck?: boolean;
+
+    /**
+    * iOS only
+    */
+    allowsBackgroundLocationUpdates?:boolean
+    /**
+    * iOS only
+    */
+   pausesLocationUpdatesAutomatically?:boolean
+    /**
+    * iOS only
+    */
+   activityType?:CLActivityType
+    /**
+    * iOS only
+    */
+   onDeferred?:deferredCallbackType
 }
 
-declare type successCallbackType = (location: Location) => void;
+declare type successCallbackType = (location: GeoLocation, manager?:CLLocationManager) => void;
 declare type errorCallbackType = (error: Error) => void;
+declare type deferredCallbackType = (error?: Error) => void;
 
 export function getCurrentLocation(options: Options): Promise<Location>;
 export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number;
 export function clearWatch(watchId: number): void;
-export function enableLocationRequest(always?: boolean): Promise<void>;
-export function isEnabled(): boolean;
+export declare function authorizeLocationServiceRequest(always?: boolean): Promise<void>;
+export declare function enableLocationServiceRequest(): Promise<void>;
+export declare function enableLocationRequest(always?: boolean): Promise<void>;
+export declare function isEnabled(): boolean;
+export declare function isLocationServiceEnabled(): boolean;
+export declare function isLocationServiceAuthorized(): boolean;
 export function distance(loc1: Location, loc2: Location): number;
 
 export class LocationMonitor {
