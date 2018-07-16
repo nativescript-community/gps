@@ -358,7 +358,7 @@ export function isLocationServiceEnabled(): boolean {
     } else if (nbProviders === 1 && enabledProviders.get(0).toString() === 'local_database') {
         result = false;
     }
-    console.log('isLocationServiceEnabled', enabledProviders, nbProviders, result);
+    // console.log('isLocationServiceEnabled', enabledProviders, nbProviders, result);
     return result;
 }
 export function isLocationServiceAuthorized(): boolean {
