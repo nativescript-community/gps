@@ -139,14 +139,13 @@ function authorizeLocationRequestCore(successCallback?, successArgs?, errorCallb
         let res = (<any>android['support'].v4.content.ContextCompat).checkSelfPermission(currentContext, (<any>android).Manifest.permission.ACCESS_FINE_LOCATION);
         if (res === -1) {
             let cb = (data: appModule.AndroidActivityRequestPermissionsEventData) => {
-                console.log('requestCode: ' + data.requestCode + ' permissions: ' + data.permissions + ' grantResults: ' + data.grantResults);
                 appModule.android.off(appModule.AndroidApplication.activityRequestPermissionsEvent, cb);
                 if (data.requestCode === 5000) {
                     if (data.grantResults.length > 0 && data.grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
-                        console.log('permission granted!!!');
+                        common.CLog(common.CLogTypes.debug, 'permission granted!!!');
                         successCallback.apply(this, successArgs);
                     } else {
-                        console.log('permission not granted!!!');
+                        common.CLog(common.CLogTypes.debug, 'permission not granted!!!');
                         if (errorCallback) {
                             errorCallback.apply(this, errorArgs);
                         }
@@ -166,7 +165,7 @@ function enableLocationRequestCore(successCallback?, successArgs?, errorCallback
     let currentContext = <android.app.Activity>appModule.android.currentContext;
     if (parseInt(platform.device.sdkVersion) >= 23) {
         appModule.android.on(appModule.AndroidApplication.activityRequestPermissionsEvent, (data: appModule.AndroidActivityRequestPermissionsEventData) => {
-            console.log('requestCode: ' + data.requestCode + ' permissions: ' + data.permissions + ' grantResults: ' + data.grantResults);
+            common.CLog(common.CLogTypes.debug, 'requestCode: ' + data.requestCode + ' permissions: ' + data.permissions + ' grantResults: ' + data.grantResults);
             if (data.requestCode === 5000) {
                 if (data.grantResults.length > 0 && data.grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
                     enableLocationServiceRequestCore(successCallback, successArgs, errorCallback, errorArgs);
@@ -296,13 +295,13 @@ export function clearWatch(watchId: number): void {
 }
 
 export function enableLocationRequest(always?: boolean): Promise<void> {
-    console.log('enableLocationRequest', always);
+    common.CLog(common.CLogTypes.debug, 'enableLocationRequest', always);
     return Promise.resolve()
         .then(() => authorizeLocationServiceRequest(always))
         .then(() => enableLocationServiceRequest());
 }
 export function enableLocationServiceRequest(): Promise<void> {
-    console.log('enableLocationServiceRequest');
+    common.CLog(common.CLogTypes.debug, 'enableLocationServiceRequest');
     return new Promise<void>(function(resolve, reject) {
         if (isLocationServiceEnabled()) {
             resolve();
@@ -320,7 +319,7 @@ export function enableLocationServiceRequest(): Promise<void> {
     });
 }
 export function authorizeLocationServiceRequest(always?: boolean): Promise<void> {
-    console.log('authorizeLocationServiceRequest', always);
+    common.CLog(common.CLogTypes.debug, 'authorizeLocationServiceRequest', always);
     return new Promise<void>(function(resolve, reject) {
         if (isLocationServiceAuthorized()) {
             resolve();
@@ -338,12 +337,12 @@ export function authorizeLocationServiceRequest(always?: boolean): Promise<void>
     });
 }
 export function isEnabled(): boolean {
-    console.log('android', 'isEnabled');
+    common.CLog(common.CLogTypes.debug, 'android', 'isEnabled');
     return isLocationServiceEnabled() && isLocationServiceAuthorized();
 }
 export function isGPSEnabled(): boolean {
     const result = getAndroidLocationManager().isProviderEnabled(android.location.LocationManager.GPS_PROVIDER);
-    console.log('isGPSEnabled', result);
+    common.CLog(common.CLogTypes.debug, 'isGPSEnabled', result);
     return result;
 }
 export function isLocationServiceEnabled(): boolean {
@@ -358,7 +357,7 @@ export function isLocationServiceEnabled(): boolean {
     } else if (nbProviders === 1 && enabledProviders.get(0).toString() === 'local_database') {
         result = false;
     }
-    // console.log('isLocationServiceEnabled', enabledProviders, nbProviders, result);
+    // common.CLog(common.CLogTypes.debug, 'isLocationServiceEnabled', enabledProviders, nbProviders, result);
     return result;
 }
 export function isLocationServiceAuthorized(): boolean {

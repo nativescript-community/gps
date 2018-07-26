@@ -5,7 +5,7 @@ import { LocationMonitor as LocationMonitorDef, Options, successCallbackType, er
 import * as common from './nativescript-background-gps.common';
 global.moduleMerge(common, exports);
 
-export {Options, successCallbackType, errorCallbackType, deferredCallbackType}
+export { Options, successCallbackType, errorCallbackType, deferredCallbackType };
 
 var locationManagers = {};
 var locationListeners = {};
@@ -24,7 +24,7 @@ export class LocationListenerImpl extends NSObject implements CLLocationManagerD
     private _resolve: () => void;
     private _reject: (error: Error) => void;
 
-    public static initWithLocationError(successCallback: successCallbackType, error?: errorCallbackType, options?:Options): LocationListenerImpl {
+    public static initWithLocationError(successCallback: successCallbackType, error?: errorCallbackType, options?: Options): LocationListenerImpl {
         let listener = <LocationListenerImpl>LocationListenerImpl.new();
         watchId++;
         listener.id = watchId;
@@ -47,6 +47,7 @@ export class LocationListenerImpl extends NSObject implements CLLocationManagerD
     }
 
     public locationManagerDidUpdateLocations(manager: CLLocationManager, locations: NSArray<CLLocation>): void {
+        common.CLog(common.CLogTypes.info, `gps.LocationListenerImpl: locationManagerDidUpdateLocations(${locations})`);
         if (this._onLocation) {
             for (let i = 0, count = locations.count; i < count; i++) {
                 let location = locationFromCLLocation(<CLLocation>locations.objectAtIndex(i));
@@ -55,18 +56,21 @@ export class LocationListenerImpl extends NSObject implements CLLocationManagerD
         }
     }
     public locationManagerDidFinishDeferredUpdatesWithError(manager: CLLocationManager, error: NSError): void {
+        common.CLog(common.CLogTypes.info, `gps.LocationListenerImpl: locationManagerDidFinishDeferredUpdatesWithError(${error})`);
         if (this._onDeferred) {
-            this._onDeferred(error?new Error(error.localizedDescription):null);
+            this._onDeferred(error ? new Error(error.localizedDescription) : null);
         }
     }
 
     public locationManagerDidFailWithError(manager: CLLocationManager, error: NSError): void {
+        common.CLog(common.CLogTypes.info, `gps.LocationListenerImpl: locationManagerDidFailWithError(${error})`);
         if (this._onError) {
             this._onError(new Error(error.localizedDescription));
         }
     }
 
     public locationManagerDidChangeAuthorizationStatus(manager: CLLocationManager, status: CLAuthorizationStatus) {
+        common.CLog(common.CLogTypes.info, `gps.LocationListenerImpl: locationManagerDidChangeAuthorizationStatus(${status})`);
         switch (status) {
             case CLAuthorizationStatus.kCLAuthorizationStatusNotDetermined:
                 break;
@@ -217,6 +221,7 @@ export function watchLocation(successCallback: successCallbackType, errorCallbac
         iosLocManager.pausesLocationUpdatesAutomatically = options.pausesLocationUpdatesAutomatically !== false;
         iosLocManager.activityType = options.activityType || CLActivityType.Fitness;
         // }
+        common.CLog(common.CLogTypes.info, `gps: watchLocation(${options}, ${locListener})`);
         iosLocManager.startUpdatingLocation();
         return locListener.id;
     } catch (e) {
@@ -232,10 +237,10 @@ export function clearWatch(watchId: number): void {
 
 export function enableLocationServiceRequest(): Promise<void> {
     if (!isEnabled()) {
-        return new Promise(function (resolve, reject){
-            let settingsUrl = NSURL.URLWithString(UIApplicationOpenSettingsURLString)
-            if (UIApplication.sharedApplication.canOpenURL(settingsUrl))  {
-                UIApplication.sharedApplication.openURLOptionsCompletionHandler(settingsUrl, null, function(success){
+        return new Promise(function(resolve, reject) {
+            let settingsUrl = NSURL.URLWithString(UIApplicationOpenSettingsURLString);
+            if (UIApplication.sharedApplication.canOpenURL(settingsUrl)) {
+                UIApplication.sharedApplication.openURLOptionsCompletionHandler(settingsUrl, null, function(success) {
                     if (success) {
                         if (isEnabled()) {
                             return Promise.resolve();
@@ -243,11 +248,11 @@ export function enableLocationServiceRequest(): Promise<void> {
                             return Promise.reject('location disabled');
                         }
                     } else {
-                        return Promise.reject('can\'t open settings');
+                        return Promise.reject("can't open settings");
                     }
                 });
             }
-        })
+        });
     }
     return Promise.resolve();
 }
@@ -313,6 +318,7 @@ export class LocationMonitor implements LocationMonitorDef {
                 }
             }
         }
+        common.CLog(common.CLogTypes.info, `gps.LocationMonitor: getLastKnownLocation(${iosLocation})`);
 
         if (iosLocation) {
             return locationFromCLLocation(iosLocation);
@@ -328,6 +334,7 @@ export class LocationMonitor implements LocationMonitorDef {
 
     static startLocationMonitoring(options: Options, locListener: LocationListenerImpl): void {
         let iosLocManager = LocationMonitor.createiOSLocationManager(locListener, options);
+        common.CLog(common.CLogTypes.info, `gps.LocationMonitor: startLocationMonitoring(${options})`);
         iosLocManager.startUpdatingLocation();
     }
 
