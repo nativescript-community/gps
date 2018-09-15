@@ -10,7 +10,7 @@ export class GeoLocation implements LocationDef {
 
   public speed: number; // in m/s ?
 
-  public direction: number; // in degrees
+  public bearing: number; // in degrees
 
   public timestamp: Date;
 

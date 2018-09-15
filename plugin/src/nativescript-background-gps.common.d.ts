@@ -6,7 +6,7 @@ export declare class GeoLocation implements LocationDef {
     horizontalAccuracy: number;
     verticalAccuracy: number;
     speed: number;
-    direction: number;
+    bearing: number;
     timestamp: Date;
     android?: any;
     ios?: any;

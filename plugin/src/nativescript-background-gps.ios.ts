@@ -118,8 +118,12 @@ function locationFromCLLocation(clLocation: CLLocation): GeoLocation {
     location.altitude = clLocation.altitude;
     location.horizontalAccuracy = clLocation.horizontalAccuracy;
     location.verticalAccuracy = clLocation.verticalAccuracy;
-    location.speed = clLocation.speed;
-    location.direction = clLocation.course;
+    if (clLocation.speed >= 0) {
+        location.speed = clLocation.speed;
+    }
+    if (clLocation.course >= 0) {
+        location.bearing = clLocation.course;
+    }
     let timeIntervalSince1970 = NSDate.dateWithTimeIntervalSinceDate(0, clLocation.timestamp).timeIntervalSince1970;
     location.timestamp = new Date(timeIntervalSince1970 * 1000);
     location.ios = clLocation;
@@ -130,7 +134,7 @@ function clLocationFromLocation(location: GeoLocation): CLLocation {
     let hAccuracy = location.horizontalAccuracy ? location.horizontalAccuracy : -1;
     let vAccuracy = location.verticalAccuracy ? location.verticalAccuracy : -1;
     let speed = location.speed ? location.speed : -1;
-    let course = location.direction ? location.direction : -1;
+    let course = location.bearing ? location.bearing : -1;
     let altitude = location.altitude ? location.altitude : -1;
     let timestamp = location.timestamp ? NSDate.dateWithTimeIntervalSince1970(location.timestamp.getTime() / 1000) : null;
     let iosLocation = CLLocation.alloc().initWithCoordinateAltitudeHorizontalAccuracyVerticalAccuracyCourseSpeedTimestamp(

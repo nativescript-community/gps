@@ -33,9 +33,9 @@ export interface GeoLocation {
     speed: number;
 
    /**
-    * The direction (course), in degrees.
+    * The bearing (course), in degrees.
     */
-    direction: number;
+   bearing: number;
 
    /**
     * The time at which this location was determined.

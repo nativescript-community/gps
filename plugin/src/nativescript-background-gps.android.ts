@@ -52,11 +52,20 @@ function locationFromAndroidLocation(androidLocation: android.location.Location)
     let location = new common.GeoLocation();
     location.latitude = androidLocation.getLatitude();
     location.longitude = androidLocation.getLongitude();
-    location.altitude = androidLocation.getAltitude();
+    if (androidLocation.hasAltitude()) {
+        location.altitude = androidLocation.getAltitude();
+    }
     location.horizontalAccuracy = androidLocation.getAccuracy();
     location.verticalAccuracy = androidLocation.getAccuracy();
-    location.speed = androidLocation.getSpeed();
-    location.direction = androidLocation.getBearing();
+    if (androidLocation.hasSpeed()) {
+        location.speed = androidLocation.getSpeed();
+    }
+    if (androidLocation.hasBearing()) {
+        location.bearing = androidLocation.getBearing();
+    }
+    // if (androidLocation.hasBearingAccuracy()) {
+    //     location.bearing = androidLocation.getBearing();
+    // }
     location.timestamp = new Date(androidLocation.getTime());
     location.android = androidLocation;
     return location;
@@ -66,14 +75,14 @@ function androidLocationFromLocation(location: common.GeoLocation): android.loca
     let androidLocation = new android.location.Location('custom');
     androidLocation.setLatitude(location.latitude);
     androidLocation.setLongitude(location.longitude);
-    if (location.altitude) {
+    if (location.altitude != undefined) {
         androidLocation.setAltitude(location.altitude);
     }
-    if (location.speed) {
+    if (location.speed >= 0) {
         androidLocation.setSpeed(float(location.speed));
     }
-    if (location.direction) {
-        androidLocation.setBearing(float(location.direction));
+    if (location.bearing >= 0) {
+        androidLocation.setBearing(float(location.bearing));
     }
     if (location.timestamp) {
         try {
