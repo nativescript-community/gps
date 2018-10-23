@@ -49,6 +49,10 @@ export interface Options {
     /**
     * iOS only
     */
+   deferredLocationUpdates?:{
+       traveled:number,
+       timeout:number
+   },
    onDeferred?:deferredCallbackType
 }
 

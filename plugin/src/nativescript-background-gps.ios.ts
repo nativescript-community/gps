@@ -56,8 +56,8 @@ export class LocationListenerImpl extends NSObject implements CLLocationManagerD
         }
     }
     public locationManagerDidFinishDeferredUpdatesWithError(manager: CLLocationManager, error: NSError): void {
-        common.CLog(common.CLogTypes.info, `gps.LocationListenerImpl: locationManagerDidFinishDeferredUpdatesWithError(${error})`);
         if (this._onDeferred) {
+            common.CLog(common.CLogTypes.info, `gps.LocationListenerImpl: locationManagerDidFinishDeferredUpdatesWithError(${error})`);
             this._onDeferred(error ? new Error(error.localizedDescription) : null);
         }
     }
@@ -224,9 +224,14 @@ export function watchLocation(successCallback: successCallbackType, errorCallbac
         iosLocManager.allowsBackgroundLocationUpdates = options.allowsBackgroundLocationUpdates === true;
         iosLocManager.pausesLocationUpdatesAutomatically = options.pausesLocationUpdatesAutomatically !== false;
         iosLocManager.activityType = options.activityType || CLActivityType.Fitness;
+
+        
         // }
         common.CLog(common.CLogTypes.info, `gps: watchLocation(${options}, ${locListener})`);
         iosLocManager.startUpdatingLocation();
+        if (!!options.deferredLocationUpdates) {
+            iosLocManager.allowDeferredLocationUpdatesUntilTraveledTimeout(options.deferredLocationUpdates.traveled, options.deferredLocationUpdates.timeout);
+        }
         return locListener.id;
     } catch (e) {
         LocationMonitor.stopLocationMonitoring(locListener.id);
