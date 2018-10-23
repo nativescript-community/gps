@@ -1,6 +1,6 @@
 {
-  "name": "nativescript-background-gps",
-  "version": "0.0.2",
+  "name": "nativescript-gps",
+  "version": "1.0.0",
   "description": "Track GPS location updates in the background.",
   "main": "src/nativescript-background-gps.js",
   "typings": "src/nativescript-background-gps.d.ts",
