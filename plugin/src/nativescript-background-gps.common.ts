@@ -25,6 +25,13 @@ export function setGPSDebug(value: boolean) {
   debug = value;
 }
 
+let mockEnabled = false;
+export function setMockEnabled(value: boolean) {
+  mockEnabled = value;
+}
+export function isMockEnabled() {
+  return mockEnabled;
+}
 export enum CLogTypes {
   debug,
   info,

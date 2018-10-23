@@ -362,11 +362,11 @@ export function isLocationServiceEnabled(): boolean {
     const nbProviders = enabledProviders.size();
     let result = true;
     if (nbProviders === 0) {
-        result = false;
+        result = common.isMockEnabled();
     } else if (nbProviders === 1 && enabledProviders.get(0).toString() === 'local_database') {
         result = false;
     }
-    // common.CLog(common.CLogTypes.debug, 'isLocationServiceEnabled', enabledProviders, nbProviders, result);
+    common.CLog(common.CLogTypes.debug, 'isLocationServiceEnabled', enabledProviders, nbProviders, result);
     return result;
 }
 export function isLocationServiceAuthorized(): boolean {
