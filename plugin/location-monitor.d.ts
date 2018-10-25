@@ -45,7 +45,7 @@ export interface Options {
     /**
     * iOS only
     */
-   activityType?:CLActivityType
+   activityType?:any //CLActivityType
     /**
     * iOS only
     */
@@ -56,7 +56,7 @@ export interface Options {
    onDeferred?:deferredCallbackType
 }
 
-declare type successCallbackType = (location: GeoLocation, manager?:CLLocationManager) => void;
+declare type successCallbackType = (location: GeoLocation, manager?:any /*CLLocationManager*/) => void;
 declare type errorCallbackType = (error: Error) => void;
 declare type deferredCallbackType = (error?: Error) => void;
 

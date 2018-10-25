@@ -45,10 +45,10 @@ export interface GeoLocation {
    /**
     * The android-specific [location](http://developer.android.com/reference/android/location/Location.html) object.
     */
-   android?: android.location.Location;
+   android?: any //android.location.Location;
 
    /**
     * The ios-specific [CLLocation](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocation_Class/) object.
     */
-    ios?: CLLocation;
+    ios?: any //CLLocation;
 }

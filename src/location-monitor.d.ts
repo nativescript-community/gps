@@ -1,0 +1,1 @@
+../plugin/location-monitor.d.ts
