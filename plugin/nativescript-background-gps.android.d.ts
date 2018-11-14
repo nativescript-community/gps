@@ -14,6 +14,6 @@ export declare function distance(loc1: common.GeoLocation, loc2: common.GeoLocat
 export declare class LocationMonitor implements LocationMonitorDef {
     static getLastKnownLocation(): common.GeoLocation;
     static startLocationMonitoring(options: Options, listener: any): void;
-    static createListenerWithCallbackAndOptions(successCallback: successCallbackType, options: Options): android.location.LocationListener;
+    static createListenerWithCallbackAndOptions(successCallback: successCallbackType, options: Options): globalAndroid.location.LocationListener;
     static stopLocationMonitoring(locListenerId: number): void;
 }

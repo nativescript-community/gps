@@ -144,8 +144,8 @@ function enableLocationServiceRequestCore(successCallback?, successArgs?, errorC
 
 function authorizeLocationRequestCore(successCallback?, successArgs?, errorCallback?: errorCallbackType, errorArgs?): void {
     let currentContext = <android.app.Activity>appModule.android.currentContext;
-    if (parseInt(platform.device.sdkVersion) >= 23) {
-        let res = (<any>android['support'].v4.content.ContextCompat).checkSelfPermission(currentContext, (<any>android).Manifest.permission.ACCESS_FINE_LOCATION);
+    if (currentContext && parseInt(platform.device.sdkVersion) >= 23) {
+        let res = android.support.v4.content.ContextCompat.checkSelfPermission(currentContext, (<any>android).Manifest.permission.ACCESS_FINE_LOCATION);
         if (res === -1) {
             let cb = (data: appModule.AndroidActivityRequestPermissionsEventData) => {
                 appModule.android.off(appModule.AndroidApplication.activityRequestPermissionsEvent, cb);
@@ -172,7 +172,7 @@ function authorizeLocationRequestCore(successCallback?, successArgs?, errorCallb
 }
 function enableLocationRequestCore(successCallback?, successArgs?, errorCallback?: errorCallbackType, errorArgs?): void {
     let currentContext = <android.app.Activity>appModule.android.currentContext;
-    if (parseInt(platform.device.sdkVersion) >= 23) {
+    if (currentContext && parseInt(platform.device.sdkVersion) >= 23) {
         appModule.android.on(appModule.AndroidApplication.activityRequestPermissionsEvent, (data: appModule.AndroidActivityRequestPermissionsEventData) => {
             common.CLog(common.CLogTypes.debug, 'requestCode: ' + data.requestCode + ' permissions: ' + data.permissions + ' grantResults: ' + data.grantResults);
             if (data.requestCode === 5000) {
@@ -185,9 +185,9 @@ function enableLocationRequestCore(successCallback?, successArgs?, errorCallback
                 }
             }
         });
-        let res = (<any>android['support'].v4.content.ContextCompat).checkSelfPermission(currentContext, (<any>android).Manifest.permission.ACCESS_FINE_LOCATION);
+        let res = android.support.v4.content.ContextCompat.checkSelfPermission(currentContext, (<any>android).Manifest.permission.ACCESS_FINE_LOCATION);
         if (res === -1) {
-            (<any>android['support'].v4.app).ActivityCompat.requestPermissions(currentContext, ['android.permission.ACCESS_FINE_LOCATION'], 5000);
+            android.support.v4.app.ActivityCompat.requestPermissions(currentContext, ['android.permission.ACCESS_FINE_LOCATION'], 5000);
         } else {
             enableLocationServiceRequestCore(successCallback, successArgs, errorCallback, errorArgs);
         }
@@ -371,7 +371,10 @@ export function isLocationServiceEnabled(): boolean {
 }
 export function isLocationServiceAuthorized(): boolean {
     let currentContext = <android.app.Activity>appModule.android.currentContext;
-    return (<any>android['support'].v4.content.ContextCompat).checkSelfPermission(currentContext, (<any>android).Manifest.permission.ACCESS_FINE_LOCATION) !== -1;
+    if (!currentContext) {
+        return false;
+    }
+    return android.support.v4.content.ContextCompat.checkSelfPermission(currentContext, android.Manifest.permission.ACCESS_FINE_LOCATION) !== -1;
 }
 
 export function distance(loc1: common.GeoLocation, loc2: common.GeoLocation): number {

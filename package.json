@@ -40,8 +40,8 @@
   "homepage": "https://github.com/nickcoury/nativescript-background-gps",
   "readmeFilename": "../README.md",
   "devDependencies": {
-    "tns-core-modules": "^4.1.0",
-    "tns-platform-declarations": "^4.1.0",
+    "tns-core-modules": "^4.2.1",
+    "tns-platform-declarations": "^4.2.1",
     "typescript": "~2.7.2",
     "prompt": "^1.0.0",
     "rimraf": "^2.5.0"
