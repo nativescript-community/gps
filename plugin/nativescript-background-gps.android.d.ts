@@ -3,10 +3,12 @@ import { LocationMonitor as LocationMonitorDef, Options, successCallbackType, er
 export declare function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number;
 export declare function getCurrentLocation(options: Options): Promise<common.GeoLocation>;
 export declare function clearWatch(watchId: number): void;
-export declare function enableLocationRequest(always?: boolean): Promise<void>;
-export declare function enableLocationServiceRequest(): Promise<void>;
+export declare function enable(): Promise<void>;
+export declare function authorize(always?: boolean): Promise<void>;
+export declare function openGPSSettings(): Promise<void>;
 export declare function authorizeLocationServiceRequest(always?: boolean): Promise<void>;
 export declare function isEnabled(): boolean;
+export declare function isAuthorized(): boolean;
 export declare function isGPSEnabled(): boolean;
 export declare function isLocationServiceEnabled(): boolean;
 export declare function isLocationServiceAuthorized(): boolean;

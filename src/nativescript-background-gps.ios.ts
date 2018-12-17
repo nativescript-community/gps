@@ -244,20 +244,21 @@ export function clearWatch(watchId: number): void {
     LocationMonitor.stopLocationMonitoring(watchId);
 }
 
-export function enableLocationServiceRequest(): Promise<void> {
+export function openGPSSettings(): Promise<void> {
     if (!isEnabled()) {
         return new Promise(function(resolve, reject) {
             let settingsUrl = NSURL.URLWithString(UIApplicationOpenSettingsURLString);
             if (UIApplication.sharedApplication.canOpenURL(settingsUrl)) {
                 UIApplication.sharedApplication.openURLOptionsCompletionHandler(settingsUrl, null, function(success) {
+                    // we get the callback for opening the URL, not enabling the GPS!
                     if (success) {
-                        if (isEnabled()) {
-                            return Promise.resolve();
-                        } else {
-                            return Promise.reject('location disabled');
-                        }
+                        // if (isEnabled()) {
+                        //     return Promise.resolve();
+                        // } else {
+                        return Promise.reject(undefined);
+                        // }
                     } else {
-                        return Promise.reject("can't open settings");
+                        return Promise.reject("cant_open_settings");
                     }
                 });
             }
@@ -265,7 +266,12 @@ export function enableLocationServiceRequest(): Promise<void> {
     }
     return Promise.resolve();
 }
-export function enableLocationRequest(always?: boolean): Promise<void> {
+export function enable(): Promise<void> {
+        common.CLog(common.CLogTypes.debug, 'enable');
+        return openGPSSettings();
+}
+export function authorize(always?: boolean): Promise<void> {
+    common.CLog(common.CLogTypes.debug, 'authorize', always);
     return authorizeLocationRequest(always);
 }
 export function authorizeLocationRequest(always?: boolean): Promise<void> {
@@ -275,7 +281,6 @@ export function authorizeLocationRequest(always?: boolean): Promise<void> {
             return;
         }
 
-        always = true;
         let listener = LocationListenerImpl.initWithPromiseCallbacks(resolve, reject, always);
         try {
             let manager = LocationMonitor.createiOSLocationManager(listener, null);
@@ -288,7 +293,8 @@ export function authorizeLocationRequest(always?: boolean): Promise<void> {
             LocationMonitor.stopLocationMonitoring(listener.id);
             reject(e);
         }
-    });
+    })
+    .catch((err)=>{console.log('test promise authorizeLocationRequest error',err);return Promise.reject(err)});
 }
 
 export function isLocationServiceEnabled(): boolean {
@@ -303,7 +309,10 @@ export function isLocationServiceAuthorized(): boolean {
 }
 
 export function isEnabled(): boolean {
-    return isLocationServiceEnabled() && isLocationServiceAuthorized();
+    return isLocationServiceEnabled();
+}
+export function isAuthorized(): boolean {
+    return isLocationServiceAuthorized();
 }
 
 export function distance(loc1: GeoLocation, loc2: GeoLocation): number {
