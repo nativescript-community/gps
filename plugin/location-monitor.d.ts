@@ -1,62 +1,67 @@
-import {GeoLocation} from "./location";
+import { GeoLocation } from './location';
 
 /**
-* Provides options for location monitoring.
-*/
+ * Provides options for location monitoring.
+ */
 export interface Options {
-   /**
-    * Specifies desired accuracy in meters. Defaults to DesiredAccuracy.HIGH
-    */
+    /**
+     * Specifies desired accuracy in meters. Defaults to DesiredAccuracy.HIGH
+     */
     desiredAccuracy?: number;
 
-   /**
-    * Update distance filter in meters. Specifies how often to update. Default on iOS is no filter, on Android it is 0 meters
-    */
+    /**
+     * Update distance filter in meters. Specifies how often to update. Default on iOS is no filter, on Android it is 0 meters
+     */
     updateDistance?: number;
 
-   /**
-    * Minimum time interval between location updates, in milliseconds (ignored on iOS)
-    */
+    /**
+     * Minimum time interval between location updates, in milliseconds (ignored on iOS)
+     */
     minimumUpdateTime?: number;
 
-   /**
-    * how old locations to receive in ms.
-    */
+    /**
+     * how old locations to receive in ms.
+     */
     maximumAge?: number;
 
-   /**
-    * how long to wait for a location in ms.
-    */
+    /**
+     * how long to wait for a location in ms.
+     */
     timeout?: number;
 
-   /**
-    * monitor the location in the background.
-    */
+    /**
+     * monitor the location in the background.
+     */
     skipPermissionCheck?: boolean;
 
     /**
-    * iOS only
-    */
-    allowsBackgroundLocationUpdates?:boolean
+     * iOS only
+     */
+    allowsBackgroundLocationUpdates?: boolean;
     /**
-    * iOS only
-    */
-   pausesLocationUpdatesAutomatically?:boolean
+     * iOS only
+     */
+    pausesLocationUpdatesAutomatically?: boolean;
     /**
-    * iOS only
-    */
-   activityType?:any //CLActivityType
+     * iOS only
+     */
+    activityType?: any; // CLActivityType
     /**
-    * iOS only
-    */
-   deferredLocationUpdates?:{
-       traveled:number,
-       timeout:number
-   },
-   onDeferred?:deferredCallbackType
+     * iOS only
+     */
+    deferredLocationUpdates?: {
+        traveled: number;
+        timeout: number;
+    };
+    onDeferred?: deferredCallbackType;
+
+    /**
+     * android only
+     */
+    provider?: string;
 }
 
-declare type successCallbackType = (location: GeoLocation, manager?:any /*CLLocationManager*/) => void;
+declare type successCallbackType = (location: GeoLocation, manager?: any /*CLLocationManager*/) => void;
 declare type errorCallbackType = (error: Error) => void;
 declare type deferredCallbackType = (error?: Error) => void;
 

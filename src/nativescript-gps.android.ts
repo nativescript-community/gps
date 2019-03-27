@@ -3,53 +3,58 @@ import * as platform from 'tns-core-modules/platform/platform';
 import * as enums from 'tns-core-modules/ui/enums/enums';
 import * as timer from 'tns-core-modules/timer/timer';
 import * as trace from 'tns-core-modules/trace/trace';
-import * as common from './nativescript-background-gps.common';
-import { LocationMonitor as LocationMonitorDef, Options, successCallbackType, errorCallbackType } from './location-monitor';
+import * as common from './nativescript-gps.common';
+import { errorCallbackType, LocationMonitor as LocationMonitorDef, Options, successCallbackType } from './location-monitor';
 global.moduleMerge(common, exports);
 
-var locationListeners = {};
-var watchId = 0;
-var androidLocationManager: android.location.LocationManager;
-var minTimeUpdate = 1 * 60 * 1000; // 1 minute
-var minRangeUpdate = 0; // 0 meters
+const locationListeners = {};
+let watchId = 0;
+let androidLocationManager: android.location.LocationManager;
+const minTimeUpdate = 1 * 60 * 1000; // 1 minute
+const minRangeUpdate = 0; // 0 meters
 
 function getAndroidLocationManager(): android.location.LocationManager {
     if (!androidLocationManager) {
-        androidLocationManager = (<android.content.Context>appModule.android.context).getSystemService(android.content.Context.LOCATION_SERVICE) as android.location.LocationManager;
+        androidLocationManager = (appModule.android.context as android.content.Context).getSystemService(android.content.Context.LOCATION_SERVICE) as android.location.LocationManager;
     }
     return androidLocationManager;
 }
 
 function createLocationListener(successCallback: successCallbackType) {
-    let locationListener = new android.location.LocationListener({
-        onLocationChanged: function(location1: android.location.Location) {
-            let locationCallback: successCallbackType = this._onLocation;
+    const locationListener = new android.location.LocationListener({
+        onLocationChanged(location: android.location.Location) {
+            common.CLog(common.CLogTypes.debug, 'onLocationChanged', location);
+
+            const locationCallback: successCallbackType = this._onLocation;
             if (locationCallback) {
-                locationCallback(locationFromAndroidLocation(location1));
+                locationCallback(locationFromAndroidLocation(location));
             }
         },
 
-        onProviderDisabled: function(provider) {
+        onProviderDisabled(provider) {
+            common.CLog(common.CLogTypes.debug, 'onProviderEnabled', provider);
             //
         },
 
-        onProviderEnabled: function(provider) {
+        onProviderEnabled(provider) {
+            common.CLog(common.CLogTypes.debug, 'onProviderEnabled', provider);
             //
         },
 
-        onStatusChanged: function(arg1, arg2, arg3) {
+        onStatusChanged(arg1, arg2, arg3) {
+            common.CLog(common.CLogTypes.debug, 'onStatusChanged', arg1, arg2, arg3);
             //
         }
     });
     watchId++;
-    (<any>locationListener)._onLocation = successCallback;
-    (<any>locationListener).id = watchId;
+    (locationListener as any)._onLocation = successCallback;
+    (locationListener as any).id = watchId;
     locationListeners[watchId] = locationListener;
     return locationListener;
 }
 
 function locationFromAndroidLocation(androidLocation: android.location.Location): common.GeoLocation {
-    let location = new common.GeoLocation();
+    const location = new common.GeoLocation();
     location.latitude = androidLocation.getLatitude();
     location.longitude = androidLocation.getLongitude();
     if (androidLocation.hasAltitude()) {
@@ -72,10 +77,10 @@ function locationFromAndroidLocation(androidLocation: android.location.Location)
 }
 
 function androidLocationFromLocation(location: common.GeoLocation): android.location.Location {
-    let androidLocation = new android.location.Location('custom');
+    const androidLocation = new android.location.Location('custom');
     androidLocation.setLatitude(location.latitude);
     androidLocation.setLongitude(location.longitude);
-    if (location.altitude != undefined) {
+    if (location.altitude !== undefined) {
         androidLocation.setAltitude(location.altitude);
     }
     if (location.speed >= 0) {
@@ -95,7 +100,7 @@ function androidLocationFromLocation(location: common.GeoLocation): android.loca
 }
 
 function criteriaFromOptions(options: Options): android.location.Criteria {
-    let criteria = new android.location.Criteria();
+    const criteria = new android.location.Criteria();
     if (options && options.desiredAccuracy <= enums.Accuracy.high) {
         criteria.setAccuracy(android.location.Criteria.ACCURACY_FINE);
     } else {
@@ -105,21 +110,27 @@ function criteriaFromOptions(options: Options): android.location.Criteria {
 }
 
 function watchLocationCore(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options, locListener: android.location.LocationListener): void {
-    let criteria = criteriaFromOptions(options);
+    const criteria = criteriaFromOptions(options);
+    common.CLog(common.CLogTypes.debug, 'watchLocationCore', criteria, options, locListener);
     try {
-        let updateTime = options && typeof options.minimumUpdateTime === 'number' ? options.minimumUpdateTime : minTimeUpdate;
-        let updateDistance = options && typeof options.updateDistance === 'number' ? options.updateDistance : minRangeUpdate;
-        getAndroidLocationManager().requestLocationUpdates(updateTime, updateDistance, criteria, locListener, null);
+        const updateTime = options && typeof options.minimumUpdateTime === 'number' ? options.minimumUpdateTime : minTimeUpdate;
+        const updateDistance = options && typeof options.updateDistance === 'number' ? options.updateDistance : minRangeUpdate;
+        if (options.provider) {
+            getAndroidLocationManager().requestLocationUpdates(options.provider, updateTime, updateDistance, locListener, null);
+        } else {
+            getAndroidLocationManager().requestLocationUpdates(updateTime, updateDistance, criteria, locListener, null);
+        }
     } catch (e) {
-        LocationMonitor.stopLocationMonitoring((<any>locListener).id);
+        common.CLog(common.CLogTypes.debug, 'watchLocationCore error', e);
+        LocationMonitor.stopLocationMonitoring((locListener as any).id);
         errorCallback(e);
     }
 }
 
 function openGPSSettingsCore(successCallback?, successArgs?, errorCallback?: errorCallbackType, errorArgs?): void {
-    let currentContext = <android.app.Activity>appModule.android.currentContext;
+    const currentContext = appModule.android.currentContext as android.app.Activity;
     if (!isEnabled()) {
-        let onActivityResultHandler = function(data: appModule.AndroidActivityResultEventData) {
+        const onActivityResultHandler = function(data: appModule.AndroidActivityResultEventData) {
             appModule.android.off(appModule.AndroidApplication.activityResultEvent, onActivityResultHandler);
             if (data.requestCode === 0) {
                 if (isEnabled()) {
@@ -143,14 +154,14 @@ function openGPSSettingsCore(successCallback?, successArgs?, errorCallback?: err
 }
 
 function authorizeLocationRequestCore(successCallback?, successArgs?, errorCallback?: errorCallbackType, errorArgs?): void {
-    let currentContext = <android.app.Activity>appModule.android.currentContext;
-    if (currentContext && parseInt(platform.device.sdkVersion) >= 23) {
-        let res = android.support.v4.content.ContextCompat.checkSelfPermission(currentContext, (<any>android).Manifest.permission.ACCESS_FINE_LOCATION);
+    const currentContext = appModule.android.currentContext as android.app.Activity;
+    if (currentContext && parseInt(platform.device.sdkVersion, 10) >= 23) {
+        const res = android.support.v4.content.ContextCompat.checkSelfPermission(currentContext, (android as any).Manifest.permission.ACCESS_FINE_LOCATION);
         if (res === -1) {
-            let cb = (data: appModule.AndroidActivityRequestPermissionsEventData) => {
+            const cb = (data: appModule.AndroidActivityRequestPermissionsEventData) => {
                 appModule.android.off(appModule.AndroidApplication.activityRequestPermissionsEvent, cb);
                 if (data.requestCode === 5000) {
-                    if (data.grantResults.length > 0 && data.grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                    if (data.grantResults.length > 0 && data.grantResults[0] === android.content.pm.PackageManager.PERMISSION_GRANTED) {
                         common.CLog(common.CLogTypes.debug, 'permission granted!!!');
                         successCallback.apply(this, successArgs);
                     } else {
@@ -162,7 +173,7 @@ function authorizeLocationRequestCore(successCallback?, successArgs?, errorCallb
                 }
             };
             appModule.android.on(appModule.AndroidApplication.activityRequestPermissionsEvent, cb);
-            (<any>android['support'].v4.app).ActivityCompat.requestPermissions(currentContext, ['android.permission.ACCESS_FINE_LOCATION'], 5000);
+            (android['support'].v4.app as any).ActivityCompat.requestPermissions(currentContext, ['android.permission.ACCESS_FINE_LOCATION'], 5000);
         } else {
             successCallback.apply(this, successArgs);
         }
@@ -171,12 +182,12 @@ function authorizeLocationRequestCore(successCallback?, successArgs?, errorCallb
     }
 }
 function enableLocationRequestCore(successCallback?, successArgs?, errorCallback?: errorCallbackType, errorArgs?): void {
-    let currentContext = <android.app.Activity>appModule.android.currentContext;
-    if (currentContext && parseInt(platform.device.sdkVersion) >= 23) {
+    const currentContext = appModule.android.currentContext as android.app.Activity;
+    if (currentContext && parseInt(platform.device.sdkVersion, 10) >= 23) {
         appModule.android.on(appModule.AndroidApplication.activityRequestPermissionsEvent, (data: appModule.AndroidActivityRequestPermissionsEventData) => {
             common.CLog(common.CLogTypes.debug, 'requestCode: ' + data.requestCode + ' permissions: ' + data.permissions + ' grantResults: ' + data.grantResults);
             if (data.requestCode === 5000) {
-                if (data.grantResults.length > 0 && data.grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                if (data.grantResults.length > 0 && data.grantResults[0] === android.content.pm.PackageManager.PERMISSION_GRANTED) {
                     openGPSSettingsCore(successCallback, successArgs, errorCallback, errorArgs);
                 } else {
                     if (errorCallback) {
@@ -185,7 +196,7 @@ function enableLocationRequestCore(successCallback?, successArgs?, errorCallback
                 }
             }
         });
-        let res = android.support.v4.content.ContextCompat.checkSelfPermission(currentContext, (<any>android).Manifest.permission.ACCESS_FINE_LOCATION);
+        const res = android.support.v4.content.ContextCompat.checkSelfPermission(currentContext, (android as any).Manifest.permission.ACCESS_FINE_LOCATION);
         if (res === -1) {
             android.support.v4.app.ActivityCompat.requestPermissions(currentContext, ['android.permission.ACCESS_FINE_LOCATION'], 5000);
         } else {
@@ -197,9 +208,9 @@ function enableLocationRequestCore(successCallback?, successArgs?, errorCallback
 }
 
 export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number {
-    var locListener = createLocationListener(successCallback);
+    const locListener = createLocationListener(successCallback);
     if (!isLocationServiceAuthorized()) {
-        let notGrantedError = new Error('Location service is not granted.');
+        const notGrantedError = new Error('Location service is not granted.');
         if (options.skipPermissionCheck !== true) {
             authorizeLocationRequestCore(watchLocationCore, [successCallback, errorCallback, options, locListener], errorCallback, [notGrantedError]);
         } else {
@@ -208,7 +219,7 @@ export function watchLocation(successCallback: successCallbackType, errorCallbac
             }
         }
     } else if (!isLocationServiceEnabled()) {
-        let notGrantedError = new Error('Location service is not enabled');
+        const notGrantedError = new Error('Location service is not enabled');
         if (options.skipPermissionCheck !== true) {
             openGPSSettingsCore(watchLocationCore, [successCallback, errorCallback, options, locListener], errorCallback, [notGrantedError]);
         } else {
@@ -219,7 +230,15 @@ export function watchLocation(successCallback: successCallbackType, errorCallbac
     } else {
         watchLocationCore(successCallback, errorCallback, options, locListener);
     }
-    return (<any>locListener).id;
+    return (locListener as any).id;
+}
+
+export function hasGPS() {
+    const currentContext = appModule.android.currentContext as android.app.Activity;
+    if (!currentContext) {
+        return false;
+    }
+    return currentContext.getPackageManager().hasSystemFeature(android.content.pm.PackageManager.FEATURE_LOCATION_GPS);
 }
 
 export function getCurrentLocation(options: Options): Promise<common.GeoLocation> {
@@ -228,7 +247,7 @@ export function getCurrentLocation(options: Options): Promise<common.GeoLocation
     if (options.timeout === 0) {
         // we should take any cached location e.g. lastKnownLocation
         return new Promise(function(resolve, reject) {
-            let lastLocation = LocationMonitor.getLastKnownLocation();
+            const lastLocation = LocationMonitor.getLastKnownLocation();
             if (lastLocation) {
                 if (typeof options.maximumAge === 'number') {
                     if (lastLocation.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
@@ -246,17 +265,17 @@ export function getCurrentLocation(options: Options): Promise<common.GeoLocation
     }
 
     return new Promise(function(resolve, reject) {
-        var timerId;
-        var stopTimerAndMonitor = function(locListenerId: number) {
+        let timerId;
+        const stopTimerAndMonitor = function(locListenerId: number) {
             if (timerId !== undefined) {
                 timer.clearTimeout(timerId);
             }
             LocationMonitor.stopLocationMonitoring(locListenerId);
         };
 
-        let enabledCallback = function(resolve, reject, options) {
-            let successCallback = function(location: common.GeoLocation) {
-                stopTimerAndMonitor((<any>locListener).id);
+        const enabledCallback = function(resolve, reject, options) {
+            const successCallback = function(location: common.GeoLocation) {
+                stopTimerAndMonitor((locListener as any).id);
                 if (options && typeof options.maximumAge === 'number') {
                     if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
                         resolve(location);
@@ -268,22 +287,22 @@ export function getCurrentLocation(options: Options): Promise<common.GeoLocation
                 }
             };
 
-            var locListener = LocationMonitor.createListenerWithCallbackAndOptions(successCallback, options);
+            const locListener = LocationMonitor.createListenerWithCallbackAndOptions(successCallback, options);
             try {
                 LocationMonitor.startLocationMonitoring(options, locListener);
             } catch (e) {
-                stopTimerAndMonitor((<any>locListener).id);
+                stopTimerAndMonitor((locListener as any).id);
                 reject(e);
             }
 
             if (options && typeof options.timeout === 'number') {
                 timerId = timer.setTimeout(function() {
-                    LocationMonitor.stopLocationMonitoring((<any>locListener).id);
+                    LocationMonitor.stopLocationMonitoring((locListener as any).id);
                     reject(new Error('Timeout while searching for location!'));
                 }, options.timeout || common.defaultGetLocationTimeout);
             }
         };
-        var permissionDeniedCallback = function(reject) {
+        const permissionDeniedCallback = function(reject) {
             reject(new Error('Location service is not enabled or using it is not granted.'));
         };
 
@@ -308,8 +327,8 @@ export function enable(): Promise<void> {
     return openGPSSettings();
 }
 export function authorize(always?: boolean): Promise<void> {
-common.CLog(common.CLogTypes.debug, 'authorize', always);
-return authorizeLocationServiceRequest(always);
+    common.CLog(common.CLogTypes.debug, 'authorize', always);
+    return authorizeLocationServiceRequest(always);
 }
 
 export function openGPSSettings(): Promise<void> {
@@ -320,10 +339,10 @@ export function openGPSSettings(): Promise<void> {
             return;
         }
 
-        let enabledCallback = function(resolve, reject) {
+        const enabledCallback = function(resolve, reject) {
             resolve();
         };
-        var permissionDeniedCallback = function(err) {
+        const permissionDeniedCallback = function(err) {
             reject(err);
         };
 
@@ -338,10 +357,10 @@ export function authorizeLocationServiceRequest(always?: boolean): Promise<void>
             return;
         }
 
-        let enabledCallback = function(resolve, reject) {
+        const enabledCallback = function(resolve, reject) {
             resolve();
         };
-        var permissionDeniedCallback = function(err) {
+        const permissionDeniedCallback = function(err) {
             reject(err);
         };
 
@@ -365,7 +384,7 @@ export function isLocationServiceEnabled(): boolean {
     // let criteria = new android.location.Criteria();
     // criteria.setAccuracy(android.location.Criteria.ACCURACY_COARSE);
     // due to bug in android API getProviders() with criteria parameter overload should be called (so most loose accuracy is used).
-    let enabledProviders = getAndroidLocationManager().getProviders(true);
+    const enabledProviders = getAndroidLocationManager().getProviders(true);
     const nbProviders = enabledProviders.size();
     // let result = true;
     // if (nbProviders === 0) {
@@ -376,9 +395,9 @@ export function isLocationServiceEnabled(): boolean {
     // }
     let acceptableProviders = 0;
     for (let index = 0; index < enabledProviders.size(); index++) {
-        const provider=  enabledProviders.get(index)
+        const provider = enabledProviders.get(index);
         common.CLog(common.CLogTypes.debug, 'provider:', enabledProviders.get(index));
-        if (provider !== 'local_database'  && provider !== 'passive') {
+        if (provider !== 'local_database' && provider !== 'passive') {
             acceptableProviders++;
         }
     }
@@ -386,7 +405,7 @@ export function isLocationServiceEnabled(): boolean {
     return acceptableProviders > 0;
 }
 export function isLocationServiceAuthorized(): boolean {
-    let currentContext = <android.app.Activity>appModule.android.currentContext;
+    const currentContext = appModule.android.currentContext as android.app.Activity;
     if (!currentContext) {
         return false;
     }
@@ -405,16 +424,16 @@ export function distance(loc1: common.GeoLocation, loc2: common.GeoLocation): nu
 
 export class LocationMonitor implements LocationMonitorDef {
     static getLastKnownLocation(): common.GeoLocation {
-        let criteria = new android.location.Criteria();
+        const criteria = new android.location.Criteria();
         criteria.setAccuracy(android.location.Criteria.ACCURACY_COARSE);
         try {
-            let iterator = getAndroidLocationManager()
+            const iterator = getAndroidLocationManager()
                 .getProviders(criteria, false)
                 .iterator();
             let androidLocation;
             while (iterator.hasNext()) {
-                var provider = iterator.next() as string;
-                let tempLocation = getAndroidLocationManager().getLastKnownLocation(provider);
+                const provider = iterator.next() as string;
+                const tempLocation = getAndroidLocationManager().getLastKnownLocation(provider);
                 if (!androidLocation || tempLocation.getTime() > androidLocation.getTime()) {
                     androidLocation = tempLocation;
                 }
@@ -429,8 +448,8 @@ export class LocationMonitor implements LocationMonitorDef {
     }
 
     static startLocationMonitoring(options: Options, listener): void {
-        let updateTime = options && typeof options.minimumUpdateTime === 'number' ? options.minimumUpdateTime : minTimeUpdate;
-        let updateDistance = options && typeof options.updateDistance === 'number' ? options.updateDistance : minRangeUpdate;
+        const updateTime = options && typeof options.minimumUpdateTime === 'number' ? options.minimumUpdateTime : minTimeUpdate;
+        const updateDistance = options && typeof options.updateDistance === 'number' ? options.updateDistance : minRangeUpdate;
         getAndroidLocationManager().requestLocationUpdates(updateTime, updateDistance, criteriaFromOptions(options), listener, null);
     }
 
@@ -439,7 +458,7 @@ export class LocationMonitor implements LocationMonitorDef {
     }
 
     static stopLocationMonitoring(locListenerId: number): void {
-        let listener = locationListeners[locListenerId];
+        const listener = locationListeners[locListenerId];
         if (listener) {
             getAndroidLocationManager().removeUpdates(listener);
             delete locationListeners[locListenerId];

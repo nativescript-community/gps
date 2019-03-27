@@ -1,5 +1,5 @@
 import { GeoLocation } from './location';
-import { LocationMonitor as LocationMonitorDef, Options, successCallbackType, errorCallbackType, deferredCallbackType } from './location-monitor';
+import { deferredCallbackType, errorCallbackType, LocationMonitor as LocationMonitorDef, Options, successCallbackType } from './location-monitor';
 export { Options, successCallbackType, errorCallbackType, deferredCallbackType };
 export declare class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate {
     static ObjCProtocols: {
@@ -22,6 +22,7 @@ export declare class LocationListenerImpl extends NSObject implements CLLocation
 export declare function getCurrentLocation(options: Options): Promise<GeoLocation>;
 export declare function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number;
 export declare function clearWatch(watchId: number): void;
+export declare function hasGPS(): boolean;
 export declare function openGPSSettings(): Promise<void>;
 export declare function enable(): Promise<void>;
 export declare function authorize(always?: boolean): Promise<void>;

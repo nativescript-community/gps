@@ -1,1 +1,0 @@
-../plugin/nativescript-background-gps.d.ts

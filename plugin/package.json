@@ -1,33 +1,33 @@
 {
-  "name": "nativescript-gps",
-  "version": "1.0.7",
-  "description": "Track GPS location updates in the background.",
-  "main": "nativescript-background-gps.js",
-  "typings": "nativescript-background-gps.d.ts",
-  "nativescript": {
-    "platforms": {
-      "android": "2.3.0",
-      "ios": "2.3.0"
-    }
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Akylas/nativescript-background-gps.git"
-  },
-  "keywords": [
-    "NativeScript",
-    "JavaScript",
-    "Android",
-    "iOS"
-  ],
-  "author": {
-    "name": "Martin Guillon",
-    "email": "martin.guillon@akylas.fr"
-  },
-  "bugs": {
-    "url": "https://github.com/Akylas/nativescript-background-gps/issues"
-  },
-  "license": "MIT",
-  "homepage": "https://github.com/Akylas/nativescript-background-gps",
-  "readmeFilename": "../README.md"
+    "name": "nativescript-gps",
+    "version": "1.1.1",
+    "description": "Track GPS location updates in the background.",
+    "main": "nativescript-gps.js",
+    "typings": "nativescript-gps.d.ts",
+    "nativescript": {
+        "platforms": {
+            "android": "2.3.0",
+            "ios": "2.3.0"
+        }
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Akylas/nativescript-background-gps.git"
+    },
+    "keywords": [
+        "NativeScript",
+        "JavaScript",
+        "Android",
+        "iOS"
+    ],
+    "author": {
+        "name": "Martin Guillon",
+        "email": "martin.guillon@akylas.fr"
+    },
+    "bugs": {
+        "url": "https://github.com/Akylas/nativescript-background-gps/issues"
+    },
+    "license": "MIT",
+    "homepage": "https://github.com/Akylas/nativescript-background-gps",
+    "readmeFilename": "../README.md"
 }

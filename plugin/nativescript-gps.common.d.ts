@@ -1,4 +1,4 @@
-import { GeoLocation as LocationDef } from "./location";
+import { GeoLocation as LocationDef } from './location';
 export declare class GeoLocation implements LocationDef {
     latitude: number;
     longitude: number;
@@ -11,7 +11,7 @@ export declare class GeoLocation implements LocationDef {
     android?: any;
     ios?: any;
 }
-export declare var defaultGetLocationTimeout: number;
+export declare let defaultGetLocationTimeout: number;
 export declare function setGPSDebug(value: boolean): void;
 export declare function setMockEnabled(value: boolean): void;
 export declare function isMockEnabled(): boolean;
@@ -19,6 +19,6 @@ export declare enum CLogTypes {
     debug = 0,
     info = 1,
     warning = 2,
-    error = 3,
+    error = 3
 }
 export declare const CLog: (type?: CLogTypes, ...args: any[]) => void;
