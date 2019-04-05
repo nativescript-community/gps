@@ -33,6 +33,10 @@ export interface Options {
      * monitor the location in the background.
      */
     skipPermissionCheck?: boolean;
+    /**
+     * monitor the location in the background.
+     */
+    dontOpenSettings?: boolean;
 
     /**
      * iOS only
@@ -66,14 +70,12 @@ declare type errorCallbackType = (error: Error) => void;
 declare type deferredCallbackType = (error?: Error) => void;
 
 export function getCurrentLocation(options: Options): Promise<Location>;
-export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number;
+export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): Promise<number>;
 export function clearWatch(watchId: number): void;
-export declare function authorizeLocationServiceRequest(always?: boolean): Promise<void>;
-export declare function enableLocationServiceRequest(): Promise<void>;
-export declare function enableLocationRequest(always?: boolean): Promise<void>;
+export declare function authorize(always?: boolean): Promise<void>;
+export declare function enable(always?: boolean): Promise<void>;
 export declare function isEnabled(): boolean;
-export declare function isLocationServiceEnabled(): boolean;
-export declare function isLocationServiceAuthorized(): boolean;
+export declare function isAuthorized(): Promise<boolean>;
 export function distance(loc1: Location, loc2: Location): number;
 
 export class LocationMonitor {

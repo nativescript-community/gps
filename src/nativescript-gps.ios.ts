@@ -3,6 +3,8 @@ import * as timer from 'tns-core-modules/timer/timer';
 import { GeoLocation } from './location';
 import { deferredCallbackType, errorCallbackType, LocationMonitor as LocationMonitorDef, Options, successCallbackType } from './location-monitor';
 import * as common from './nativescript-gps.common';
+import * as perms from 'nativescript-perms';
+import * as appModule from 'tns-core-modules/application/application';
 global.moduleMerge(common, exports);
 
 export { Options, successCallbackType, errorCallbackType, deferredCallbackType };
@@ -149,6 +151,32 @@ function clLocationFromLocation(location: GeoLocation): CLLocation {
     return iosLocation;
 }
 
+function prepareForRequest(options: Options) {
+    return Promise.resolve()
+        .then(() => {
+            return isAuthorized().then(auth => {
+                if (!auth) {
+                    if (options.skipPermissionCheck !== true) {
+                        return perms.request('location');
+                    } else {
+                        return Promise.reject(new Error('Location service is not granted.'));
+                    }
+                }
+                return undefined;
+            });
+        })
+        .then(() => {
+            if (!isEnabled()) {
+                if (options.dontOpenSettings !== true) {
+                    return openGPSSettings();
+                } else {
+                    return Promise.reject('location_service_not_enabled');
+                }
+            }
+            return undefined;
+        });
+}
+
 // options - desiredAccuracy, updateDistance, minimumUpdateTime, maximumAge, timeout
 export function getCurrentLocation(options: Options): Promise<GeoLocation> {
     options = options || {};
@@ -171,73 +199,76 @@ export function getCurrentLocation(options: Options): Promise<GeoLocation> {
             }
         });
     }
-
-    return new Promise(function(resolve, reject) {
-        let timerId;
-        if (!isEnabled()) {
-            reject(new Error('Location service is disabled'));
-        }
-
-        const stopTimerAndMonitor = function(locListenerId) {
-            if (timerId !== undefined) {
-                timer.clearTimeout(timerId);
+    return prepareForRequest(options).then(() => {
+        return new Promise<GeoLocation>(function(resolve, reject) {
+            let timerId;
+            if (!isEnabled()) {
+                reject(new Error('Location service is disabled'));
             }
 
-            LocationMonitor.stopLocationMonitoring(locListenerId);
-        };
-
-        const successCallback = function(location: GeoLocation) {
-            stopTimerAndMonitor(locListener.id);
-            if (typeof options.maximumAge === 'number') {
-                if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
-                    resolve(location);
-                } else {
-                    reject(new Error('New location is older than requested maximum age!'));
+            const stopTimerAndMonitor = function(locListenerId) {
+                if (timerId !== undefined) {
+                    timer.clearTimeout(timerId);
                 }
-            } else {
-                resolve(location);
+
+                LocationMonitor.stopLocationMonitoring(locListenerId);
+            };
+
+            const successCallback = function(location: GeoLocation) {
+                stopTimerAndMonitor(locListener.id);
+                if (typeof options.maximumAge === 'number') {
+                    if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
+                        resolve(location);
+                    } else {
+                        reject(new Error('New location is older than requested maximum age!'));
+                    }
+                } else {
+                    resolve(location);
+                }
+            };
+
+            const locListener = LocationListenerImpl.initWithLocationError(successCallback, null, options);
+            try {
+                LocationMonitor.startLocationMonitoring(options, locListener);
+            } catch (e) {
+                stopTimerAndMonitor(locListener.id);
+                reject(e);
             }
-        };
 
-        const locListener = LocationListenerImpl.initWithLocationError(successCallback, null, options);
-        try {
-            LocationMonitor.startLocationMonitoring(options, locListener);
-        } catch (e) {
-            stopTimerAndMonitor(locListener.id);
-            reject(e);
-        }
-
-        if (typeof options.timeout === 'number') {
-            timerId = timer.setTimeout(function() {
-                LocationMonitor.stopLocationMonitoring(locListener.id);
-                reject(new Error('Timeout while searching for location!'));
-            }, options.timeout || defaultGetLocationTimeout);
-        }
+            if (typeof options.timeout === 'number') {
+                timerId = timer.setTimeout(function() {
+                    LocationMonitor.stopLocationMonitoring(locListener.id);
+                    reject(new Error('Timeout while searching for location!'));
+                }, options.timeout || defaultGetLocationTimeout);
+            }
+        });
     });
 }
 
-export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number {
-    options = options || {};
-    const locListener = LocationListenerImpl.initWithLocationError(successCallback, errorCallback, options);
-    try {
-        const iosLocManager = LocationMonitor.createiOSLocationManager(locListener, options);
-        // if (options.background) {
-        iosLocManager.allowsBackgroundLocationUpdates = options.allowsBackgroundLocationUpdates === true;
-        iosLocManager.pausesLocationUpdatesAutomatically = options.pausesLocationUpdatesAutomatically !== false;
-        iosLocManager.activityType = options.activityType || CLActivityType.Fitness;
+export function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options) {
+    return prepareForRequest(options).then(() => {
+        options = options || {};
+        const locListener = LocationListenerImpl.initWithLocationError(successCallback, errorCallback, options);
+        try {
+            const iosLocManager = LocationMonitor.createiOSLocationManager(locListener, options);
+            // if (options.background) {
+            iosLocManager.allowsBackgroundLocationUpdates = options.allowsBackgroundLocationUpdates === true;
+            iosLocManager.pausesLocationUpdatesAutomatically = options.pausesLocationUpdatesAutomatically !== false;
+            iosLocManager.activityType = options.activityType || CLActivityType.Fitness;
 
-        // }
-        common.CLog(common.CLogTypes.info, `gps: watchLocation(${options}, ${locListener})`);
-        iosLocManager.startUpdatingLocation();
-        if (!!options.deferredLocationUpdates) {
-            iosLocManager.allowDeferredLocationUpdatesUntilTraveledTimeout(options.deferredLocationUpdates.traveled, options.deferredLocationUpdates.timeout);
+            // }
+            common.CLog(common.CLogTypes.info, `gps: watchLocation(${options}, ${locListener})`);
+            iosLocManager.startUpdatingLocation();
+            if (!!options.deferredLocationUpdates) {
+                iosLocManager.allowDeferredLocationUpdatesUntilTraveledTimeout(options.deferredLocationUpdates.traveled, options.deferredLocationUpdates.timeout);
+            }
+            return locListener.id;
+        } catch (e) {
+            LocationMonitor.stopLocationMonitoring(locListener.id);
+            errorCallback(e);
+            return null;
         }
-        return locListener.id;
-    } catch (e) {
-        LocationMonitor.stopLocationMonitoring(locListener.id);
-        errorCallback(e);
-        return null;
-    }
+    });
 }
 
 export function clearWatch(watchId: number): void {
@@ -254,9 +285,13 @@ export function openGPSSettings(): Promise<void> {
                 UIApplication.sharedApplication.openURLOptionsCompletionHandler(settingsUrl, null, function(success) {
                     // we get the callback for opening the URL, not enabling the GPS!
                     if (success) {
-                        // if (isEnabled()) {
-                        //     return Promise.resolve();
-                        // } else {
+                        appModule.android.once(appModule.resumeEvent, () => {
+                            if (isEnabled()) {
+                                resolve();
+                            } else {
+                                reject('location_service_not_enabled');
+                            }
+                        });
                         return Promise.reject(undefined);
                         // }
                     } else {
@@ -272,51 +307,45 @@ export function enable(): Promise<void> {
     common.CLog(common.CLogTypes.debug, 'enable');
     return openGPSSettings();
 }
-export function authorize(always?: boolean): Promise<void> {
+export function authorize(always?: boolean): Promise<boolean> {
     common.CLog(common.CLogTypes.debug, 'authorize', always);
-    return authorizeLocationRequest(always);
+    return perms
+        .request('location', {
+            type: always ? 'always' : undefined
+        })
+        .then(s => s === 'authorized');
 }
-export function authorizeLocationRequest(always?: boolean): Promise<void> {
-    return new Promise<void>(function(resolve, reject) {
-        if (isLocationServiceAuthorized()) {
-            resolve();
-            return;
-        }
+// export function authorizeLocationRequest(always?: boolean): Promise<void> {
+//     return new Promise<void>(function(resolve, reject) {
+//         if (isLocationServiceAuthorized()) {
+//             resolve();
+//             return;
+//         }
 
-        const listener = LocationListenerImpl.initWithPromiseCallbacks(resolve, reject, always);
-        try {
-            const manager = LocationMonitor.createiOSLocationManager(listener, null);
-            if (always) {
-                manager.requestAlwaysAuthorization();
-            } else {
-                manager.requestWhenInUseAuthorization();
-            }
-        } catch (e) {
-            LocationMonitor.stopLocationMonitoring(listener.id);
-            reject(e);
-        }
-    }).catch(err => {
-        console.log('test promise authorizeLocationRequest error', err);
-        return Promise.reject(err);
-    });
-}
-
-export function isLocationServiceEnabled(): boolean {
-    return CLLocationManager.locationServicesEnabled();
-}
-export function isLocationServiceAuthorized(): boolean {
-    return (
-        CLLocationManager.authorizationStatus() === CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse ||
-        CLLocationManager.authorizationStatus() === CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways ||
-        CLLocationManager.authorizationStatus() === CLAuthorizationStatus.kCLAuthorizationStatusAuthorized
-    );
-}
+//         const listener = LocationListenerImpl.initWithPromiseCallbacks(resolve, reject, always);
+//         try {
+//             const manager = LocationMonitor.createiOSLocationManager(listener, null);
+//             if (always) {
+//                 manager.requestAlwaysAuthorization();
+//             } else {
+//                 manager.requestWhenInUseAuthorization();
+//             }
+//         } catch (e) {
+//             LocationMonitor.stopLocationMonitoring(listener.id);
+//             reject(e);
+//         }
+//     }).catch(err => {
+//         console.log('test promise authorizeLocationRequest error', err);
+//         return Promise.reject(err);
+//     });
+// }
 
 export function isEnabled(): boolean {
-    return isLocationServiceEnabled();
+    return CLLocationManager.locationServicesEnabled();
 }
-export function isAuthorized(): boolean {
-    return isLocationServiceAuthorized();
+
+export function isAuthorized() {
+    return perms.check('location').then(s => s === 'authorized');
 }
 
 export function distance(loc1: GeoLocation, loc2: GeoLocation): number {

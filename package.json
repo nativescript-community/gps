@@ -41,6 +41,7 @@
     "readmeFilename": "../README.md",
     "devDependencies": {
         "cpy-cli": "^2.0.0",
+        "nativescript-perms": "^1.0.0",
         "tns-core-modules": "^5.2.2",
         "tns-platform-declarations": "^5.2.2",
         "tslint": "^5.14.0",

@@ -20,17 +20,14 @@ export declare class LocationListenerImpl extends NSObject implements CLLocation
     locationManagerDidChangeAuthorizationStatus(manager: CLLocationManager, status: CLAuthorizationStatus): void;
 }
 export declare function getCurrentLocation(options: Options): Promise<GeoLocation>;
-export declare function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): number;
+export declare function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): Promise<number>;
 export declare function clearWatch(watchId: number): void;
 export declare function hasGPS(): boolean;
 export declare function openGPSSettings(): Promise<void>;
 export declare function enable(): Promise<void>;
-export declare function authorize(always?: boolean): Promise<void>;
-export declare function authorizeLocationRequest(always?: boolean): Promise<void>;
-export declare function isLocationServiceEnabled(): boolean;
-export declare function isLocationServiceAuthorized(): boolean;
+export declare function authorize(always?: boolean): Promise<boolean>;
 export declare function isEnabled(): boolean;
-export declare function isAuthorized(): boolean;
+export declare function isAuthorized(): Promise<boolean>;
 export declare function distance(loc1: GeoLocation, loc2: GeoLocation): number;
 export declare class LocationMonitor implements LocationMonitorDef {
     static getLastKnownLocation(): GeoLocation;
