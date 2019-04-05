@@ -1,9 +1,9 @@
 {
     "name": "nativescript-gps",
     "version": "1.0.0",
-    "description": "Track GPS location updates in the background.",
-    "main": "src/nativescript-background-gps.js",
-    "typings": "src/nativescript-background-gps.d.ts",
+    "description": "Track GPS location updates",
+    "main": "src/nativescript-gps.js",
+    "typings": "src/nativescript-gps.d.ts",
     "nativescript": {
         "platforms": {
             "android": "2.3.0",
@@ -15,12 +15,12 @@
         "demo.ios": "npm run preparedemo && cd demo && tns emulate ios",
         "demo.ios.device": "npm run preparedemo && cd demo && tns run ios",
         "demo.android": "npm run preparedemo && cd demo && tns run android",
-        "preparedemo": "npm run build && cd demo && tns plugin remove nativescript-background-gps && tns plugin add .. && tns install",
+        "preparedemo": "npm run build && cd demo && tns plugin remove nativescript-gps && tns plugin add .. && tns install",
         "setup": "npm i && cd demo && npm i && cd .. && npm run build && cd demo && tns plugin add .. && cd .."
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/nickcoury/nativescript-background-gps.git"
+        "url": "https://github.com/Akylas/nativescript-background-gps.git"
     },
     "keywords": [
         "NativeScript",
@@ -29,24 +29,24 @@
         "iOS"
     ],
     "author": {
-        "name": "Nick Coury",
-        "email": "nickcoury@gmail.com"
+        "name": "Martin Guillon",
+        "email": "martin.guillon@akylas.fr"
     },
     "bugs": {
-        "url": "https://github.com/nickcoury/nativescript-background-gps/issues"
+        "url": "https://github.com/Akylas/nativescript-background-gps/issues"
     },
     "license": "MIT",
-    "homepage": "https://github.com/nickcoury/nativescript-background-gps",
+    "homepage": "https://github.com/Akylas/nativescript-background-gps",
     "readmeFilename": "../README.md",
     "devDependencies": {
         "cpy-cli": "^2.0.0",
-        "nativescript-perms": "^1.0.0",
-        "tns-core-modules": "^5.2.2",
-        "tns-platform-declarations": "^5.2.2",
-        "tslint": "^5.14.0",
+        "nativescript-perms": "^1.0.1",
+        "tns-core-modules": "^5.3.1",
+        "tns-platform-declarations": "^5.3.1",
+        "tslint": "^5.15.0",
         "tslint-config-prettier": "^1.18.0",
         "tslint-config-standard": "^8.0.1",
-        "typescript": "~3.3.4000",
+        "typescript": "~3.4.1",
         "prompt": "^1.0.0",
         "rimraf": "^2.6.3"
     }

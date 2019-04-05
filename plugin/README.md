@@ -1,4 +1,4 @@
-# Nativescript GPS Plugin
+# Nativescript Background GPS Plugin
 
 ## NOTE
 
