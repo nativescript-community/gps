@@ -180,6 +180,7 @@ function prepareForRequest(options: Options) {
 // options - desiredAccuracy, updateDistance, minimumUpdateTime, maximumAge, timeout
 export function getCurrentLocation(options: Options): Promise<GeoLocation> {
     options = options || {};
+    common.CLog(common.CLogTypes.debug, 'getCurrentLocation', options);
     if (options.timeout === 0) {
         // we should take any cached location e.g. lastKnownLocation
         return new Promise(function(resolve, reject) {
