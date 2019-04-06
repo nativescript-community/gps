@@ -1,4 +1,4 @@
-import * as appModule from 'tns-core-modules/application/application';
+import * as application from 'tns-core-modules/application/application';
 // import * as platform from 'tns-core-modules/platform/platform';
 import * as enums from 'tns-core-modules/ui/enums/enums';
 import * as timer from 'tns-core-modules/timer/timer';
@@ -16,7 +16,7 @@ const minRangeUpdate = 0; // 0 meters
 
 function getAndroidLocationManager(): android.location.LocationManager {
     if (!androidLocationManager) {
-        androidLocationManager = (appModule.android.context as android.content.Context).getSystemService(android.content.Context.LOCATION_SERVICE) as android.location.LocationManager;
+        androidLocationManager = (application.android.context as android.content.Context).getSystemService(android.content.Context.LOCATION_SERVICE) as android.location.LocationManager;
     }
     return androidLocationManager;
 }
@@ -130,12 +130,12 @@ function watchLocationCore(options: Options, locListener: android.location.Locat
 
 function openGPSSettings() {
     common.CLog(common.CLogTypes.debug, 'openGPSSettings', isEnabled());
-    const currentContext = appModule.android.context;
+    const activity = application.android.foregroundActivity || application.android.startActivity;
     return new Promise((resolve, reject) => {
         if (!isEnabled()) {
-            const onActivityResultHandler = function(data: appModule.AndroidActivityResultEventData) {
+            const onActivityResultHandler = function(data: application.AndroidActivityResultEventData) {
                 if (data.requestCode === 5340) {
-                    appModule.android.off(appModule.AndroidApplication.activityResultEvent, onActivityResultHandler);
+                    application.android.off(application.AndroidApplication.activityResultEvent, onActivityResultHandler);
                     common.CLog(common.CLogTypes.debug, 'openGPSSettingsCore done', data.requestCode, isEnabled());
 
                     if (isEnabled()) {
@@ -146,8 +146,8 @@ function openGPSSettings() {
                     }
                 }
             };
-            appModule.android.on(appModule.AndroidApplication.activityResultEvent, onActivityResultHandler);
-            currentContext.startActivityForResult(new android.content.Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 5340);
+            application.android.on(application.AndroidApplication.activityResultEvent, onActivityResultHandler);
+            activity.startActivityForResult(new android.content.Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 5340);
         } else {
             resolve();
         }
@@ -192,7 +192,7 @@ export function watchLocation(successCallback: successCallbackType, errorCallbac
 }
 
 export function hasGPS() {
-    const currentContext = appModule.android.context;
+    const currentContext = application.android.context as android.content.Context;
     if (!currentContext) {
         return false;
     }
