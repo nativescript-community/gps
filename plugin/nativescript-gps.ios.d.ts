@@ -1,5 +1,6 @@
 import { GeoLocation } from './location';
 import { deferredCallbackType, errorCallbackType, LocationMonitor as LocationMonitorDef, Options, successCallbackType } from './location-monitor';
+export * from './nativescript-gps.common';
 export { Options, successCallbackType, errorCallbackType, deferredCallbackType };
 export declare class LocationListenerImpl extends NSObject implements CLLocationManagerDelegate {
     static ObjCProtocols: {

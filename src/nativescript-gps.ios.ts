@@ -5,7 +5,7 @@ import { deferredCallbackType, errorCallbackType, LocationMonitor as LocationMon
 import * as common from './nativescript-gps.common';
 import * as perms from 'nativescript-perms';
 import * as appModule from 'tns-core-modules/application/application';
-global.moduleMerge(common, exports);
+export * from './nativescript-gps.common';
 
 export { Options, successCallbackType, errorCallbackType, deferredCallbackType };
 

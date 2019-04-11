@@ -1,5 +1,7 @@
 import * as common from './nativescript-gps.common';
 import { errorCallbackType, LocationMonitor as LocationMonitorDef, Options, successCallbackType } from './location-monitor';
+export * from './nativescript-gps.common';
+export declare function openGPSSettings(): Promise<{}>;
 export declare function watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options): Promise<any>;
 export declare function hasGPS(): boolean;
 export declare function getCurrentLocation(options: Options): Promise<common.GeoLocation>;

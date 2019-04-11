@@ -6,7 +6,7 @@ import * as trace from 'tns-core-modules/trace/trace';
 import * as common from './nativescript-gps.common';
 import { errorCallbackType, LocationMonitor as LocationMonitorDef, Options, successCallbackType } from './location-monitor';
 import * as perms from 'nativescript-perms';
-global.moduleMerge(common, exports);
+export * from './nativescript-gps.common';
 
 const locationListeners = {};
 let watchId = 0;
@@ -128,7 +128,7 @@ function watchLocationCore(options: Options, locListener: android.location.Locat
     }
 }
 
-function openGPSSettings() {
+export function openGPSSettings() {
     common.CLog(common.CLogTypes.debug, 'openGPSSettings', isEnabled());
     const activity = application.android.foregroundActivity || application.android.startActivity;
     return new Promise((resolve, reject) => {
@@ -277,7 +277,11 @@ export function authorize(always?: boolean) {
 }
 
 export function isAuthorized() {
-    return perms.check('location').then(s => s === 'authorized');
+    common.CLog(common.CLogTypes.debug, 'isAuthorized');
+    return perms.check('location').then(s => {
+        common.CLog(common.CLogTypes.debug, 'isAuthorized result', s);
+        return s === 'authorized';
+    });
 }
 
 export function isGPSEnabled(): boolean {
