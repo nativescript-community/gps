@@ -1,6 +1,6 @@
 {
     "name": "nativescript-gps",
-    "version": "1.2.4",
+    "version": "1.2.6",
     "description": "Track GPS location updates",
     "main": "nativescript-gps.js",
     "typings": "nativescript-gps.d.ts",
@@ -31,6 +31,6 @@
     "homepage": "https://github.com/Akylas/nativescript-background-gps",
     "readmeFilename": "./README.md",
     "dependencies": {
-        "nativescript-perms": "^1.0.1"
+        "nativescript-perms": "^1.0.3"
     }
 }
