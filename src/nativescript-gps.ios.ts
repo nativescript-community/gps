@@ -1,10 +1,10 @@
 import * as enums from 'tns-core-modules/ui/enums/enums';
-import * as timer from 'tns-core-modules/timer/timer';
+import * as timer from 'tns-core-modules/timer';
 import { GeoLocation } from './location';
 import { deferredCallbackType, errorCallbackType, LocationMonitor as LocationMonitorDef, Options, successCallbackType } from './location-monitor';
 import * as common from './nativescript-gps.common';
 import * as perms from 'nativescript-perms';
-import * as appModule from 'tns-core-modules/application/application';
+import * as appModule from 'tns-core-modules/application';
 export * from './nativescript-gps.common';
 
 export { Options, successCallbackType, errorCallbackType, deferredCallbackType };
@@ -283,16 +283,19 @@ export function openGPSSettings(): Promise<void> {
         return new Promise(function(resolve, reject) {
             const settingsUrl = NSURL.URLWithString(UIApplicationOpenSettingsURLString);
             if (UIApplication.sharedApplication.canOpenURL(settingsUrl)) {
-                UIApplication.sharedApplication.openURLOptionsCompletionHandler(settingsUrl, null, function(success) {
+                UIApplication.sharedApplication.openURLOptionsCompletionHandler(settingsUrl, null, function (success) {
+
                     // we get the callback for opening the URL, not enabling the GPS!
                     if (success) {
-                        appModule.android.once(appModule.resumeEvent, () => {
+                        const onResume = function () {
+                            appModule.off(appModule.resumeEvent, onResume);
                             if (isEnabled()) {
                                 resolve();
                             } else {
                                 reject('location_service_not_enabled');
                             }
-                        });
+                        };
+                        appModule.on(appModule.resumeEvent, onResume);
                         return Promise.reject(undefined);
                         // }
                     } else {
