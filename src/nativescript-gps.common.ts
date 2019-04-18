@@ -1,4 +1,6 @@
 import { GeoLocation as LocationDef } from './location';
+import * as perms from 'nativescript-perms';
+
 export class GeoLocation implements LocationDef {
     public latitude: number;
     public longitude: number;
@@ -23,6 +25,7 @@ export let defaultGetLocationTimeout = 5 * 60 * 1000; // 5 minutes
 let debug = false;
 export function setGPSDebug(value: boolean) {
     debug = value;
+    perms.setDebug(debug);
 }
 
 let mockEnabled = false;
