@@ -4,5 +4,3 @@
  */
 export * from './nativescript-gps.ios';
 
-// Export any shared classes, constants, etc.
-export * from './nativescript-gps.common';

@@ -1,5 +1,6 @@
 import { GeoLocation as LocationDef } from './location';
 import * as perms from 'nativescript-perms';
+import { Observable } from 'tns-core-modules/ui/page/page';
 
 export class GeoLocation implements LocationDef {
     public latitude: number;
@@ -43,7 +44,7 @@ export enum CLogTypes {
 }
 
 export const CLog = (type: CLogTypes = 0, ...args) => {
-    if (debug) {
+    // if (debug) {
         if (type === 0) {
             // Debug
             console.log.apply(this, args);
@@ -56,5 +57,14 @@ export const CLog = (type: CLogTypes = 0, ...args) => {
         } else if (type === 3) {
             console.error.apply(this, args);
         }
-    }
+    // }
 };
+export abstract class GPSCommon extends Observable {
+    public set debug(value: boolean) {
+        setGPSDebug(value);
+    }
+        /*
+     * String value for hooking into the gps_status_event. This event fires when the gps state changes.
+     */
+    public static gps_status_event = 'gps_status_event';
+}
