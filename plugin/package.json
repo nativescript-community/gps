@@ -31,6 +31,6 @@
     "homepage": "https://github.com/Akylas/nativescript-background-gps",
     "readmeFilename": "./README.md",
     "dependencies": {
-        "nativescript-perms": "^1.0.4"
+        "nativescript-perms": "^1.0.6"
     }
 }
