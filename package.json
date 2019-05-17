@@ -40,13 +40,14 @@
     "readmeFilename": "../README.md",
     "devDependencies": {
         "cpy-cli": "^2.0.0",
-        "nativescript-perms": "^1.0.4",
-        "tns-core-modules": "^5.3.1",
-        "tns-platform-declarations": "^5.3.1",
+        "nativescript-observable": "^1.0.1",
+        "nativescript-perms": "^1.0.7",
+        "tns-core-modules": "^5.4.0",
+        "tns-platform-declarations": "^5.4.0",
         "tslint": "^5.16.0",
         "tslint-config-prettier": "^1.18.0",
         "tslint-config-standard": "^8.0.1",
-        "typescript": "~3.4.3",
+        "typescript": "~3.4.5",
         "prompt": "^1.0.0",
         "rimraf": "^2.6.3"
     }

@@ -1,6 +1,7 @@
 import { GeoLocation as LocationDef } from './location';
 import * as perms from 'nativescript-perms';
-import { Observable } from 'tns-core-modules/ui/page/page';
+import { EventData } from 'tns-core-modules/data/observable';
+import Observable from 'nativescript-observable';
 
 export class GeoLocation implements LocationDef {
     public latitude: number;
@@ -47,23 +48,30 @@ export const CLog = (type: CLogTypes = 0, ...args) => {
     if (debug) {
         if (type === 0) {
             // Debug
-            console.log.apply(this, args);
+            console.log('[nativescript-gps2]', ...args);
         } else if (type === 1) {
             // Info
-            console.log.apply(this, args);
+            console.log('[nativescript-gps2]', ...args);
         } else if (type === 2) {
             // Warning
-            console.warn.apply(this, args);
+            console.warn('[nativescript-gps2]', ...args);
         } else if (type === 3) {
-            console.error.apply(this, args);
+            console.error('[nativescript-gps2]', ...args);
         }
     }
 };
+
+declare module 'tns-core-modules/data/observable' {
+    interface Observable {
+        _getEventList(eventName: string, createIfNeeded?: boolean): any[];
+    }
+}
+
 export abstract class GPSCommon extends Observable {
     public set debug(value: boolean) {
         setGPSDebug(value);
     }
-        /*
+    /*
      * String value for hooking into the gps_status_event. This event fires when the gps state changes.
      */
     public static gps_status_event = 'gps_status_event';
