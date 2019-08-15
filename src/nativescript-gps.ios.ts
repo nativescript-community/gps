@@ -278,15 +278,20 @@ export class GPS extends common.GPSCommon {
                 };
 
                 const successCallback = function(location: GeoLocation) {
-                    stopTimerAndMonitor(locListener.id);
+                    let readyToStop = false;
                     if (typeof options.maximumAge === 'number') {
                         if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
                             resolve(location);
-                        } else {
-                            reject(new Error('New location is older than requested maximum age!'));
+                            readyToStop = true;
+                        // } else {
+                            // reject(new Error('New location is older than requested maximum age!'));
                         }
                     } else {
                         resolve(location);
+                        readyToStop = true;
+                    }
+                    if (readyToStop) {
+                        stopTimerAndMonitor(locListener.id);
                     }
                 };
 

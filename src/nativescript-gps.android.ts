@@ -255,15 +255,20 @@ export class GPS extends common.GPSCommon {
                     LocationMonitor.stopLocationMonitoring(locListenerId);
                 };
                 const successCallback = function(location: common.GeoLocation) {
-                    stopTimerAndMonitor((locListener as any).id);
+                    let readyToStop = false;
                     if (options && typeof options.maximumAge === 'number') {
                         if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
                             resolve(location);
-                        } else {
-                            reject(new Error('New location is older than requested maximum age!'));
+                            readyToStop = true;
+                        // } else {
+                            // reject(new Error('New location is older than requested maximum age!'));
                         }
                     } else {
                         resolve(location);
+                        readyToStop = true;
+                    }
+                    if (readyToStop) {
+                        stopTimerAndMonitor((locListener as any).id);
                     }
                 };
 
