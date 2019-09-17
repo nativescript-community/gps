@@ -50,8 +50,8 @@ export class LocationListenerImpl extends NSObject implements CLLocationManagerD
     private _onLocation: successCallbackType;
     private _onError: errorCallbackType;
     private _onDeferred: deferredCallbackType;
-    private _resolve: () => void;
-    private _reject: (error: Error) => void;
+    // private _resolve: () => void;
+    // private _reject: (error: Error) => void;
 
     public static initWithLocationError(successCallback: successCallbackType, error?: errorCallbackType, options?: Options): LocationListenerImpl {
         const listener = LocationListenerImpl.new() as LocationListenerImpl;
@@ -64,16 +64,16 @@ export class LocationListenerImpl extends NSObject implements CLLocationManagerD
         return listener;
     }
 
-    public static initWithPromiseCallbacks(resolve: () => void, reject: (error: Error) => void, authorizeAlways: boolean = false): LocationListenerImpl {
-        const listener = LocationListenerImpl.new() as LocationListenerImpl;
-        watchId++;
-        listener.id = watchId;
-        listener._resolve = resolve;
-        listener._reject = reject;
-        listener.authorizeAlways = authorizeAlways;
+    // public static initWithPromiseCallbacks(resolve: () => void, reject: (error: Error) => void, authorizeAlways: boolean = false): LocationListenerImpl {
+    //     const listener = LocationListenerImpl.new() as LocationListenerImpl;
+    //     watchId++;
+    //     listener.id = watchId;
+    //     listener._resolve = resolve;
+    //     listener._reject = reject;
+    //     listener.authorizeAlways = authorizeAlways;
 
-        return listener;
-    }
+    //     return listener;
+    // }
 
     public locationManagerDidUpdateLocations(manager: CLLocationManager, locations: NSArray<CLLocation>): void {
         common.CLog(common.CLogTypes.info, `LocationListenerImpl.locationManagerDidUpdateLocations(${locations})`);
@@ -98,46 +98,46 @@ export class LocationListenerImpl extends NSObject implements CLLocationManagerD
         }
     }
 
-    public locationManagerDidChangeAuthorizationStatus(manager: CLLocationManager, status: CLAuthorizationStatus) {
-        common.CLog(common.CLogTypes.info, `LocationListenerImpl.locationManagerDidChangeAuthorizationStatus(${status})`);
-        switch (status) {
-            case CLAuthorizationStatus.kCLAuthorizationStatusNotDetermined:
-                break;
+    // public locationManagerDidChangeAuthorizationStatus(manager: CLLocationManager, status: CLAuthorizationStatus) {
+    //     common.CLog(common.CLogTypes.info, `LocationListenerImpl.locationManagerDidChangeAuthorizationStatus(${status})`);
+    //     switch (status) {
+    //         case CLAuthorizationStatus.kCLAuthorizationStatusNotDetermined:
+    //             break;
 
-            case CLAuthorizationStatus.kCLAuthorizationStatusRestricted:
-                break;
+    //         case CLAuthorizationStatus.kCLAuthorizationStatusRestricted:
+    //             break;
 
-            case CLAuthorizationStatus.kCLAuthorizationStatusDenied:
-                if (this._reject) {
-                    LocationMonitor.stopLocationMonitoring(this.id);
-                    this._reject(new Error('Authorization Denied.'));
-                }
-                break;
+    //         case CLAuthorizationStatus.kCLAuthorizationStatusDenied:
+    //             if (this._reject) {
+    //                 LocationMonitor.stopLocationMonitoring(this.id);
+    //                 this._reject(new Error('Authorization Denied.'));
+    //             }
+    //             break;
 
-            case CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways:
-                if (this.authorizeAlways && this._resolve) {
-                    LocationMonitor.stopLocationMonitoring(this.id);
-                    this._resolve();
-                } else if (this._reject) {
-                    LocationMonitor.stopLocationMonitoring(this.id);
-                    this._reject(new Error('Authorization Denied.'));
-                }
-                break;
+    //         case CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways:
+    //             if (this.authorizeAlways && this._resolve) {
+    //                 LocationMonitor.stopLocationMonitoring(this.id);
+    //                 this._resolve();
+    //             } else if (this._reject) {
+    //                 LocationMonitor.stopLocationMonitoring(this.id);
+    //                 this._reject(new Error('Authorization Denied.'));
+    //             }
+    //             break;
 
-            case CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse:
-                if (!this.authorizeAlways && this._resolve) {
-                    LocationMonitor.stopLocationMonitoring(this.id);
-                    this._resolve();
-                } else if (this._reject) {
-                    LocationMonitor.stopLocationMonitoring(this.id);
-                    this._reject(new Error('Authorization Denied.'));
-                }
-                break;
+    //         case CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse:
+    //             if (!this.authorizeAlways && this._resolve) {
+    //                 LocationMonitor.stopLocationMonitoring(this.id);
+    //                 this._resolve();
+    //             } else if (this._reject) {
+    //                 LocationMonitor.stopLocationMonitoring(this.id);
+    //                 this._reject(new Error('Authorization Denied.'));
+    //             }
+    //             break;
 
-            default:
-                break;
-        }
-    }
+    //         default:
+    //             break;
+    //     }
+    // }
 }
 
 function locationFromCLLocation(clLocation: CLLocation): GeoLocation {
@@ -227,8 +227,7 @@ export class GPS extends common.GPSCommon {
                 });
             })
             .then(() => {
-                common.CLog(common.CLogTypes.debug, 'finished authorize');
-                common.CLog(common.CLogTypes.debug, 'finished authorize1', this.isEnabled());
+                common.CLog(common.CLogTypes.debug, 'finished authorize', this.isEnabled());
                 if (!this.isEnabled()) {
                     if (options.dontOpenSettings !== true) {
                         return this.openGPSSettings();
