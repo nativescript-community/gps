@@ -1,26 +1,29 @@
-import { GeoLocation as LocationDef } from './location';
+import { GeoLocation } from './location';
 import * as perms from 'nativescript-perms';
 import { EventData } from 'tns-core-modules/data/observable';
 import Observable from 'nativescript-observable';
 
-export class GeoLocation implements LocationDef {
-    public latitude: number;
-    public longitude: number;
+export { GeoLocation };
 
-    public altitude: number;
+// export class GeoLocation implements LocationDef {
+//     public latitude: number;
+//     public longitude: number;
 
-    public horizontalAccuracy: number;
-    public verticalAccuracy: number;
+//     public altitude: number;
 
-    public speed: number; // in m/s ?
+//     public horizontalAccuracy: number;
+//     public verticalAccuracy: number;
 
-    public bearing: number; // in degrees
+//     public speed: number; // in m/s ?
 
-    public timestamp: Date;
+//     public bearing: number; // in degrees
 
-    public android?: any; // android Location
-    public ios?: any; // iOS native location
-}
+//     public timestamp: Date;
+//     public elapsedBoot?: number;
+
+//     public android?: any; // android Location
+//     public ios?: any; // iOS native location
+// }
 
 export let defaultGetLocationTimeout = 5 * 60 * 1000; // 5 minutes
 

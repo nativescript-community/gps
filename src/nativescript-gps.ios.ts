@@ -141,7 +141,7 @@ export class LocationListenerImpl extends NSObject implements CLLocationManagerD
 }
 
 function locationFromCLLocation(clLocation: CLLocation): GeoLocation {
-    const location = new common.GeoLocation();
+    const location = {} as common.GeoLocation;
     location.latitude = clLocation.coordinate.latitude;
     location.longitude = clLocation.coordinate.longitude;
     location.altitude = clLocation.altitude;

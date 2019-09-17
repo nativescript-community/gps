@@ -56,7 +56,7 @@ function createLocationListener(successCallback: successCallbackType) {
 }
 
 function locationFromAndroidLocation(androidLocation: android.location.Location): common.GeoLocation {
-    const location = new common.GeoLocation();
+    const location = {} as common.GeoLocation;
     location.latitude = androidLocation.getLatitude();
     location.longitude = androidLocation.getLongitude();
     if (androidLocation.hasAltitude()) {
