@@ -262,7 +262,7 @@ export class GPS extends common.GPSCommon {
             });
         }
         return this.prepareForRequest(options).then(() => {
-            return new Promise<GeoLocation>(function(resolve, reject) {
+            return new Promise<GeoLocation>((resolve, reject) => {
                 let timerId;
                 if (!this.isEnabled()) {
                     reject(new Error('Location service is disabled'));
@@ -347,10 +347,10 @@ export class GPS extends common.GPSCommon {
     openGPSSettings(): Promise<void> {
         common.CLog(common.CLogTypes.debug, 'openGPSSettings');
         if (!this.isEnabled()) {
-            return new Promise(function(resolve, reject) {
+            return new Promise((resolve, reject) => {
                 const settingsUrl = NSURL.URLWithString(UIApplicationOpenSettingsURLString);
                 if (UIApplication.sharedApplication.canOpenURL(settingsUrl)) {
-                    UIApplication.sharedApplication.openURLOptionsCompletionHandler(settingsUrl, null, function(success) {
+                    UIApplication.sharedApplication.openURLOptionsCompletionHandler(settingsUrl, null, success => {
                         common.CLog(common.CLogTypes.debug, 'openGPSSettings', 'did open settings', success);
                         // we get the callback for opening the URL, not enabling the GPS!
                         if (success) {
