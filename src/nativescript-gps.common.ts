@@ -51,15 +51,15 @@ export const CLog = (type: CLogTypes = 0, ...args) => {
     if (debug) {
         if (type === 0) {
             // Debug
-            console.log('[nativescript-gps2]', ...args);
+            console.log('[nativescript-gps]', ...args);
         } else if (type === 1) {
             // Info
-            console.log('[nativescript-gps2]', ...args);
+            console.log('[nativescript-gps]', ...args);
         } else if (type === 2) {
             // Warning
-            console.warn('[nativescript-gps2]', ...args);
+            console.warn('[nativescript-gps]', ...args);
         } else if (type === 3) {
-            console.error('[nativescript-gps2]', ...args);
+            console.error('[nativescript-gps]', ...args);
         }
     }
 };
