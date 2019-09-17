@@ -154,7 +154,12 @@ function locationFromCLLocation(clLocation: CLLocation): GeoLocation {
         location.bearing = clLocation.course;
     }
     const timeIntervalSince1970 = NSDate.dateWithTimeIntervalSinceDate(0, clLocation.timestamp).timeIntervalSince1970;
-    location.timestamp = new Date(timeIntervalSince1970 * 1000);
+    const ms = timeIntervalSince1970 * 1000;
+    const bootElapsed = (NSDate as any).bootTimeTimeIntervalSinceReferenceDate() * 1000;
+    const delta = NSDate.date().timeIntervalSince1970 * 1000 - ms;
+    location.timestamp = new Date(ms);
+    location.elapsedBoot = bootElapsed - delta;
+    console.log('locationFromCLLocation', timeIntervalSince1970, ms, (NSDate as any).bootTimeTimeIntervalSinceReferenceDate, bootElapsed, delta, bootElapsed - delta);
     location.ios = clLocation;
     return location;
 }
@@ -282,7 +287,7 @@ export class GPS extends common.GPSCommon {
                         if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
                             resolve(location);
                             readyToStop = true;
-                        // } else {
+                            // } else {
                             // reject(new Error('New location is older than requested maximum age!'));
                         }
                     } else {

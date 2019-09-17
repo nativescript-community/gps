@@ -43,6 +43,11 @@ export interface GeoLocation {
     timestamp: Date;
 
     /**
+     * the location time in elapsed ms since boot (lot more accurate)
+     */
+    elapsedBoot?: number;
+
+    /**
      * The android-specific [location](http://developer.android.com/reference/android/location/Location.html) object.
      */
     android?: any; // android.location.Location;
