@@ -8,6 +8,9 @@ import * as common from './nativescript-gps.common';
 import { errorCallbackType, LocationMonitor as LocationMonitorDef, Options, successCallbackType } from './location-monitor';
 import * as perms from 'nativescript-perms';
 export * from './nativescript-gps.common';
+import lazy from "tns-core-modules/utils/lazy";
+
+const isPostOVar = lazy(() => android.os.Build.VERSION.SDK_INT >= 26);
 
 const locationListeners = {};
 let watchId = 0;
@@ -63,17 +66,22 @@ function locationFromAndroidLocation(androidLocation: android.location.Location)
         location.altitude = androidLocation.getAltitude();
     }
     location.horizontalAccuracy = androidLocation.getAccuracy();
-    location.verticalAccuracy = androidLocation.getAccuracy();
     if (androidLocation.hasSpeed()) {
         location.speed = androidLocation.getSpeed();
     }
     if (androidLocation.hasBearing()) {
         location.bearing = androidLocation.getBearing();
     }
+
+    if (isPostOVar() && androidLocation.hasVerticalAccuracy()) {
+        location.verticalAccuracy = androidLocation.getVerticalAccuracyMeters();
+    } else {
+        location.verticalAccuracy = androidLocation.getAccuracy();
+    }
     // if (androidLocation.hasBearingAccuracy()) {
     //     location.bearing = androidLocation.getBearing();
     // }
-    location.timestamp = new Date(androidLocation.getTime());
+    location.timestamp = androidLocation.getTime();
     location.elapsedBoot = androidLocation.getElapsedRealtimeNanos() / 1000000;
     location.android = androidLocation;
     return location;
@@ -94,7 +102,7 @@ function androidLocationFromLocation(location: common.GeoLocation): android.loca
     }
     if (location.timestamp) {
         try {
-            androidLocation.setTime(long(location.timestamp.getTime()));
+            androidLocation.setTime(long(location.timestamp));
         } catch (e) {
             console.error('invalid location timestamp');
         }

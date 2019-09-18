@@ -38,9 +38,9 @@ export interface GeoLocation {
     bearing: number;
 
     /**
-     * The time at which this location was determined.
+     * The time at which this location was determined in ms since epoch
      */
-    timestamp: Date;
+    timestamp: number;
 
     /**
      * the location time in elapsed ms since boot (lot more accurate)

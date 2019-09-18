@@ -157,9 +157,9 @@ function locationFromCLLocation(clLocation: CLLocation): GeoLocation {
     const ms = timeIntervalSince1970 * 1000;
     const bootElapsed = (NSDate as any).bootTimeTimeIntervalSinceReferenceDate() * 1000;
     const delta = NSDate.date().timeIntervalSince1970 * 1000 - ms;
-    location.timestamp = new Date(ms);
+    location.timestamp = ms;
     location.elapsedBoot = bootElapsed - delta;
-    console.log('locationFromCLLocation', timeIntervalSince1970, ms, (NSDate as any).bootTimeTimeIntervalSinceReferenceDate, bootElapsed, delta, bootElapsed - delta);
+    // console.log('locationFromCLLocation', timeIntervalSince1970, ms, (NSDate as any).bootTimeTimeIntervalSinceReferenceDate, bootElapsed, delta, bootElapsed - delta);
     location.ios = clLocation;
     return location;
 }
@@ -170,7 +170,7 @@ function clLocationFromLocation(location: GeoLocation): CLLocation {
     const speed = location.speed ? location.speed : -1;
     const course = location.bearing ? location.bearing : -1;
     const altitude = location.altitude ? location.altitude : -1;
-    const timestamp = location.timestamp ? NSDate.dateWithTimeIntervalSince1970(location.timestamp.getTime() / 1000) : null;
+    const timestamp = location.timestamp ? NSDate.dateWithTimeIntervalSince1970(location.timestamp / 1000) : null;
     const iosLocation = CLLocation.alloc().initWithCoordinateAltitudeHorizontalAccuracyVerticalAccuracyCourseSpeedTimestamp(
         CLLocationCoordinate2DMake(location.latitude, location.longitude),
         altitude,
