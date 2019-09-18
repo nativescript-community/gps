@@ -8,7 +8,7 @@ import * as common from './nativescript-gps.common';
 import { errorCallbackType, LocationMonitor as LocationMonitorDef, Options, successCallbackType } from './location-monitor';
 import * as perms from 'nativescript-perms';
 export * from './nativescript-gps.common';
-import lazy from "tns-core-modules/utils/lazy";
+import lazy from 'tns-core-modules/utils/lazy';
 
 const isPostOVar = lazy(() => android.os.Build.VERSION.SDK_INT >= 26);
 
@@ -269,7 +269,7 @@ export class GPS extends common.GPSCommon {
                         if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
                             resolve(location);
                             readyToStop = true;
-                        // } else {
+                            // } else {
                             // reject(new Error('New location is older than requested maximum age!'));
                         }
                     } else {
