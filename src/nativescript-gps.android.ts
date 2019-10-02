@@ -343,13 +343,9 @@ export class GPS extends common.GPSCommon {
     }
 
     distance(loc1: common.GeoLocation, loc2: common.GeoLocation): number {
-        if (!loc1.android) {
-            loc1.android = androidLocationFromLocation(loc1);
-        }
-        if (!loc2.android) {
-            loc2.android = androidLocationFromLocation(loc2);
-        }
-        return loc1.android.distanceTo(loc2.android);
+        const andLoc1 = loc1.android || androidLocationFromLocation(loc1);
+        const andLoc2 = loc2.android || androidLocationFromLocation(loc2);
+        return andLoc1.distanceTo(andLoc2);
     }
 }
 

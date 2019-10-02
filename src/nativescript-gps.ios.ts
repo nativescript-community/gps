@@ -426,13 +426,9 @@ export class GPS extends common.GPSCommon {
     }
 
     distance(loc1: GeoLocation, loc2: GeoLocation): number {
-        if (!loc1.ios) {
-            loc1.ios = clLocationFromLocation(loc1);
-        }
-        if (!loc2.ios) {
-            loc2.ios = clLocationFromLocation(loc2);
-        }
-        return loc1.ios.distanceFromLocation(loc2.ios);
+        const iosdLoc1 = loc1.android || clLocationFromLocation(loc1);
+        const iosLoc2 = loc2.android || clLocationFromLocation(loc2);
+        return iosdLoc1.distanceFromLocation(iosLoc2);
     }
 }
 export class LocationMonitor implements LocationMonitorDef {
