@@ -62,7 +62,7 @@ export interface Options {
     /**
      * android only
      */
-    provider?: string;
+    provider?: 'gps' | 'network' | 'passive';
 }
 
 declare type successCallbackType = (location: GeoLocation, manager?: any /*CLLocationManager*/) => void;
