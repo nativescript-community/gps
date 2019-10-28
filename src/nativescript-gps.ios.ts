@@ -153,12 +153,12 @@ function locationFromCLLocation(clLocation: CLLocation): GeoLocation {
     if (clLocation.course >= 0) {
         location.bearing = clLocation.course;
     }
-    const timeIntervalSince1970 = NSDate.dateWithTimeIntervalSinceDate(0, clLocation.timestamp).timeIntervalSince1970;
-    const ms = timeIntervalSince1970 * 1000;
-    const bootElapsed = (NSDate as any).bootTimeTimeIntervalSinceReferenceDate() * 1000;
-    const delta = NSDate.date().timeIntervalSince1970 * 1000 - ms;
+    const ms = NSDate.dateWithTimeIntervalSinceDate(0, clLocation.timestamp).timeIntervalSince1970 * 1000;
+    const bootElapsedms = (NSDate as any).bootTimeTimeIntervalSinceReferenceDate() * 1000;
+    const deltams = Date.now() - ms;
     location.timestamp = ms;
-    location.elapsedBoot = bootElapsed - delta;
+    location.age = deltams;
+    location.elapsedBoot = bootElapsedms - deltams;
     // console.log('locationFromCLLocation', timeIntervalSince1970, ms, (NSDate as any).bootTimeTimeIntervalSinceReferenceDate, bootElapsed, delta, bootElapsed - delta);
     location.ios = clLocation;
     return location;

@@ -82,6 +82,7 @@ function locationFromAndroidLocation(androidLocation: android.location.Location)
     //     location.bearing = androidLocation.getBearing();
     // }
     location.timestamp = androidLocation.getTime();
+    location.age = Date.now() - location.timestamp;
     location.elapsedBoot = androidLocation.getElapsedRealtimeNanos() / 1000000;
     location.android = androidLocation;
     return location;

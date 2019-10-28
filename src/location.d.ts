@@ -48,6 +48,11 @@ export interface GeoLocation {
     elapsedBoot?: number;
 
     /**
+     * the location age from the moment it was received
+     */
+    age?: number;
+
+    /**
      * The android-specific [location](http://developer.android.com/reference/android/location/Location.html) object.
      */
     android?: any; // android.location.Location;
