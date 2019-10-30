@@ -1,6 +1,5 @@
 import { GeoLocation } from './location';
 import * as perms from 'nativescript-perms';
-import { EventData } from 'tns-core-modules/data/observable';
 import Observable from 'nativescript-observable';
 
 export { GeoLocation };
@@ -64,11 +63,6 @@ export const CLog = (type: CLogTypes = 0, ...args) => {
     }
 };
 
-declare module 'tns-core-modules/data/observable' {
-    interface Observable {
-        _getEventList(eventName: string, createIfNeeded?: boolean): any[];
-    }
-}
 
 export abstract class GPSCommon extends Observable {
     public set debug(value: boolean) {

@@ -1,14 +1,13 @@
-import * as application from 'tns-core-modules/application/application';
-// import * as platform from 'tns-core-modules/platform/platform';
-import { ad } from 'tns-core-modules/utils/utils';
-import * as enums from 'tns-core-modules/ui/enums/enums';
-import * as timer from 'tns-core-modules/timer/timer';
-import * as trace from 'tns-core-modules/trace/trace';
+import * as application from '@nativescript/core/application';
+import { ad } from '@nativescript/core/utils/utils';
+import * as enums from '@nativescript/core/ui/enums';
+import * as timer from '@nativescript/core/timer';
+import * as trace from '@nativescript/core/trace';
 import * as common from './nativescript-gps.common';
 import { errorCallbackType, LocationMonitor as LocationMonitorDef, Options, successCallbackType } from './location-monitor';
 import * as perms from 'nativescript-perms';
 export * from './nativescript-gps.common';
-import lazy from 'tns-core-modules/utils/lazy';
+import lazy from '@nativescript/core/utils/lazy';
 
 const isPostOVar = lazy(() => android.os.Build.VERSION.SDK_INT >= 26);
 
