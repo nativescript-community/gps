@@ -8,6 +8,7 @@ import { errorCallbackType, LocationMonitor as LocationMonitorDef, Options, succ
 import * as perms from 'nativescript-perms';
 export * from './nativescript-gps.common';
 import lazy from '@nativescript/core/utils/lazy';
+import { DefaultLatLonKeys } from './location';
 
 const isPostOVar = lazy(() => android.os.Build.VERSION.SDK_INT >= 26);
 
@@ -24,12 +25,12 @@ function getAndroidLocationManager(): android.location.LocationManager {
     return androidLocationManager;
 }
 
-function createLocationListener(successCallback: successCallbackType) {
+function createLocationListener<T = DefaultLatLonKeys>(successCallback: successCallbackType<T>) {
     const locationListener = new android.location.LocationListener({
         onLocationChanged(location: android.location.Location) {
             common.CLog(common.CLogTypes.debug, 'onLocationChanged', location);
 
-            const locationCallback: successCallbackType = this._onLocation;
+            const locationCallback: successCallbackType<T> = this._onLocation;
             if (locationCallback) {
                 locationCallback(locationFromAndroidLocation(location));
             }
@@ -57,12 +58,14 @@ function createLocationListener(successCallback: successCallbackType) {
     return locationListener;
 }
 
-function locationFromAndroidLocation(androidLocation: android.location.Location): common.GeoLocation {
-    const location = {} as common.GeoLocation;
-    location.latitude = androidLocation.getLatitude();
-    location.longitude = androidLocation.getLongitude();
+function locationFromAndroidLocation<T = DefaultLatLonKeys>(androidLocation: android.location.Location): common.GenericGeoLocation<T> {
+    const location = {} as common.GenericGeoLocation<T>;
+    
+    location.provider = androidLocation.getProvider();
+    location[common.LatitudeKey] = androidLocation.getLatitude();
+    location[common.LongitudeKey] = androidLocation.getLongitude();
     if (androidLocation.hasAltitude()) {
-        location.altitude = androidLocation.getAltitude();
+        location[common.AltitudeKey] = androidLocation.getAltitude();
     }
     location.horizontalAccuracy = androidLocation.getAccuracy();
     if (androidLocation.hasSpeed()) {
@@ -81,18 +84,18 @@ function locationFromAndroidLocation(androidLocation: android.location.Location)
     //     location.bearing = androidLocation.getBearing();
     // }
     location.timestamp = androidLocation.getTime();
-    location.age = Date.now() - location.timestamp;
+    location.age = Math.max(Date.now() - location.timestamp);
     location.elapsedBoot = androidLocation.getElapsedRealtimeNanos() / 1000000;
     location.android = androidLocation;
     return location;
 }
 
-function androidLocationFromLocation(location: common.GeoLocation): android.location.Location {
+function androidLocationFromLocation<T = DefaultLatLonKeys>(location: common.GenericGeoLocation<T>): android.location.Location {
     const androidLocation = new android.location.Location('custom');
-    androidLocation.setLatitude(location.latitude);
-    androidLocation.setLongitude(location.longitude);
-    if (location.altitude !== undefined) {
-        androidLocation.setAltitude(location.altitude);
+    androidLocation.setLatitude(location[common.LatitudeKey]);
+    androidLocation.setLongitude(location[common.LongitudeKey]);
+    if (location[common.AltitudeKey] !== undefined) {
+        androidLocation.setAltitude(location[common.AltitudeKey]);
     }
     if (location.speed >= 0) {
         androidLocation.setSpeed(float(location.speed));
@@ -213,7 +216,7 @@ export class GPS extends common.GPSCommon {
         });
     }
 
-    watchLocation(successCallback: successCallbackType, errorCallback: errorCallbackType, options: Options) {
+    watchLocation(successCallback: successCallbackType<DefaultLatLonKeys>, errorCallback: errorCallbackType, options: Options) {
         common.CLog(common.CLogTypes.debug, 'watchLocation', options);
         return this.prepareForRequest(options).then(() => {
             const locListener = createLocationListener(successCallback);
@@ -230,14 +233,14 @@ export class GPS extends common.GPSCommon {
         return currentContext.getPackageManager().hasSystemFeature(android.content.pm.PackageManager.FEATURE_LOCATION_GPS);
     }
 
-    getCurrentLocation(options: Options): Promise<common.GeoLocation> {
+    getCurrentLocation<T = DefaultLatLonKeys>(options: Options): Promise<common.GenericGeoLocation<T>> {
         options = options || {};
         common.CLog(common.CLogTypes.debug, 'getCurrentLocation', options);
 
         if (options.timeout === 0) {
             // we should take any cached location e.g. lastKnownLocation
             return new Promise(function(resolve, reject) {
-                const lastLocation = LocationMonitor.getLastKnownLocation();
+                const lastLocation = LocationMonitor.getLastKnownLocation<T>();
                 if (lastLocation) {
                     if (typeof options.maximumAge === 'number') {
                         if (lastLocation.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
@@ -255,7 +258,7 @@ export class GPS extends common.GPSCommon {
         }
 
         return this.prepareForRequest(options).then(() => {
-            return new Promise<common.GeoLocation>(function(resolve, reject) {
+            return new Promise<common.GenericGeoLocation<T>>(function(resolve, reject) {
                 let timerId;
                 const stopTimerAndMonitor = function(locListenerId: number) {
                     if (timerId !== undefined) {
@@ -263,7 +266,7 @@ export class GPS extends common.GPSCommon {
                     }
                     LocationMonitor.stopLocationMonitoring(locListenerId);
                 };
-                const successCallback = function(location: common.GeoLocation) {
+                const successCallback = function(location: common.GenericGeoLocation<T>) {
                     let readyToStop = false;
                     if (options && typeof options.maximumAge === 'number') {
                         if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
@@ -281,7 +284,7 @@ export class GPS extends common.GPSCommon {
                     }
                 };
 
-                const locListener = LocationMonitor.createListenerWithCallbackAndOptions(successCallback, options);
+                const locListener = LocationMonitor.createListenerWithCallbackAndOptions<T>(successCallback, options);
                 try {
                     LocationMonitor.startLocationMonitoring(options, locListener);
                 } catch (e) {
@@ -292,7 +295,7 @@ export class GPS extends common.GPSCommon {
                 if (options && typeof options.timeout === 'number') {
                     timerId = timer.setTimeout(function() {
                         LocationMonitor.stopLocationMonitoring((locListener as any).id);
-                        reject(new Error('Timeout while searching for location!'));
+                        resolve(null);
                     }, options.timeout || common.defaultGetLocationTimeout);
                 }
             });
@@ -333,7 +336,7 @@ export class GPS extends common.GPSCommon {
         let acceptableProviders = 0;
         for (let index = 0; index < enabledProviders.size(); index++) {
             const provider = enabledProviders.get(index);
-            common.CLog(common.CLogTypes.debug, 'provider:', enabledProviders.get(index));
+            common.CLog(common.CLogTypes.debug, 'enabled provider:', enabledProviders.get(index));
             if (provider !== 'local_database' && provider !== 'passive') {
                 acceptableProviders++;
             }
@@ -342,15 +345,15 @@ export class GPS extends common.GPSCommon {
         return acceptableProviders > 0;
     }
 
-    distance(loc1: common.GeoLocation, loc2: common.GeoLocation): number {
-        const andLoc1 = loc1.android || androidLocationFromLocation(loc1);
-        const andLoc2 = loc2.android || androidLocationFromLocation(loc2);
+    distance<T = DefaultLatLonKeys>(loc1: common.GenericGeoLocation<T>, loc2: common.GenericGeoLocation<T>): number {
+        const andLoc1 = loc1.android || androidLocationFromLocation<T>(loc1);
+        const andLoc2 = loc2.android || androidLocationFromLocation<T>(loc2);
         return andLoc1.distanceTo(andLoc2);
     }
 }
 
 export class LocationMonitor implements LocationMonitorDef {
-    static getLastKnownLocation(): common.GeoLocation {
+    static getLastKnownLocation<T = DefaultLatLonKeys>(): common.GenericGeoLocation<T> {
         const criteria = new android.location.Criteria();
         criteria.setAccuracy(android.location.Criteria.ACCURACY_COARSE);
         try {
@@ -366,7 +369,7 @@ export class LocationMonitor implements LocationMonitorDef {
                 }
             }
             if (androidLocation) {
-                return locationFromAndroidLocation(androidLocation);
+                return locationFromAndroidLocation<T>(androidLocation);
             }
         } catch (e) {
             trace.write('Error: ' + e.message, 'Error');
@@ -380,8 +383,8 @@ export class LocationMonitor implements LocationMonitorDef {
         getAndroidLocationManager().requestLocationUpdates(updateTime, updateDistance, criteriaFromOptions(options), listener, null);
     }
 
-    static createListenerWithCallbackAndOptions(successCallback: successCallbackType, options: Options) {
-        return createLocationListener(successCallback);
+    static createListenerWithCallbackAndOptions<T = DefaultLatLonKeys>(successCallback: successCallbackType<T>, options: Options) {
+        return createLocationListener<T>(successCallback);
     }
 
     static stopLocationMonitoring(locListenerId: number): void {

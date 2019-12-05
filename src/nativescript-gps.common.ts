@@ -1,8 +1,12 @@
-import { GeoLocation } from './location';
+import { DefaultLatLonKeys, GenericGeoLocation, GeoLocation } from './location';
 import * as perms from 'nativescript-perms';
 import Observable from 'nativescript-observable';
 
-export { GeoLocation };
+export type LatitudeKeys = 'latitude' | 'lat';
+export type LongitudeKeys = 'longitude' | 'lon' | 'lng';
+export type AltitudeKeys = 'altitude' | 'alt' | 'ele';
+
+export { DefaultLatLonKeys, GenericGeoLocation, GeoLocation };
 
 // export class GeoLocation implements LocationDef {
 //     public latitude: number;
@@ -63,7 +67,6 @@ export const CLog = (type: CLogTypes = 0, ...args) => {
     }
 };
 
-
 export abstract class GPSCommon extends Observable {
     public set debug(value: boolean) {
         setGPSDebug(value);
@@ -72,4 +75,16 @@ export abstract class GPSCommon extends Observable {
      * String value for hooking into the gps_status_event. This event fires when the gps state changes.
      */
     public static gps_status_event = 'gps_status_event';
+}
+
+export let LatitudeKey: LatitudeKeys = 'latitude';
+export let LongitudeKey: LongitudeKeys = 'longitude';
+export let AltitudeKey: AltitudeKeys = 'altitude';
+
+export function setGeoLocationKeys(latitude: LatitudeKeys, longitude: LongitudeKeys, altitude?: AltitudeKeys) {
+    LatitudeKey = latitude;
+    LongitudeKey = longitude;
+    if (altitude) {
+        AltitudeKey = altitude;
+    }
 }

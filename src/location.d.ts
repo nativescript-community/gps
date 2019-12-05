@@ -1,21 +1,20 @@
 /**
  * A data class that encapsulates common properties for a geolocation.
  */
-export interface GeoLocation {
+
+
+export type DefaultLatLonKeys = {
+    latitude: number;
+    longitude: number;
+    altitude?: number;
+};
+
+type GenericGeoLocation<T = DefaultLatLonKeys> = {
+    [P in keyof T]: number;
+} & {
     /**
      * The latitude of the geolocation, in degrees.
      */
-    latitude: number;
-
-    /**
-     * The longitude of the geolocation, in degrees.
-     */
-    longitude: number;
-
-    /**
-     * The altitude (if available), in meters above sea level.
-     */
-    altitude: number;
 
     /**
      * The horizontal accuracy, in meters.
@@ -53,6 +52,11 @@ export interface GeoLocation {
     age?: number;
 
     /**
+     * [android only]: the provider of the location
+     */
+    provider?: string;
+
+    /**
      * The android-specific [location](http://developer.android.com/reference/android/location/Location.html) object.
      */
     android?: any; // android.location.Location;
@@ -61,4 +65,6 @@ export interface GeoLocation {
      * The ios-specific [CLLocation](https://developer.apple.com/library/ios/documentation/CoreLocation/Reference/CLLocation_Class/) object.
      */
     ios?: any; // CLLocation;
-}
+};
+
+type GeoLocation = GenericGeoLocation<DefaultLatLonKeys>;
