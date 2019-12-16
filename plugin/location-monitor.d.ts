@@ -65,7 +65,7 @@ export interface Options {
     provider?: 'gps' | 'network' | 'passive';
 
 
-    nmea?:boolean
+    nmeaAltitude?:boolean
 }
 
 declare type successCallbackType<T> = (location: GenericGeoLocation<T>, manager?: any /*CLLocationManager*/) => void;
