@@ -11,8 +11,9 @@ import lazy from '@nativescript/core/utils/lazy';
 import { DefaultLatLonKeys } from './location';
 
 const isPostOVar = lazy(() => android.os.Build.VERSION.SDK_INT >= 26);
+const isPostLVar = lazy(() => android.os.Build.VERSION.SDK_INT >= 24);
 
-const locationListeners = {};
+const locationListeners: { [k: number]: LocationListener<any> } = {};
 let watchId = 0;
 let androidLocationManager: android.location.LocationManager;
 const minTimeUpdate = 1 * 60 * 1000; // 1 minute
@@ -25,14 +26,36 @@ function getAndroidLocationManager(): android.location.LocationManager {
     return androidLocationManager;
 }
 
-function createLocationListener<T = DefaultLatLonKeys>(successCallback: successCallbackType<T>) {
+interface LocationListener<T = DefaultLatLonKeys> extends android.location.LocationListener {
+    _onLocation: successCallbackType<T>;
+    _nmeaListener: NmeaListener<T> | OnNmeaListener<T>;
+    mLastMslAltitude?: number;
+    mLastMslAltitudeTimestamp?: number;
+    id: number;
+}
+interface NmeaListener<T = DefaultLatLonKeys> extends android.location.GpsStatus.NmeaListener {
+    locationListener: WeakRef<LocationListener<T>>;
+}
+interface OnNmeaListener<T = DefaultLatLonKeys> extends android.location.OnNmeaMessageListener {
+    locationListener: WeakRef<LocationListener<T>>;
+}
+
+function createLocationListener<T = DefaultLatLonKeys>(successCallback: successCallbackType<T>, options: Options) {
     const locationListener = new android.location.LocationListener({
         onLocationChanged(location: android.location.Location) {
             common.CLog(common.CLogTypes.debug, 'onLocationChanged', location);
-
-            const locationCallback: successCallbackType<T> = this._onLocation;
+            const that = this as LocationListener<T>;
+            const locationCallback = that._onLocation;
             if (locationCallback) {
-                locationCallback(locationFromAndroidLocation(location));
+                const loc = locationFromAndroidLocation<T>(location);
+                const updateTime = options && typeof options.minimumUpdateTime === 'number' ? options.minimumUpdateTime : minTimeUpdate;
+                if (that.mLastMslAltitudeTimestamp) {
+                    // common.CLog(common.CLogTypes.debug, 'onLocationChanged test', loc.timestamp, that.mLastMslAltitudeTimestamp, loc['altitude'], that.mLastMslAltitude);
+                    if (loc.timestamp - that.mLastMslAltitudeTimestamp <= updateTime) {
+                        loc.mslAltitude = that.mLastMslAltitude;
+                    }
+                }
+                locationCallback(loc);
             }
         },
 
@@ -50,17 +73,62 @@ function createLocationListener<T = DefaultLatLonKeys>(successCallback: successC
             common.CLog(common.CLogTypes.debug, 'onStatusChanged', arg1, arg2, arg3);
             //
         }
-    });
+    }) as LocationListener<T>;
     watchId++;
-    (locationListener as any)._onLocation = successCallback;
-    (locationListener as any).id = watchId;
+    locationListener._onLocation = successCallback;
+    locationListener.id = watchId;
     locationListeners[watchId] = locationListener;
+
+    if (options.nmea === true) {
+        if (isPostLVar()) {
+            locationListener._nmeaListener = new android.location.OnNmeaMessageListener({
+                onNmeaMessage(nmea: string, timestamp: number) {
+                    const locationListener = (this as NmeaListener<T>).locationListener && (this as NmeaListener<T>).locationListener.get();
+                    if (locationListener && nmea[0] === '$') {
+                        const tokens = nmea.split(',');
+                        const type = tokens[0];
+                        const alt = tokens[9];
+
+                        // Parse altitude above sea level, Detailed description of NMEA string here http://aprs.gids.nl/nmea/#gga
+                        if (type.endsWith('GGA')) {
+                            if (alt && alt.length > 0) {
+                                locationListener.mLastMslAltitudeTimestamp = timestamp;
+                                locationListener.mLastMslAltitude = parseFloat(alt);
+                                common.CLog(common.CLogTypes.debug, 'onNmeaMessage', timestamp, tokens, locationListener.mLastMslAltitude);
+                            }
+                        }
+                    }
+                }
+            }) as OnNmeaListener<T>;
+        } else {
+            locationListener._nmeaListener = new android.location.GpsStatus.NmeaListener({
+                onNmeaReceived(timestamp: number, nmea: string) {
+                    const locationListener = (this as NmeaListener<T>).locationListener && (this as NmeaListener<T>).locationListener.get();
+                    if (locationListener && nmea[0] === '$') {
+                        const tokens = nmea.split(',');
+                        const type = tokens[0];
+                        const alt = tokens[9];
+
+                        // Parse altitude above sea level, Detailed description of NMEA string here http://aprs.gids.nl/nmea/#gga
+                        if (type.endsWith('GGA')) {
+                            if (alt && alt.length > 0) {
+                                locationListener.mLastMslAltitudeTimestamp = timestamp;
+                                locationListener.mLastMslAltitude = parseFloat(alt);
+                                common.CLog(common.CLogTypes.debug, 'onNmeaReceived', timestamp, tokens, locationListener.mLastMslAltitude);
+                            }
+                        }
+                    }
+                }
+            }) as NmeaListener<T>;
+        }
+        locationListener._nmeaListener.locationListener = new WeakRef(locationListener);
+    }
     return locationListener;
 }
 
 function locationFromAndroidLocation<T = DefaultLatLonKeys>(androidLocation: android.location.Location): common.GenericGeoLocation<T> {
     const location = {} as common.GenericGeoLocation<T>;
-    
+
     location.provider = androidLocation.getProvider();
     location[common.LatitudeKey] = androidLocation.getLatitude();
     location[common.LongitudeKey] = androidLocation.getLongitude();
@@ -123,23 +191,23 @@ function criteriaFromOptions(options: Options): android.location.Criteria {
     return criteria;
 }
 
-function watchLocationCore(options: Options, locListener: android.location.LocationListener): void {
-    const criteria = criteriaFromOptions(options);
-    common.CLog(common.CLogTypes.debug, 'watchLocationCore', criteria, options, locListener);
-    try {
-        const updateTime = options && typeof options.minimumUpdateTime === 'number' ? options.minimumUpdateTime : minTimeUpdate;
-        const updateDistance = options && typeof options.updateDistance === 'number' ? options.updateDistance : minRangeUpdate;
-        if (options.provider) {
-            getAndroidLocationManager().requestLocationUpdates(options.provider, updateTime, updateDistance, locListener, null);
-        } else {
-            getAndroidLocationManager().requestLocationUpdates(updateTime, updateDistance, criteria, locListener, null);
-        }
-    } catch (e) {
-        common.CLog(common.CLogTypes.debug, 'watchLocationCore error', e);
-        LocationMonitor.stopLocationMonitoring((locListener as any).id);
-        throw e;
-    }
-}
+// function watchLocationCore(options: Options, locListener: android.location.LocationListener): void {
+//     const criteria = criteriaFromOptions(options);
+//     common.CLog(common.CLogTypes.debug, 'watchLocationCore', criteria, options, locListener);
+//     try {
+//         const updateTime = options && typeof options.minimumUpdateTime === 'number' ? options.minimumUpdateTime : minTimeUpdate;
+//         const updateDistance = options && typeof options.updateDistance === 'number' ? options.updateDistance : minRangeUpdate;
+//         if (options.provider) {
+//             getAndroidLocationManager().requestLocationUpdates(options.provider, updateTime, updateDistance, locListener, null);
+//         } else {
+//             getAndroidLocationManager().requestLocationUpdates(updateTime, updateDistance, criteria, locListener, null);
+//         }
+//     } catch (e) {
+//         common.CLog(common.CLogTypes.debug, 'watchLocationCore error', e);
+//         LocationMonitor.stopLocationMonitoring((locListener as any).id);
+//         throw e;
+//     }
+// }
 export class GPS extends common.GPSCommon {
     enabled = false;
     constructor() {
@@ -164,7 +232,7 @@ export class GPS extends common.GPSCommon {
                 }
             });
         }
-    }
+    };
     prepareForRequest(options: Options) {
         common.CLog(common.CLogTypes.debug, 'prepareForRequest', options, this.isEnabled());
         return Promise.resolve()
@@ -216,11 +284,18 @@ export class GPS extends common.GPSCommon {
         });
     }
 
-    watchLocation(successCallback: successCallbackType<DefaultLatLonKeys>, errorCallback: errorCallbackType, options: Options) {
+    watchLocation<T = DefaultLatLonKeys>(successCallback: successCallbackType<T>, errorCallback: errorCallbackType, options: Options) {
         common.CLog(common.CLogTypes.debug, 'watchLocation', options);
         return this.prepareForRequest(options).then(() => {
-            const locListener = createLocationListener(successCallback);
-            watchLocationCore(options, locListener);
+            const locListener = LocationMonitor.createListenerWithCallbackAndOptions<T>(successCallback, options);
+            try {
+                LocationMonitor.startLocationMonitoring(options, locListener);
+            } catch (e) {
+                common.CLog(common.CLogTypes.debug, 'watchLocationCore error', e);
+                LocationMonitor.stopLocationMonitoring((locListener as any).id);
+                throw e;
+            }
+            // watchLocationCore(options, locListener);
             return (locListener as any).id;
         });
     }
@@ -286,7 +361,7 @@ export class GPS extends common.GPSCommon {
 
                 const locListener = LocationMonitor.createListenerWithCallbackAndOptions<T>(successCallback, options);
                 try {
-                    LocationMonitor.startLocationMonitoring(options, locListener);
+                    LocationMonitor.startLocationMonitoring<T>(options, locListener);
                 } catch (e) {
                     stopTimerAndMonitor((locListener as any).id);
                     reject(e);
@@ -377,20 +452,34 @@ export class LocationMonitor implements LocationMonitorDef {
         return null;
     }
 
-    static startLocationMonitoring(options: Options, listener): void {
+    static startLocationMonitoring<T = DefaultLatLonKeys>(options: Options, listener: LocationListener<T>): void {
         const updateTime = options && typeof options.minimumUpdateTime === 'number' ? options.minimumUpdateTime : minTimeUpdate;
         const updateDistance = options && typeof options.updateDistance === 'number' ? options.updateDistance : minRangeUpdate;
-        getAndroidLocationManager().requestLocationUpdates(updateTime, updateDistance, criteriaFromOptions(options), listener, null);
+        const manager = getAndroidLocationManager();
+        if (options.provider) {
+            manager.requestLocationUpdates(options.provider, updateTime, updateDistance, listener, null);
+        } else {
+            manager.requestLocationUpdates(updateTime, updateDistance, criteriaFromOptions(options), listener, null);
+        }
+        if (listener._nmeaListener) {
+            manager.addNmeaListener(listener._nmeaListener as any);
+        }
     }
 
     static createListenerWithCallbackAndOptions<T = DefaultLatLonKeys>(successCallback: successCallbackType<T>, options: Options) {
-        return createLocationListener<T>(successCallback);
+        return createLocationListener<T>(successCallback, options);
     }
 
     static stopLocationMonitoring(locListenerId: number): void {
         const listener = locationListeners[locListenerId];
         if (listener) {
-            getAndroidLocationManager().removeUpdates(listener);
+            const manager = getAndroidLocationManager();
+            manager.removeUpdates(listener);
+            if (listener._nmeaListener) {
+                manager.removeNmeaListener(listener._nmeaListener as any);
+                listener._nmeaListener.locationListener = null;
+                listener._nmeaListener = null;
+            }
             delete locationListeners[locListenerId];
         }
     }

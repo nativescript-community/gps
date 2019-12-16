@@ -63,6 +63,9 @@ export interface Options {
      * android only
      */
     provider?: 'gps' | 'network' | 'passive';
+
+
+    nmea?:boolean
 }
 
 declare type successCallbackType<T> = (location: GenericGeoLocation<T>, manager?: any /*CLLocationManager*/) => void;

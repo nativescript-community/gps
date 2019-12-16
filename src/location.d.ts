@@ -56,6 +56,12 @@ type GenericGeoLocation<T = DefaultLatLonKeys> = {
      */
     provider?: string;
 
+
+    /**
+     * [android only]: nmea altitude
+     */
+    mslAltitude?:number
+
     /**
      * The android-specific [location](http://developer.android.com/reference/android/location/Location.html) object.
      */
