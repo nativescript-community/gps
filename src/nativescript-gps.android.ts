@@ -79,7 +79,7 @@ function createLocationListener<T = DefaultLatLonKeys>(successCallback: successC
     locationListener.id = watchId;
     locationListeners[watchId] = locationListener;
 
-    if (options.nmea === true) {
+    if (options.nmeaAltitude === true) {
         if (isPostLVar()) {
             locationListener._nmeaListener = new android.location.OnNmeaMessageListener({
                 onNmeaMessage(nmea: string, timestamp: number) {
