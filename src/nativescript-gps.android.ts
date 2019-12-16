@@ -385,18 +385,6 @@ export class GPS extends common.GPSCommon {
         common.CLog(common.CLogTypes.debug, 'enable');
         return this.openGPSSettings();
     }
-    authorize(always?: boolean) {
-        common.CLog(common.CLogTypes.debug, 'authorize', always);
-        return perms.request('location').then(s => s === 'authorized');
-    }
-
-    isAuthorized() {
-        common.CLog(common.CLogTypes.debug, 'isAuthorized');
-        return perms.check('location').then(s => {
-            common.CLog(common.CLogTypes.debug, 'isAuthorized result', s);
-            return s === 'authorized';
-        });
-    }
 
     isGPSEnabled(): boolean {
         const result = getAndroidLocationManager().isProviderEnabled(android.location.LocationManager.GPS_PROVIDER);

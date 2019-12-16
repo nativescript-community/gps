@@ -384,14 +384,7 @@ export class GPS extends common.GPSCommon {
         common.CLog(common.CLogTypes.debug, 'enable');
         return this.openGPSSettings();
     }
-    authorize(always?: boolean): Promise<boolean> {
-        common.CLog(common.CLogTypes.debug, 'authorize', always);
-        return perms
-            .request('location', {
-                type: always ? 'always' : undefined
-            })
-            .then(s => s === 'authorized');
-    }
+
     // authorizeLocationRequest(always?: boolean): Promise<void> {
     //     return new Promise<void>(function(resolve, reject) {
     //         if (isLocationServiceAuthorized()) {
@@ -421,9 +414,6 @@ export class GPS extends common.GPSCommon {
         return CLLocationManager.locationServicesEnabled();
     }
 
-    isAuthorized() {
-        return perms.check('location').then(s => s === 'authorized');
-    }
 
     distance<T = DefaultLatLonKeys>(loc1: GenericGeoLocation<T>, loc2: GenericGeoLocation<T>): number {
         const iosdLoc1 = loc1.android || clLocationFromLocation<T>(loc1);

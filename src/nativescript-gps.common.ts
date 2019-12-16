@@ -75,6 +75,22 @@ export abstract class GPSCommon extends Observable {
      * String value for hooking into the gps_status_event. This event fires when the gps state changes.
      */
     public static gps_status_event = 'gps_status_event';
+
+    authorize(always?: boolean) {
+        CLog(CLogTypes.debug, 'authorize', always);
+        return perms.request('location', { type: always ? 'always' : undefined }).then(s => s[0] === 'authorized');
+    }
+
+    isAuthorized(always?: boolean) {
+        CLog(CLogTypes.debug, 'isAuthorized');
+        return perms.check('location').then(s => {
+            CLog(CLogTypes.debug, 'isAuthorized result', s);
+            if (always !== undefined) {
+                return s[0] === 'authorized' && s[1] === always;
+            }
+            return s[0] === 'authorized';
+        });
+    }
 }
 
 export let LatitudeKey: LatitudeKeys = 'latitude';

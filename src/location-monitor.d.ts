@@ -78,7 +78,7 @@ export function clearWatch(watchId: number): void;
 export declare function authorize(always?: boolean): Promise<void>;
 export declare function enable(always?: boolean): Promise<void>;
 export declare function isEnabled(): boolean;
-export declare function isAuthorized(): Promise<boolean>;
+export declare function isAuthorized(always?: boolean): Promise<boolean>;
 export function distance<T = DefaultLatLonKeys>(loc1: GenericGeoLocation<T>, loc2: GenericGeoLocation<T>): number;
 
 export class LocationMonitor {

@@ -1,6 +1,6 @@
 {
     "name": "nativescript-gps",
-    "version": "2.0.10",
+    "version": "2.0.11",
     "description": "Track GPS location updates",
     "main": "nativescript-gps.js",
     "typings": "nativescript-gps.d.ts",
@@ -32,6 +32,6 @@
     "readmeFilename": "./README.md",
     "dependencies": {
         "nativescript-observable": "^2.0.1",
-        "nativescript-perms": "^1.0.10"
+        "nativescript-perms": "^2.0.1"
     }
 }
