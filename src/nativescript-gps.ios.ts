@@ -349,7 +349,7 @@ export class GPS extends common.GPSCommon {
     hasGPS() {
         return true;
     }
-    openGPSSettings(): Promise<void> {
+    openGPSSettings(): Promise<boolean> {
         common.CLog(common.CLogTypes.debug, 'openGPSSettings', this.isEnabled());
         // if (!this.isEnabled()) {
         return new Promise((resolve, reject) => {
@@ -363,11 +363,11 @@ export class GPS extends common.GPSCommon {
                         const onResume = () => {
                             common.CLog(common.CLogTypes.debug, 'openGPSSettings', 'resume');
                             appModule.off(appModule.resumeEvent, onResume);
-                            if (this.isEnabled()) {
-                                resolve();
-                            } else {
-                                reject('location_service_not_enabled');
-                            }
+                            // if (this.isEnabled()) {
+                            resolve(this.isEnabled());
+                            // } else {
+                            // reject('location_service_not_enabled');
+                            // }
                         };
                         appModule.on(appModule.resumeEvent, onResume);
                         return Promise.reject(undefined);
@@ -381,7 +381,7 @@ export class GPS extends common.GPSCommon {
         // }
         // return Promise.resolve();
     }
-    enable(): Promise<void> {
+    enable() {
         common.CLog(common.CLogTypes.debug, 'enable');
         return this.openGPSSettings();
     }
