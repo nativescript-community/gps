@@ -151,9 +151,13 @@ function locationFromAndroidLocation<T = DefaultLatLonKeys>(androidLocation: and
     // if (androidLocation.hasBearingAccuracy()) {
     //     location.bearing = androidLocation.getBearing();
     // }
-    location.timestamp = androidLocation.getTime();
+    const bootTime = java.lang.System.currentTimeMillis() - android.os.SystemClock.elapsedRealtime();
+
+    // we use elapseRealtime because getTime() is wrong on some devices
+    const sinceBoot = Math.round(androidLocation.getElapsedRealtimeNanos() / 1000000);
+    location.timestamp = bootTime + sinceBoot;
     location.age = Math.max(Date.now() - location.timestamp);
-    location.elapsedBoot = androidLocation.getElapsedRealtimeNanos() / 1000000;
+    location.elapsedBoot = sinceBoot;
     location.android = androidLocation;
     return location;
 }
