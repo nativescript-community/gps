@@ -1,0 +1,16 @@
+dependencies:
+  nativescript-observable: 2.0.1
+  nativescript-perms: 1.0.10
+lockfileVersion: 5.1
+packages:
+  /nativescript-observable/2.0.1:
+    dev: false
+    resolution:
+      integrity: sha512-85cKqYrNLM8Gp9kHKx9y6dImbyLrR5mlSTwvjFIW7wd7musxJVHzrQ0zCamzIV1ESXT2+52uy8j2rI2/aAn3Fg==
+  /nativescript-perms/1.0.10:
+    dev: false
+    resolution:
+      integrity: sha512-URV8kepUd/moG+x5P1ZbrabwpPFVODU5zNoyUMbFmZ7ULfNCJwErVHBRvaf0Y4cU64pIWvnusj6RFkuNsoxeRA==
+specifiers:
+  nativescript-observable: ^2.0.1
+  nativescript-perms: ^1.0.10

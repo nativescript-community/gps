@@ -1,12 +1,12 @@
 import { Observable } from 'tns-core-modules/data/observable';
-import application = require('tns-core-modules/application');
-import * as gps from 'nativescript-gps';
-// const gps = require('nativescript-gps');
-const ObservableArray = require('tns-core-modules/data/observable-array').ObservableArray;
-
+import { ObservableArray } from 'tns-core-modules/data/observable-array';
+import * as application from 'tns-core-modules/application';
+import { GPS } from 'nativescript-gps';
+const gps = new GPS();
+gps.debug = true;
 export class HelloWorldModel extends Observable {
     public message: string;
-    public gpsPoints: any[];
+    public gpsPoints: ObservableArray<any>;
     private watchId: number;
     private uiApplication: any;
 
@@ -21,9 +21,11 @@ export class HelloWorldModel extends Observable {
 
         this.enableLocation()
             .then(() => {
-                this.watchId = gps.watchLocation(this.locationReceived, this.error, {
+                console.log('enableLocation done');
+                gps.watchLocation(this.locationReceived, this.error, {
+                    provider:'gps',
                     minimumUpdateTime: 1000
-                });
+                }).then(watchId => (this.watchId = watchId));
             })
             .catch(this.error);
     }
@@ -31,7 +33,10 @@ export class HelloWorldModel extends Observable {
     enableLocation() {
         if (!gps.isEnabled()) {
             console.log('Location not enabled, requesting.');
-            return gps.authorize(true).then(() => gps.enable());
+            return gps
+                .authorize(true)
+                .then(() => gps.enable())
+                .then(() => gps.isEnabled());
         } else {
             return Promise.resolve(true);
         }
@@ -68,8 +73,8 @@ export class HelloWorldModel extends Observable {
         const logTime: Date = new Date();
         const difference: number = (logTime.getTime() - gpsTime.getTime()) / 1000;
         this.message = `last location:${difference},${position.latitude},${position.longitude}`;
-        this.gpsPoints.unshift({ name: difference + ' = ' + this.formatDate(logTime) + ' - ' + this.formatDate(gpsTime) });
-    }
+        this.gpsPoints.unshift({ name: gpsTime });
+    };
 
     error(err) {
         console.log('Error: ' + JSON.stringify(err));
