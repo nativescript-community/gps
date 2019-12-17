@@ -11,7 +11,7 @@
         }
     },
     "scripts": {
-        "tsc": "tsc -skipLibCheck && cpy '**/*.d.ts' '../plugin' --parents --cwd=src && cp README.md plugin/",
+        "tsc": "cpy '**/*.d.ts' '../plugin' --parents --cwd=src && cp README.md plugin/ && tsc -skipLibCheck",
         "demo.ios": "npm run preparedemo && cd demo && tns emulate ios",
         "demo.ios.device": "npm run preparedemo && cd demo && tns run ios",
         "demo.android": "npm run preparedemo && cd demo && tns run android",
