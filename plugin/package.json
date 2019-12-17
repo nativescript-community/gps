@@ -1,6 +1,6 @@
 {
     "name": "nativescript-gps",
-    "version": "2.0.12",
+    "version": "2.0.13",
     "description": "Track GPS location updates",
     "main": "nativescript-gps.js",
     "typings": "nativescript-gps.d.ts",
