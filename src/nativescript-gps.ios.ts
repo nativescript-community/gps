@@ -350,35 +350,36 @@ export class GPS extends common.GPSCommon {
         return true;
     }
     openGPSSettings(): Promise<void> {
-        common.CLog(common.CLogTypes.debug, 'openGPSSettings');
-        if (!this.isEnabled()) {
-            return new Promise((resolve, reject) => {
-                const settingsUrl = NSURL.URLWithString(UIApplicationOpenSettingsURLString);
-                if (UIApplication.sharedApplication.canOpenURL(settingsUrl)) {
-                    UIApplication.sharedApplication.openURLOptionsCompletionHandler(settingsUrl, null, success => {
-                        common.CLog(common.CLogTypes.debug, 'openGPSSettings', 'did open settings', success);
-                        // we get the callback for opening the URL, not enabling the GPS!
-                        if (success) {
-                            const onResume = () => {
-                                common.CLog(common.CLogTypes.debug, 'openGPSSettings', 'resume');
-                                appModule.off(appModule.resumeEvent, onResume);
-                                if (this.isEnabled()) {
-                                    resolve();
-                                } else {
-                                    reject('location_service_not_enabled');
-                                }
-                            };
-                            appModule.on(appModule.resumeEvent, onResume);
-                            return Promise.reject(undefined);
-                            // }
-                        } else {
-                            return Promise.reject('cant_open_settings');
-                        }
-                    });
-                }
-            });
-        }
-        return Promise.resolve();
+        common.CLog(common.CLogTypes.debug, 'openGPSSettings', this.isEnabled());
+        // if (!this.isEnabled()) {
+        return new Promise((resolve, reject) => {
+            const settingsUrl = NSURL.URLWithString(UIApplicationOpenSettingsURLString);
+            common.CLog(common.CLogTypes.debug, 'openGPSSettings1', settingsUrl, UIApplication.sharedApplication.canOpenURL(settingsUrl));
+            if (UIApplication.sharedApplication.canOpenURL(settingsUrl)) {
+                UIApplication.sharedApplication.openURLOptionsCompletionHandler(settingsUrl, null, success => {
+                    common.CLog(common.CLogTypes.debug, 'openGPSSettings', 'did open settings', success);
+                    // we get the callback for opening the URL, not enabling the GPS!
+                    if (success) {
+                        const onResume = () => {
+                            common.CLog(common.CLogTypes.debug, 'openGPSSettings', 'resume');
+                            appModule.off(appModule.resumeEvent, onResume);
+                            if (this.isEnabled()) {
+                                resolve();
+                            } else {
+                                reject('location_service_not_enabled');
+                            }
+                        };
+                        appModule.on(appModule.resumeEvent, onResume);
+                        return Promise.reject(undefined);
+                        // }
+                    } else {
+                        return Promise.reject('cant_open_settings');
+                    }
+                });
+            }
+        });
+        // }
+        // return Promise.resolve();
     }
     enable(): Promise<void> {
         common.CLog(common.CLogTypes.debug, 'enable');
@@ -413,7 +414,6 @@ export class GPS extends common.GPSCommon {
     isEnabled(): boolean {
         return CLLocationManager.locationServicesEnabled();
     }
-
 
     distance<T = DefaultLatLonKeys>(loc1: GenericGeoLocation<T>, loc2: GenericGeoLocation<T>): number {
         const iosdLoc1 = loc1.android || clLocationFromLocation<T>(loc1);
