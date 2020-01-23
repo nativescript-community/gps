@@ -241,6 +241,9 @@ export class GPS extends common.GPSCommon {
         common.CLog(common.CLogTypes.debug, 'prepareForRequest', options, this.isEnabled());
         return Promise.resolve()
             .then(() => {
+                if (options.skipPermissionCheck === true) {
+                    return undefined;
+                }
                 return this.isAuthorized().then(auth => {
                     if (!auth) {
                         if (options.skipPermissionCheck !== true) {

@@ -219,14 +219,17 @@ export class GPS extends common.GPSCommon {
         common.CLog(common.CLogTypes.debug, 'prepareForRequest', options);
         return Promise.resolve()
             .then(() => {
+                if (options.skipPermissionCheck === true) {
+                    return undefined;
+                }
                 return this.isAuthorized().then(auth => {
                     if (!auth) {
-                        if (options.skipPermissionCheck !== true) {
-                            common.CLog(common.CLogTypes.debug, 'requesting location permission');
-                            return perms.request('location');
-                        } else {
+                        // if (options.skipPermissionCheck !== true) {
+                        //     common.CLog(common.CLogTypes.debug, 'requesting location permission');
+                        //     return perms.request('location');
+                        // } else {
                             return Promise.reject(new Error('Location service is not granted.'));
-                        }
+                        // }
                     }
                     return undefined;
                 });
@@ -234,7 +237,7 @@ export class GPS extends common.GPSCommon {
             .then(() => {
                 common.CLog(common.CLogTypes.debug, 'finished authorize', this.isEnabled());
                 if (!this.isEnabled()) {
-                    if (options.dontOpenSettings !== true) {
+                    if (options.dontOpenSettings !== true && options.skipPermissionCheck !== true) {
                         return this.openGPSSettings();
                     } else {
                         return Promise.reject('location_service_not_enabled');
