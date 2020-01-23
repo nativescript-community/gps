@@ -154,11 +154,11 @@ function locationFromCLLocation<T = DefaultLatLonKeys>(clLocation: CLLocation): 
         location.bearing = clLocation.course;
     }
     const ms = NSDate.dateWithTimeIntervalSinceDate(0, clLocation.timestamp).timeIntervalSince1970 * 1000;
-    const bootElapsedms = (NSDate as any).bootTimeTimeIntervalSinceReferenceDate() * 1000;
+    // const bootElapsedms = (NSDate as any).bootTimeTimeIntervalSinceReferenceDate() * 1000;
     const deltams = Math.max(Date.now() - ms, 0);
     location.timestamp = ms;
     location.age = deltams;
-    location.elapsedBoot = bootElapsedms - deltams;
+    // location.elapsedBoot = bootElapsedms - deltams;
     // console.log('locationFromCLLocation', timeIntervalSince1970, ms, (NSDate as any).bootTimeTimeIntervalSinceReferenceDate, bootElapsed, delta, bootElapsed - delta);
     location.ios = clLocation;
     return location;
