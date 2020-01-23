@@ -332,9 +332,10 @@ export class GPS extends common.GPSCommon {
                 iosLocManager.activityType = options.activityType || CLActivityType.Fitness;
 
                 // }
-                common.CLog(common.CLogTypes.info, `gps: watchLocation(${options}, ${locListener})`);
+                common.CLog(common.CLogTypes.info, `gps: watchLocation(${JSON.stringify(options)}, ${locListener.id})`);
                 iosLocManager.startUpdatingLocation();
-                if (!!options.deferredLocationUpdates) {
+                if (options.deferredLocationUpdates) {
+                    common.CLog(common.CLogTypes.info, `gps: watchLocation defering`);
                     iosLocManager.allowDeferredLocationUpdatesUntilTraveledTimeout(options.deferredLocationUpdates.traveled, options.deferredLocationUpdates.timeout);
                 }
                 return locListener.id;
@@ -451,11 +452,12 @@ export class LocationMonitor implements LocationMonitorDef {
 
     static startLocationMonitoring<T = DefaultLatLonKeys>(options: Options, locListener: LocationListenerImpl<T>): void {
         const iosLocManager = LocationMonitor.createiOSLocationManager<T>(locListener, options);
-        common.CLog(common.CLogTypes.info, `gps.LocationMonitor: startLocationMonitoring(${options})`);
+        common.CLog(common.CLogTypes.info, `gps.LocationMonitor: startLocationMonitoring(${options}) ${locListener.id}`);
         iosLocManager.startUpdatingLocation();
     }
 
     static stopLocationMonitoring(iosLocManagerId: number) {
+        common.CLog(common.CLogTypes.info, `gps.LocationMonitor: stopLocationMonitoring(${iosLocManagerId})`);
         if (locationManagers[iosLocManagerId]) {
             locationManagers[iosLocManagerId].stopUpdatingLocation();
             locationManagers[iosLocManagerId].delegate = null;
@@ -467,8 +469,8 @@ export class LocationMonitor implements LocationMonitorDef {
     static createiOSLocationManager<T = DefaultLatLonKeys>(locListener: LocationListenerImpl<T>, options: Options): CLLocationManager {
         const iosLocManager = new CLLocationManager();
         iosLocManager.delegate = locListener;
-        iosLocManager.desiredAccuracy = options ? options.desiredAccuracy : enums.Accuracy.high;
-        iosLocManager.distanceFilter = options ? options.updateDistance : minRangeUpdate;
+        iosLocManager.desiredAccuracy = options?.desiredAccuracy ?? enums.Accuracy.high;
+        iosLocManager.distanceFilter = options?.updateDistance ?? minRangeUpdate;
         locationManagers[locListener.id] = iosLocManager;
         locationListeners[locListener.id] = locListener;
         return iosLocManager;
