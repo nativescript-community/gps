@@ -224,12 +224,11 @@ export class GPS extends common.GPSCommon {
                 }
                 return this.isAuthorized().then(auth => {
                     if (!auth) {
-                        // if (options.skipPermissionCheck !== true) {
-                        //     common.CLog(common.CLogTypes.debug, 'requesting location permission');
-                        //     return perms.request('location');
-                        // } else {
-                            return Promise.reject(new Error('Location service is not granted.'));
-                        // }
+                        if (options.skipPermissionCheck !== true) {
+                            return perms.request('location');
+                        } else {
+                            return Promise.reject(new Error('location_service_not_granted'));
+                        }
                     }
                     return undefined;
                 });

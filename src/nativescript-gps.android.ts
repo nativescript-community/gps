@@ -249,7 +249,7 @@ export class GPS extends common.GPSCommon {
                         if (options.skipPermissionCheck !== true) {
                             return perms.request('location');
                         } else {
-                            return Promise.reject(new Error('Location service is not granted.'));
+                            return Promise.reject(new Error('location_service_not_granted'));
                         }
                     }
                     return undefined;
