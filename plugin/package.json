@@ -12,7 +12,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/Akylas/nativescript-background-gps.git"
+        "url": "https://github.com/farfromrefug/nativescript-gps.git"
     },
     "keywords": [
         "NativeScript",
@@ -25,10 +25,10 @@
         "email": "martin.guillon@akylas.fr"
     },
     "bugs": {
-        "url": "https://github.com/Akylas/nativescript-background-gps/issues"
+        "url": "https://github.com/farfromrefug/nativescript-gps/issues"
     },
     "license": "MIT",
-    "homepage": "https://github.com/Akylas/nativescript-background-gps",
+    "homepage": "https://github.com/farfromrefug/nativescript-gps",
     "readmeFilename": "./README.md",
     "dependencies": {
         "nativescript-observable": "^2.0.1",
