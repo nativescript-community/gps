@@ -13,7 +13,7 @@
     "scripts": {
         "tsc": "cpy '**/*.d.ts' '../plugin' --parents --cwd=src && tsc -skipLibCheck -d ",
         "build": " cp README.md plugin/ && rm -f .tsbuildinfo && npm run tsc && npm run build.esm && node ./build.esm.js",
-        "build.esm": "tsc -skipLibCheck --target es2015 --removeComments --outDir build/esm",
+        "build.esm": "tsc -skipLibCheck --target es2015 --module esnext --removeComments --outDir build/esm",
         "demo.ios": "npm run preparedemo && cd demo && tns emulate ios",
         "demo.ios.device": "npm run preparedemo && cd demo && tns run ios",
         "demo.android": "npm run preparedemo && cd demo && tns run android",
