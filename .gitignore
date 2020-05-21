@@ -11,3 +11,5 @@ node_modules
 .idea/
 **/.DS_Store
 plugin/*.d.ts
+plugin/**/*js.map
+plugin/**/*js

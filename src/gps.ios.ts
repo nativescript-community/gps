@@ -2,10 +2,10 @@ import * as enums from '@nativescript/core/ui/enums';
 import * as timer from '@nativescript/core/timer';
 import { DefaultLatLonKeys, GeoLocation, GenericGeoLocation } from './location';
 import { deferredCallbackType, errorCallbackType, LocationMonitor as LocationMonitorDef, Options, successCallbackType } from './location-monitor';
-import * as common from './nativescript-gps.common';
+import * as common from './gps.common';
 import * as perms from 'nativescript-perms';
 import * as appModule from '@nativescript/core/application';
-export * from './nativescript-gps.common';
+export * from './gps.common';
 
 export { Options, successCallbackType, errorCallbackType, deferredCallbackType };
 

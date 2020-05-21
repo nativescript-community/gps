@@ -3,10 +3,10 @@ import { ad } from '@nativescript/core/utils/utils';
 import * as enums from '@nativescript/core/ui/enums';
 import * as timer from '@nativescript/core/timer';
 import * as trace from '@nativescript/core/trace';
-import * as common from './nativescript-gps.common';
+import * as common from './gps.common';
 import { errorCallbackType, LocationMonitor as LocationMonitorDef, Options, successCallbackType } from './location-monitor';
 import * as perms from 'nativescript-perms';
-export * from './nativescript-gps.common';
+export * from './gps.common';
 import lazy from '@nativescript/core/utils/lazy';
 import { DefaultLatLonKeys } from './location';
 
