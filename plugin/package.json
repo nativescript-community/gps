@@ -1,9 +1,8 @@
 {
     "name": "nativescript-gps",
-    "version": "2.0.17",
+    "version": "2.0.18",
     "description": "Track GPS location updates",
-    "main": "gps.js",
-    "module": "gps.mjs",
+    "main": "gps",
     "sideEffects": false,
     "typings": "gps.d.ts",
     "nativescript": {
