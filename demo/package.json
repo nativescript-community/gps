@@ -6,8 +6,8 @@
         }
     },
     "dependencies": {
-        "nativescript-gps": "file:../plugin",
-        "tns-core-modules": "^6.2.3"
+        "@nativescript-community/gps": "file:../plugin",
+        "@nativescript/core": "^6.2.3"
     },
     "devDependencies": {
         "babel-traverse": "6.26.0",

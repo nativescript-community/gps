@@ -1,7 +1,7 @@
-import { Observable } from 'tns-core-modules/data/observable';
-import { ObservableArray } from 'tns-core-modules/data/observable-array';
-import * as application from 'tns-core-modules/application';
-import { GPS } from 'nativescript-gps';
+import { Observable } from '@nativescript/core/data/observable';
+import { ObservableArray } from '@nativescript/core/data/observable-array';
+import * as application from '@nativescript/core/application';
+import { GPS } from '@nativescript-community/gps';
 const gps = new GPS();
 gps.debug = true;
 export class HelloWorldModel extends Observable {

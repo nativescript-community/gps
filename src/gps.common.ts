@@ -1,6 +1,6 @@
 import { DefaultLatLonKeys, GenericGeoLocation, GeoLocation } from './location';
-import * as perms from 'nativescript-perms';
-import Observable from 'nativescript-observable';
+import { check, request, setDebug } from '@nativescript-community/perms';
+import Observable from '@nativescript-community/observable';
 
 export type LatitudeKeys = 'latitude' | 'lat';
 export type LongitudeKeys = 'longitude' | 'lon' | 'lng';
@@ -33,7 +33,7 @@ export let defaultGetLocationTimeout = 5 * 60 * 1000; // 5 minutes
 let debug = false;
 export function setGPSDebug(value: boolean) {
     debug = value;
-    perms.setDebug(debug);
+    setDebug(debug);
 }
 
 let mockEnabled = false;
@@ -47,22 +47,22 @@ export enum CLogTypes {
     debug,
     info,
     warning,
-    error
+    error,
 }
 
 export const CLog = (type: CLogTypes = 0, ...args) => {
     if (debug) {
         if (type === 0) {
             // Debug
-            console.log('[nativescript-gps]', ...args);
+            console.log('[@nativescript-community/gps]', ...args);
         } else if (type === 1) {
             // Info
-            console.log('[nativescript-gps]', ...args);
+            console.log('[@nativescript-community/gps]', ...args);
         } else if (type === 2) {
             // Warning
-            console.warn('[nativescript-gps]', ...args);
+            console.warn('[@nativescript-community/gps]', ...args);
         } else if (type === 3) {
-            console.error('[nativescript-gps]', ...args);
+            console.error('[@nativescript-community/gps]', ...args);
         }
     }
 };
@@ -78,12 +78,12 @@ export abstract class GPSCommon extends Observable {
 
     authorize(always?: boolean) {
         CLog(CLogTypes.debug, 'authorize', always);
-        return perms.request('location', { type: always ? 'always' : undefined }).then(s => s[0] === 'authorized');
+        return request('location', { type: always ? 'always' : undefined }).then((s) => s[0] === 'authorized');
     }
 
     isAuthorized(always?: boolean) {
         CLog(CLogTypes.debug, 'isAuthorized');
-        return perms.check('location').then(s => {
+        return check('location').then((s) => {
             CLog(CLogTypes.debug, 'isAuthorized result', s);
             if (always !== undefined) {
                 return s[0] === 'authorized' && s[1] === always;

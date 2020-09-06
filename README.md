@@ -7,8 +7,8 @@ It differentiates itself from `nativescript-geolocation``` by NOT using google p
 
 ## Getting started
 
-1. `tns plugin add nativescript-gps`
+1. `tns plugin add @nativescript-community/gps`
 
 ## Usage
 
-`import * as gps from 'nativescript-gps';`
+`import * as gps from '@nativescript-community/gps';`

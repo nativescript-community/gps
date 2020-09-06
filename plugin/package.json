@@ -1,6 +1,6 @@
 {
-    "name": "nativescript-gps",
-    "version": "2.0.18",
+    "name": "@nativescript-community/gps",
+    "version": "2.0.19",
     "description": "Track GPS location updates",
     "main": "gps",
     "sideEffects": false,
@@ -13,7 +13,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/farfromrefug/nativescript-gps.git"
+        "url": "https://github.com/nativescript-community/gps.git"
     },
     "keywords": [
         "NativeScript",
@@ -26,13 +26,13 @@
         "email": "martin.guillon@akylas.fr"
     },
     "bugs": {
-        "url": "https://github.com/farfromrefug/nativescript-gps/issues"
+        "url": "https://github.com/nativescript-community/gps/issues"
     },
     "license": "MIT",
-    "homepage": "https://github.com/farfromrefug/nativescript-gps",
+    "homepage": "https://github.com/nativescript-community/gps",
     "readmeFilename": "./README.md",
     "dependencies": {
-        "nativescript-observable": "^2.0.1",
-        "nativescript-perms": "^2.0.1"
+        "@nativescript-community/observable": "^2.0.8",
+        "@nativescript-community/perms": "^2.1.0"
     }
 }

@@ -1,5 +1,5 @@
 {
-    "name": "nativescript-gps",
+    "name": "@nativescript-community/gps",
     "version": "1.0.0",
     "description": "Track GPS location updates",
     "main": "src/gps.js",
@@ -11,18 +11,17 @@
         }
     },
     "scripts": {
+        "setup": "ts-patch install",
         "tsc": "cpy '**/*.d.ts' '../plugin' --parents --cwd=src && tsc -skipLibCheck -d ",
-        "build": " cp README.md plugin/ && rm -f .tsbuildinfo && npm run tsc && npm run build.esm",
-        "build.esm": "tsc -skipLibCheck --target es2015 --module esnext --removeComments --outDir build/esm && node ./build.esm.js",
+        "build": " cp README.md plugin/ && rm -f .tsbuildinfo && npm run tsc",
         "demo.ios": "npm run preparedemo && cd demo && tns emulate ios",
         "demo.ios.device": "npm run preparedemo && cd demo && tns run ios",
         "demo.android": "npm run preparedemo && cd demo && tns run android",
-        "preparedemo": "npm run build && cd demo && tns plugin remove nativescript-gps && tns plugin add .. && tns install",
-        "setup": "npm i && cd demo && npm i && cd .. && npm run build && cd demo && tns plugin add .. && cd .."
+        "preparedemo": "npm run build && cd demo && tns plugin remove @nativescript-community/gps && tns plugin add .. && tns install"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/farfromrefug/nativescript-gps.git"
+        "url": "https://github.com/nativescript-community/gps.git"
     },
     "keywords": [
         "NativeScript",
@@ -35,24 +34,31 @@
         "email": "martin.guillon@akylas.fr"
     },
     "bugs": {
-        "url": "https://github.com/farfromrefug/nativescript-gps/issues"
+        "url": "https://github.com/nativescript-community/gps/issues"
     },
     "license": "MIT",
-    "homepage": "https://github.com/farfromrefug/nativescript-gps",
+    "homepage": "https://github.com/nativescript-community/gps",
     "readmeFilename": "../README.md",
     "devDependencies": {
-        "@nativescript/core": "6.5.1",
+        "@commitlint/cli": "^9.1.2",
+        "@nativescript/core": "7.0.0",
+        "@nativescript/types-android": "7.0.2",
+        "@nativescript/types-ios": "7.0.1",
+        "@nativescript/webpack": "~3.0.1",
+        "@nativescript-community/observable": "^2.0.8",
+        "@nativescript-community/perms": "^2.1.0",
+        "@typescript-eslint/eslint-plugin": "4.0.1",
+        "@typescript-eslint/parser": "4.0.1",
         "cpy-cli": "^3.1.1",
-        "nativescript-observable": "^2.0.3",
-        "nativescript-perms": "^2.0.7",
-        "tns-platform-declarations": "6.5.1",
-        "tslint": "^6.1.2",
-        "tslint-config-prettier": "^1.18.0",
-        "tslint-config-standard": "^9.0.0",
-        "typescript": "~3.9.3",
+        "eslint": "7.8.1",
+        "husky": "^4.2.5",
+        "lerna": "^3.22.1",
         "prompt": "^1.0.0",
-        "recursive-copy": "^2.0.10",
         "rimraf": "^3.0.2",
-        "through2": "^3.0.1"
+        "ts-patch": "1.3.0",
+        "typescript": "~3.9.7"
+    },
+    "dependencies": {
+        "ts-node": "^9.0.0"
     }
 }

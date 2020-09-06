@@ -1,10 +1,9 @@
-import * as enums from '@nativescript/core/ui/enums';
-import * as timer from '@nativescript/core/timer';
-import { DefaultLatLonKeys, GeoLocation, GenericGeoLocation } from './location';
-import { deferredCallbackType, errorCallbackType, LocationMonitor as LocationMonitorDef, Options, successCallbackType } from './location-monitor';
+import { Accuracy } from '@nativescript/core/ui/enums';
+import { DefaultLatLonKeys, GenericGeoLocation, GeoLocation } from './location';
+import { LocationMonitor as LocationMonitorDef, Options, deferredCallbackType, errorCallbackType, successCallbackType } from './location-monitor';
 import * as common from './gps.common';
-import * as perms from 'nativescript-perms';
-import * as appModule from '@nativescript/core/application';
+import { request } from '@nativescript-community/perms';
+import { Application } from '@nativescript/core';
 export * from './gps.common';
 
 export { Options, successCallbackType, errorCallbackType, deferredCallbackType };
@@ -15,6 +14,7 @@ let watchId = 0;
 const minRangeUpdate = 0; // 0 meters
 const defaultGetLocationTimeout = 5 * 60 * 1000; // 5 minutes
 
+@NativeClass
 export class LocationChangeListenerImpl extends NSObject implements CLLocationManagerDelegate {
     public static ObjCProtocols = [CLLocationManagerDelegate];
     owner: WeakRef<GPS>;
@@ -34,14 +34,15 @@ export class LocationChangeListenerImpl extends NSObject implements CLLocationMa
                 object: owner,
                 data: {
                     enabled,
-                    authorizationStatus: status
-                }
+                    authorizationStatus: status,
+                },
             });
         }
         common.CLog(common.CLogTypes.info, `LocationListenerImpl.locationManagerDidChangeAuthorizationStatus(${status}) done`);
     }
 }
 
+@NativeClass
 export class LocationListenerImpl<T = DefaultLatLonKeys> extends NSObject implements CLLocationManagerDelegate {
     public static ObjCProtocols = [CLLocationManagerDelegate];
 
@@ -222,10 +223,10 @@ export class GPS extends common.GPSCommon {
                 if (options.skipPermissionCheck === true) {
                     return undefined;
                 }
-                return this.isAuthorized().then(auth => {
+                return this.isAuthorized().then((auth) => {
                     if (!auth) {
                         if (options.skipPermissionCheck !== true) {
-                            return perms.request('location');
+                            return request('location');
                         } else {
                             return Promise.reject(new Error('location_service_not_granted'));
                         }
@@ -251,7 +252,7 @@ export class GPS extends common.GPSCommon {
         common.CLog(common.CLogTypes.debug, 'getCurrentLocation', options);
         if (options.timeout === 0) {
             // we should take any cached location e.g. lastKnownLocation
-            return new Promise(function(resolve, reject) {
+            return new Promise(function (resolve, reject) {
                 const lastLocation = LocationMonitor.getLastKnownLocation<T>();
                 if (lastLocation) {
                     if (typeof options.maximumAge === 'number') {
@@ -268,55 +269,53 @@ export class GPS extends common.GPSCommon {
                 }
             });
         }
-        return this.prepareForRequest(options).then(() => {
-            return new Promise<GenericGeoLocation<T>>((resolve, reject) => {
-                let timerId;
-                if (!this.isEnabled()) {
-                    reject(new Error('Location service is disabled'));
+        return this.prepareForRequest(options).then(() => new Promise<GenericGeoLocation<T>>((resolve, reject) => {
+            let timerId;
+            if (!this.isEnabled()) {
+                reject(new Error('Location service is disabled'));
+            }
+
+            const stopTimerAndMonitor = function (locListenerId) {
+                if (timerId !== undefined) {
+                    clearTimeout(timerId);
                 }
 
-                const stopTimerAndMonitor = function(locListenerId) {
-                    if (timerId !== undefined) {
-                        timer.clearTimeout(timerId);
-                    }
+                LocationMonitor.stopLocationMonitoring(locListenerId);
+            };
 
-                    LocationMonitor.stopLocationMonitoring(locListenerId);
-                };
-
-                const successCallback = function(location: GenericGeoLocation<T>) {
-                    let readyToStop = false;
-                    if (typeof options.maximumAge === 'number') {
-                        if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
-                            resolve(location);
-                            readyToStop = true;
-                            // } else {
-                            // reject(new Error('New location is older than requested maximum age!'));
-                        }
-                    } else {
+            const successCallback = function (location: GenericGeoLocation<T>) {
+                let readyToStop = false;
+                if (typeof options.maximumAge === 'number') {
+                    if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
                         resolve(location);
                         readyToStop = true;
+                        // } else {
+                        // reject(new Error('New location is older than requested maximum age!'));
                     }
-                    if (readyToStop) {
-                        stopTimerAndMonitor(locListener.id);
-                    }
-                };
-
-                const locListener = LocationListenerImpl.initWithLocationError<T>(successCallback, null, options);
-                try {
-                    LocationMonitor.startLocationMonitoring<T>(options, locListener);
-                } catch (e) {
+                } else {
+                    resolve(location);
+                    readyToStop = true;
+                }
+                if (readyToStop) {
                     stopTimerAndMonitor(locListener.id);
-                    reject(e);
                 }
+            };
 
-                if (typeof options.timeout === 'number') {
-                    timerId = timer.setTimeout(function() {
-                        LocationMonitor.stopLocationMonitoring(locListener.id);
-                        resolve(null);
-                    }, options.timeout || defaultGetLocationTimeout);
-                }
-            });
-        });
+            const locListener = LocationListenerImpl.initWithLocationError<T>(successCallback, null, options);
+            try {
+                LocationMonitor.startLocationMonitoring<T>(options, locListener);
+            } catch (e) {
+                stopTimerAndMonitor(locListener.id);
+                reject(e);
+            }
+
+            if (typeof options.timeout === 'number') {
+                timerId = setTimeout(function () {
+                    LocationMonitor.stopLocationMonitoring(locListener.id);
+                    resolve(null);
+                }, options.timeout || defaultGetLocationTimeout);
+            }
+        }));
     }
 
     watchLocation<T = DefaultLatLonKeys>(successCallback: successCallbackType<T>, errorCallback: errorCallbackType, options: Options) {
@@ -334,7 +333,7 @@ export class GPS extends common.GPSCommon {
                 common.CLog(common.CLogTypes.info, `gps: watchLocation(${JSON.stringify(options)}, ${locListener.id})`);
                 iosLocManager.startUpdatingLocation();
                 if (options.deferredLocationUpdates) {
-                    common.CLog(common.CLogTypes.info, `gps: watchLocation defering`);
+                    common.CLog(common.CLogTypes.info, 'gps: watchLocation defering');
                     iosLocManager.allowDeferredLocationUpdatesUntilTraveledTimeout(options.deferredLocationUpdates.traveled, options.deferredLocationUpdates.timeout);
                 }
                 return locListener.id;
@@ -359,20 +358,20 @@ export class GPS extends common.GPSCommon {
             const settingsUrl = NSURL.URLWithString(UIApplicationOpenSettingsURLString);
             common.CLog(common.CLogTypes.debug, 'openGPSSettings1', settingsUrl, UIApplication.sharedApplication.canOpenURL(settingsUrl));
             if (UIApplication.sharedApplication.canOpenURL(settingsUrl)) {
-                UIApplication.sharedApplication.openURLOptionsCompletionHandler(settingsUrl, null, success => {
+                UIApplication.sharedApplication.openURLOptionsCompletionHandler(settingsUrl, null, (success) => {
                     common.CLog(common.CLogTypes.debug, 'openGPSSettings', 'did open settings', success);
                     // we get the callback for opening the URL, not enabling the GPS!
                     if (success) {
                         const onResume = () => {
                             common.CLog(common.CLogTypes.debug, 'openGPSSettings', 'resume');
-                            appModule.off(appModule.resumeEvent, onResume);
+                            Application.off(Application.resumeEvent, onResume);
                             // if (this.isEnabled()) {
                             resolve(this.isEnabled());
                             // } else {
                             // reject('location_service_not_enabled');
                             // }
                         };
-                        appModule.on(appModule.resumeEvent, onResume);
+                        Application.on(Application.resumeEvent, onResume);
                         return Promise.reject(undefined);
                         // }
                     } else {
@@ -468,7 +467,7 @@ export class LocationMonitor implements LocationMonitorDef {
     static createiOSLocationManager<T = DefaultLatLonKeys>(locListener: LocationListenerImpl<T>, options: Options): CLLocationManager {
         const iosLocManager = new CLLocationManager();
         iosLocManager.delegate = locListener;
-        iosLocManager.desiredAccuracy = options?.desiredAccuracy ?? enums.Accuracy.high;
+        iosLocManager.desiredAccuracy = options?.desiredAccuracy ?? Accuracy.high;
         iosLocManager.distanceFilter = options?.updateDistance ?? minRangeUpdate;
         locationManagers[locListener.id] = iosLocManager;
         locationListeners[locListener.id] = locListener;
