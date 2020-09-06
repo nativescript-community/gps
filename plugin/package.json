@@ -1,6 +1,6 @@
 {
     "name": "@nativescript-community/gps",
-    "version": "2.0.19",
+    "version": "2.1.0",
     "description": "Track GPS location updates",
     "main": "gps",
     "sideEffects": false,
