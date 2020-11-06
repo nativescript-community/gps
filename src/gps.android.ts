@@ -10,8 +10,16 @@ import { DefaultLatLonKeys } from './location';
 
 export * from './gps.common';
 
-const isPostOVar = lazy(() => android.os.Build.VERSION.SDK_INT >= 26);
-const isPostLVar = lazy(() => android.os.Build.VERSION.SDK_INT >= 24);
+let ANDROID_SDK = -1;
+function getAndroidSDK() {
+    if (ANDROID_SDK === -1) {
+        ANDROID_SDK = android.os.Build.VERSION.SDK_INT;
+    }
+    return ANDROID_SDK;
+}
+
+const NOUGAT = 24;
+const OREO = 26;
 
 const locationListeners: { [k: number]: LocationListener<any> } = {};
 let watchId = 0;
@@ -80,7 +88,7 @@ function createLocationListener<T = DefaultLatLonKeys>(successCallback: successC
     locationListeners[watchId] = locationListener;
 
     if (options.nmeaAltitude === true) {
-        if (isPostLVar()) {
+        if ( getAndroidSDK() >= NOUGAT ) {
             locationListener._nmeaListener = new android.location.OnNmeaMessageListener({
                 onNmeaMessage(nmea: string, timestamp: number) {
                     const locationListener = (this as NmeaListener<T>).locationListener && (this as NmeaListener<T>).locationListener.get();
@@ -101,25 +109,26 @@ function createLocationListener<T = DefaultLatLonKeys>(successCallback: successC
                 },
             }) as OnNmeaListener<T>;
         } else {
-            locationListener._nmeaListener = new android.location.GpsStatus.NmeaListener({
-                onNmeaReceived(timestamp: number, nmea: string) {
-                    const locationListener = (this as NmeaListener<T>).locationListener && (this as NmeaListener<T>).locationListener.get();
-                    if (locationListener && nmea[0] === '$') {
-                        const tokens = nmea.split(',');
-                        const type = tokens[0];
-                        const alt = tokens[9];
+            // TODO: bring back when https://github.com/NativeScript/android-runtime/issues/1645 is fixed
+            // locationListener._nmeaListener = new android.location.GpsStatus.NmeaListener({
+            //     onNmeaReceived(timestamp: number, nmea: string) {
+            //         const locationListener = (this as NmeaListener<T>).locationListener && (this as NmeaListener<T>).locationListener.get();
+            //         if (locationListener && nmea[0] === '$') {
+            //             const tokens = nmea.split(',');
+            //             const type = tokens[0];
+            //             const alt = tokens[9];
 
-                        // Parse altitude above sea level, Detailed description of NMEA string here http://aprs.gids.nl/nmea/#gga
-                        if (type.endsWith('GGA')) {
-                            if (alt && alt.length > 0) {
-                                locationListener.mLastMslAltitudeTimestamp = timestamp;
-                                locationListener.mLastMslAltitude = parseFloat(alt);
-                                common.CLog(common.CLogTypes.debug, 'onNmeaReceived', timestamp, tokens, locationListener.mLastMslAltitude);
-                            }
-                        }
-                    }
-                },
-            }) as NmeaListener<T>;
+            //             // Parse altitude above sea level, Detailed description of NMEA string here http://aprs.gids.nl/nmea/#gga
+            //             if (type.endsWith('GGA')) {
+            //                 if (alt && alt.length > 0) {
+            //                     locationListener.mLastMslAltitudeTimestamp = timestamp;
+            //                     locationListener.mLastMslAltitude = parseFloat(alt);
+            //                     common.CLog(common.CLogTypes.debug, 'onNmeaReceived', timestamp, tokens, locationListener.mLastMslAltitude);
+            //                 }
+            //             }
+            //         }
+            //     },
+            // }) as NmeaListener<T>;
         }
         locationListener._nmeaListener.locationListener = new WeakRef(locationListener);
     }
@@ -143,7 +152,7 @@ function locationFromAndroidLocation<T = DefaultLatLonKeys>(androidLocation: and
         location.bearing = androidLocation.getBearing();
     }
 
-    if (isPostOVar() && androidLocation.hasVerticalAccuracy()) {
+    if (getAndroidSDK() >= OREO && androidLocation.hasVerticalAccuracy()) {
         location.verticalAccuracy = androidLocation.getVerticalAccuracyMeters();
     } else {
         location.verticalAccuracy = androidLocation.getAccuracy();
