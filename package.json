@@ -18,7 +18,7 @@
         "demo.ios.device": "npm run preparedemo && cd demo && tns run ios",
         "demo.android": "npm run preparedemo && cd demo && tns run android",
         "preparedemo": "npm run build && cd demo && tns plugin remove @nativescript-community/gps && tns plugin add .. && tns install",
-        "publish": "npm run setup && npm run build && lerna publish",
+        "publish": "npm run setup && npm run build && lerna publish --create-release=github",
         "commitmsg": "commitlint -e $GIT_PARAMS"
     },
     "repository": {
