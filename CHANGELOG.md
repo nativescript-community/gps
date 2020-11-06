@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.1](https://github.com/nativescript-community/gps/compare/v2.1.0...v2.1.1) (2020-11-06)
+
+
+### Bug Fixes
+
+* android fix crash  < 24 for now ([0bb2e3d](https://github.com/nativescript-community/gps/commit/0bb2e3d7737363388893e3b32444a90a5460cf96))
+
+
+
+
+
 # 2.1.0 (2020-09-06)
 
 
