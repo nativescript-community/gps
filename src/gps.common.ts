@@ -8,27 +8,7 @@ export type AltitudeKeys = 'altitude' | 'alt' | 'ele';
 
 export { DefaultLatLonKeys, GenericGeoLocation, GeoLocation };
 
-// export class GeoLocation implements LocationDef {
-//     public latitude: number;
-//     public longitude: number;
-
-//     public altitude: number;
-
-//     public horizontalAccuracy: number;
-//     public verticalAccuracy: number;
-
-//     public speed: number; // in m/s ?
-
-//     public bearing: number; // in degrees
-
-//     public timestamp: Date;
-//     public elapsedBoot?: number;
-
-//     public android?: any; // android Location
-//     public ios?: any; // iOS native location
-// }
-
-export let defaultGetLocationTimeout = 5 * 60 * 1000; // 5 minutes
+export const defaultGetLocationTimeout = 5 * 60 * 1000; // 5 minutes
 
 let debug = false;
 export function setGPSDebug(value: boolean) {
@@ -43,48 +23,43 @@ export function setMockEnabled(value: boolean) {
 export function isMockEnabled() {
     return mockEnabled;
 }
+import { Trace } from '@nativescript/core';
+export const GPSTraceCategory = 'N-GPS';
+
 export enum CLogTypes {
-    debug,
-    info,
-    warning,
-    error,
+    debug = Trace.messageType.log,
+    log = Trace.messageType.log,
+    info = Trace.messageType.info,
+    warning = Trace.messageType.warn,
+    error = Trace.messageType.error,
 }
 
-export const CLog = (type: CLogTypes = 0, ...args) => {
-    if (debug) {
-        if (type === 0) {
-            // Debug
-            console.log('[@nativescript-community/gps]', ...args);
-        } else if (type === 1) {
-            // Info
-            console.log('[@nativescript-community/gps]', ...args);
-        } else if (type === 2) {
-            // Warning
-            console.warn('[@nativescript-community/gps]', ...args);
-        } else if (type === 3) {
-            console.error('[@nativescript-community/gps]', ...args);
-        }
-    }
+export const CLog = (type: CLogTypes, ...args) => {
+    Trace.write(args.map(a=>(a && typeof a === 'object'? JSON.stringify(a) :a)).join(' '), GPSTraceCategory, type);
 };
 
+
 export abstract class GPSCommon extends Observable {
-    public set debug(value: boolean) {
-        setGPSDebug(value);
-    }
     /*
      * String value for hooking into the gps_status_event. This event fires when the gps state changes.
      */
     public static gps_status_event = 'gps_status_event';
 
     authorize(always?: boolean) {
-        CLog(CLogTypes.debug, 'authorize', always);
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.debug, 'authorize', always);
+        }
         return request('location', { type: always ? 'always' : undefined }).then((s) => s[0] === 'authorized');
     }
 
     isAuthorized(always?: boolean) {
-        CLog(CLogTypes.debug, 'isAuthorized');
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.debug, 'isAuthorized');
+        }
         return check('location').then((s) => {
-            CLog(CLogTypes.debug, 'isAuthorized result', s);
+            if (Trace.isEnabled()) {
+                CLog(CLogTypes.debug, 'isAuthorized result', s);
+            }
             if (always !== undefined) {
                 return s[0] === 'authorized' && s[1] === always;
             }

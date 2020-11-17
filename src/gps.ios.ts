@@ -1,9 +1,9 @@
 import { Accuracy } from '@nativescript/core/ui/enums';
 import { DefaultLatLonKeys, GenericGeoLocation, GeoLocation } from './location';
 import { LocationMonitor as LocationMonitorDef, Options, deferredCallbackType, errorCallbackType, successCallbackType } from './location-monitor';
-import * as common from './gps.common';
 import { request } from '@nativescript-community/perms';
-import { Application } from '@nativescript/core';
+import { Application, Trace } from '@nativescript/core';
+import { AltitudeKey, CLog, CLogTypes, GPSCommon, LatitudeKey, LongitudeKey } from './gps.common';
 export * from './gps.common';
 
 export { Options, successCallbackType, errorCallbackType, deferredCallbackType };
@@ -25,12 +25,14 @@ export class LocationChangeListenerImpl extends NSObject implements CLLocationMa
     }
 
     public locationManagerDidChangeAuthorizationStatus(manager: CLLocationManager, status: CLAuthorizationStatus) {
-        common.CLog(common.CLogTypes.info, `LocationListenerImpl.locationManagerDidChangeAuthorizationStatus(${status})`);
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.info, `LocationListenerImpl.locationManagerDidChangeAuthorizationStatus(${status})`);
+        }
         const owner = this.owner && this.owner.get();
         if (owner) {
             const enabled = status === CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways || status === CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse;
             owner.notify({
-                eventName: common.GPSCommon.gps_status_event,
+                eventName: GPSCommon.gps_status_event,
                 object: owner,
                 data: {
                     enabled,
@@ -38,7 +40,9 @@ export class LocationChangeListenerImpl extends NSObject implements CLLocationMa
                 },
             });
         }
-        common.CLog(common.CLogTypes.info, `LocationListenerImpl.locationManagerDidChangeAuthorizationStatus(${status}) done`);
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.info, `LocationListenerImpl.locationManagerDidChangeAuthorizationStatus(${status}) done`);
+        }
     }
 }
 
@@ -77,7 +81,9 @@ export class LocationListenerImpl<T = DefaultLatLonKeys> extends NSObject implem
     // }
 
     public locationManagerDidUpdateLocations(manager: CLLocationManager, locations: NSArray<CLLocation>): void {
-        common.CLog(common.CLogTypes.info, `LocationListenerImpl.locationManagerDidUpdateLocations(${locations})`);
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.info, `LocationListenerImpl.locationManagerDidUpdateLocations(${locations})`);
+        }
         if (this._onLocation) {
             for (let i = 0, count = locations.count; i < count; i++) {
                 const location = locationFromCLLocation<T>(locations.objectAtIndex(i));
@@ -87,65 +93,29 @@ export class LocationListenerImpl<T = DefaultLatLonKeys> extends NSObject implem
     }
     public locationManagerDidFinishDeferredUpdatesWithError(manager: CLLocationManager, error: NSError): void {
         if (this._onDeferred) {
-            common.CLog(common.CLogTypes.info, `LocationListenerImpl.locationManagerDidFinishDeferredUpdatesWithError(${error})`);
+            if (Trace.isEnabled()) {
+                CLog(CLogTypes.info, `LocationListenerImpl.locationManagerDidFinishDeferredUpdatesWithError(${error})`);
+            }
             this._onDeferred(error ? new Error(error.localizedDescription) : null);
         }
     }
 
     public locationManagerDidFailWithError(manager: CLLocationManager, error: NSError): void {
-        common.CLog(common.CLogTypes.info, `LocationListenerImpl.locationManagerDidFailWithError(${error})`);
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.info, `LocationListenerImpl.locationManagerDidFailWithError(${error})`);
+        }
         if (this._onError) {
             this._onError(new Error(error.localizedDescription));
         }
     }
 
-    // public locationManagerDidChangeAuthorizationStatus(manager: CLLocationManager, status: CLAuthorizationStatus) {
-    //     common.CLog(common.CLogTypes.info, `LocationListenerImpl.locationManagerDidChangeAuthorizationStatus(${status})`);
-    //     switch (status) {
-    //         case CLAuthorizationStatus.kCLAuthorizationStatusNotDetermined:
-    //             break;
-
-    //         case CLAuthorizationStatus.kCLAuthorizationStatusRestricted:
-    //             break;
-
-    //         case CLAuthorizationStatus.kCLAuthorizationStatusDenied:
-    //             if (this._reject) {
-    //                 LocationMonitor.stopLocationMonitoring(this.id);
-    //                 this._reject(new Error('Authorization Denied.'));
-    //             }
-    //             break;
-
-    //         case CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedAlways:
-    //             if (this.authorizeAlways && this._resolve) {
-    //                 LocationMonitor.stopLocationMonitoring(this.id);
-    //                 this._resolve();
-    //             } else if (this._reject) {
-    //                 LocationMonitor.stopLocationMonitoring(this.id);
-    //                 this._reject(new Error('Authorization Denied.'));
-    //             }
-    //             break;
-
-    //         case CLAuthorizationStatus.kCLAuthorizationStatusAuthorizedWhenInUse:
-    //             if (!this.authorizeAlways && this._resolve) {
-    //                 LocationMonitor.stopLocationMonitoring(this.id);
-    //                 this._resolve();
-    //             } else if (this._reject) {
-    //                 LocationMonitor.stopLocationMonitoring(this.id);
-    //                 this._reject(new Error('Authorization Denied.'));
-    //             }
-    //             break;
-
-    //         default:
-    //             break;
-    //     }
-    // }
 }
 
 function locationFromCLLocation<T = DefaultLatLonKeys>(clLocation: CLLocation): GenericGeoLocation<T> {
     const location = {} as GenericGeoLocation<T>;
-    location[common.LatitudeKey] = clLocation.coordinate.latitude;
-    location[common.LongitudeKey] = clLocation.coordinate.longitude;
-    location[common.AltitudeKey] = clLocation.altitude;
+    location[LatitudeKey] = clLocation.coordinate.latitude;
+    location[LongitudeKey] = clLocation.coordinate.longitude;
+    location[AltitudeKey] = clLocation.altitude;
     location.horizontalAccuracy = clLocation.horizontalAccuracy;
     location.verticalAccuracy = clLocation.verticalAccuracy;
     if (clLocation.speed >= 0) {
@@ -170,10 +140,10 @@ function clLocationFromLocation<T>(location: GenericGeoLocation<T>): CLLocation 
     const vAccuracy = location.verticalAccuracy ? location.verticalAccuracy : -1;
     const speed = location.speed ? location.speed : -1;
     const course = location.bearing ? location.bearing : -1;
-    const altitude = location[common.AltitudeKey] ? location[common.AltitudeKey] : -1;
+    const altitude = location[AltitudeKey] ? location[AltitudeKey] : -1;
     const timestamp = location.timestamp ? NSDate.dateWithTimeIntervalSince1970(location.timestamp / 1000) : null;
     const iosLocation = CLLocation.alloc().initWithCoordinateAltitudeHorizontalAccuracyVerticalAccuracyCourseSpeedTimestamp(
-        CLLocationCoordinate2DMake(location[common.LatitudeKey], location[common.LongitudeKey]),
+        CLLocationCoordinate2DMake(location[LatitudeKey], location[LongitudeKey]),
         altitude,
         hAccuracy,
         vAccuracy,
@@ -184,32 +154,44 @@ function clLocationFromLocation<T>(location: GenericGeoLocation<T>): CLLocation 
     return iosLocation;
 }
 
-export class GPS extends common.GPSCommon {
+export class GPS extends GPSCommon{
     enabled = false;
     iosChangeLocManager: CLLocationManager;
     iosChangeLocListener: LocationChangeListenerImpl;
     constructor() {
         super();
-        common.CLog(common.CLogTypes.debug, '*** iOS GPS Constructor ***');
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.debug, '*** iOS GPS Constructor ***');
+        }
         this.enabled = this.isEnabled();
     }
     onListenerAdded(eventName: string, count: number) {
-        common.CLog(common.CLogTypes.debug, 'onListenerAdded', eventName, count);
-        if (eventName === GPS.gps_status_event) {
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.debug, 'onListenerAdded', eventName, count);
+        }
+        if (eventName === GPSCommon.gps_status_event) {
             if (!this.iosChangeLocManager) {
                 this.iosChangeLocManager = new CLLocationManager();
-                common.CLog(common.CLogTypes.debug, 'GPS created iosChangeLocManager', this.iosChangeLocManager);
+                if (Trace.isEnabled()) {
+                    CLog(CLogTypes.debug, 'GPS created iosChangeLocManager', this.iosChangeLocManager);
+                }
                 this.iosChangeLocListener = LocationChangeListenerImpl.initWithOwner(new WeakRef(this));
-                common.CLog(common.CLogTypes.debug, 'GPS created delegate', this.iosChangeLocListener);
+                if (Trace.isEnabled()) {
+                    CLog(CLogTypes.debug, 'GPS created delegate', this.iosChangeLocListener);
+                }
                 this.iosChangeLocManager.delegate = this.iosChangeLocListener;
             }
         }
     }
     onListenerRemoved(eventName: string, count: number) {
-        common.CLog(common.CLogTypes.debug, 'onListenerRemoved', eventName, count);
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.debug, 'onListenerRemoved', eventName, count);
+        }
         if (eventName === GPS.gps_status_event && count === 0) {
             if (this.iosChangeLocManager) {
-                common.CLog(common.CLogTypes.debug, 'deleting', 'iosChangeLocManager');
+                if (Trace.isEnabled()) {
+                    CLog(CLogTypes.debug, 'deleting', 'iosChangeLocManager');
+                }
                 this.iosChangeLocManager.delegate = null;
                 this.iosChangeLocManager = null;
                 this.iosChangeLocListener = null;
@@ -217,7 +199,9 @@ export class GPS extends common.GPSCommon {
         }
     }
     prepareForRequest(options: Options) {
-        common.CLog(common.CLogTypes.debug, 'prepareForRequest', options);
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.debug, 'prepareForRequest', options);
+        }
         return Promise.resolve()
             .then(() => {
                 if (options.skipPermissionCheck === true) {
@@ -235,7 +219,9 @@ export class GPS extends common.GPSCommon {
                 });
             })
             .then(() => {
-                common.CLog(common.CLogTypes.debug, 'finished authorize', this.isEnabled());
+                if (Trace.isEnabled()) {
+                    CLog(CLogTypes.debug, 'finished authorize', this.isEnabled());
+                }
                 if (!this.isEnabled()) {
                     if (options.dontOpenSettings !== true && options.skipPermissionCheck !== true) {
                         return this.openGPSSettings();
@@ -249,7 +235,9 @@ export class GPS extends common.GPSCommon {
     // options - desiredAccuracy, updateDistance, minimumUpdateTime, maximumAge, timeout
     getCurrentLocation<T = DefaultLatLonKeys>(options: Options): Promise<GenericGeoLocation<T>> {
         options = options || {};
-        common.CLog(common.CLogTypes.debug, 'getCurrentLocation', options);
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.debug, 'getCurrentLocation', options);
+        }
         if (options.timeout === 0) {
             // we should take any cached location e.g. lastKnownLocation
             return new Promise(function (resolve, reject) {
@@ -330,10 +318,14 @@ export class GPS extends common.GPSCommon {
                 iosLocManager.activityType = options.activityType || CLActivityType.Fitness;
 
                 // }
-                common.CLog(common.CLogTypes.info, `gps: watchLocation(${JSON.stringify(options)}, ${locListener.id})`);
+                if (Trace.isEnabled()) {
+                    CLog(CLogTypes.info, `gps: watchLocation(${JSON.stringify(options)}, ${locListener.id})`);
+                }
                 iosLocManager.startUpdatingLocation();
                 if (options.deferredLocationUpdates) {
-                    common.CLog(common.CLogTypes.info, 'gps: watchLocation defering');
+                    if (Trace.isEnabled()) {
+                        CLog(CLogTypes.info, 'gps: watchLocation defering');
+                    }
                     iosLocManager.allowDeferredLocationUpdatesUntilTraveledTimeout(options.deferredLocationUpdates.traveled, options.deferredLocationUpdates.timeout);
                 }
                 return locListener.id;
@@ -352,18 +344,26 @@ export class GPS extends common.GPSCommon {
         return true;
     }
     openGPSSettings(): Promise<boolean> {
-        common.CLog(common.CLogTypes.debug, 'openGPSSettings', this.isEnabled());
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.debug, 'openGPSSettings', this.isEnabled());
+        }
         // if (!this.isEnabled()) {
         return new Promise((resolve, reject) => {
             const settingsUrl = NSURL.URLWithString(UIApplicationOpenSettingsURLString);
-            common.CLog(common.CLogTypes.debug, 'openGPSSettings1', settingsUrl, UIApplication.sharedApplication.canOpenURL(settingsUrl));
+            if (Trace.isEnabled()) {
+                CLog(CLogTypes.debug, 'openGPSSettings1', settingsUrl, UIApplication.sharedApplication.canOpenURL(settingsUrl));
+            }
             if (UIApplication.sharedApplication.canOpenURL(settingsUrl)) {
                 UIApplication.sharedApplication.openURLOptionsCompletionHandler(settingsUrl, null, (success) => {
-                    common.CLog(common.CLogTypes.debug, 'openGPSSettings', 'did open settings', success);
+                    if (Trace.isEnabled()) {
+                        CLog(CLogTypes.debug, 'openGPSSettings', 'did open settings', success);
+                    }
                     // we get the callback for opening the URL, not enabling the GPS!
                     if (success) {
                         const onResume = () => {
-                            common.CLog(common.CLogTypes.debug, 'openGPSSettings', 'resume');
+                            if (Trace.isEnabled()) {
+                                CLog(CLogTypes.debug, 'openGPSSettings', 'resume');
+                            }
                             Application.off(Application.resumeEvent, onResume);
                             // if (this.isEnabled()) {
                             resolve(this.isEnabled());
@@ -384,7 +384,9 @@ export class GPS extends common.GPSCommon {
         // return Promise.resolve();
     }
     enable() {
-        common.CLog(common.CLogTypes.debug, 'enable');
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.debug, 'enable');
+        }
         return this.openGPSSettings();
     }
 
@@ -434,7 +436,9 @@ export class LocationMonitor implements LocationMonitorDef {
                 }
             }
         }
-        common.CLog(common.CLogTypes.info, `gps.LocationMonitor: getLastKnownLocation(${iosLocation})`);
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.info, `gps.LocationMonitor: getLastKnownLocation(${iosLocation})`);
+        }
 
         if (iosLocation) {
             return locationFromCLLocation(iosLocation);
@@ -450,12 +454,16 @@ export class LocationMonitor implements LocationMonitorDef {
 
     static startLocationMonitoring<T = DefaultLatLonKeys>(options: Options, locListener: LocationListenerImpl<T>): void {
         const iosLocManager = LocationMonitor.createiOSLocationManager<T>(locListener, options);
-        common.CLog(common.CLogTypes.info, `gps.LocationMonitor: startLocationMonitoring(${options}) ${locListener.id}`);
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.info, `gps.LocationMonitor: startLocationMonitoring(${options}) ${locListener.id}`);
+        }
         iosLocManager.startUpdatingLocation();
     }
 
     static stopLocationMonitoring(iosLocManagerId: number) {
-        common.CLog(common.CLogTypes.info, `gps.LocationMonitor: stopLocationMonitoring(${iosLocManagerId})`);
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.info, `gps.LocationMonitor: stopLocationMonitoring(${iosLocManagerId})`);
+        }
         if (locationManagers[iosLocManagerId]) {
             locationManagers[iosLocManagerId].stopUpdatingLocation();
             locationManagers[iosLocManagerId].delegate = null;
