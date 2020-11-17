@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.2](https://github.com/nativescript-community/gps/compare/v2.1.1...v2.1.2) (2020-11-17)
+
+
+### Bug Fixes
+
+* android fix for pre 24 devices with nmeaAltitude option ([492e28b](https://github.com/nativescript-community/gps/commit/492e28bf9a210188655095e1061c3ffaef9f363e))
+
+
+
+
+
 ## [2.1.1](https://github.com/nativescript-community/gps/compare/v2.1.0...v2.1.1) (2020-11-06)
 
 
