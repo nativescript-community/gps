@@ -130,7 +130,9 @@ function createLocationListener<T = DefaultLatLonKeys>(successCallback: successC
             //     },
             // }) as NmeaListener<T>;
         }
-        locationListener._nmeaListener.locationListener = new WeakRef(locationListener);
+        if (locationListener._nmeaListener) {
+            locationListener._nmeaListener.locationListener = new WeakRef(locationListener);
+        }
     }
     return locationListener;
 }
