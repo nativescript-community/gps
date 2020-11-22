@@ -1,7 +1,7 @@
 {
     "name": "@nativescript-community/gps",
     "version": "2.1.2",
-    "description": "Track GPS location updates",
+    "description": "Tracks GPS location updates regardless of the app state. Does not depend on Google Play Services.",
     "main": "gps",
     "sideEffects": false,
     "typings": "gps.d.ts",
@@ -13,7 +13,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/nativescript-community/gps.git"
+        "url": "https://github.com/nativescript-community/gps"
     },
     "keywords": [
         "NativeScript",
