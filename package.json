@@ -12,6 +12,7 @@
     },
     "scripts": {
         "setup": "ts-patch install",
+        "prepare": "npm run setup",
         "tsc": "cpy '**/*.d.ts' '../plugin' --parents --cwd=src && tsc -skipLibCheck -d ",
         "build": " cp README.md plugin/ && rm -f .tsbuildinfo && npm run tsc",
         "demo.ios": "npm run preparedemo && cd demo && tns emulate ios",
