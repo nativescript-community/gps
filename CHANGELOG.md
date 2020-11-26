@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.5](https://github.com/nativescript-community/gps/compare/v2.1.4...v2.1.5) (2020-11-26)
+
+
+### Bug Fixes
+
+* fix after trace mode change ([1b626ee](https://github.com/nativescript-community/gps/commit/1b626eefdf638af3403e3385924ad395bfd34695))
+
+
+
+
+
 ## [2.1.4](https://github.com/nativescript-community/gps/compare/v2.1.3...v2.1.4) (2020-11-23)
 
 **Note:** Version bump only for package @nativescript-community/gps

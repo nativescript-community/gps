@@ -1,6 +1,6 @@
 {
     "name": "@nativescript-community/gps",
-    "version": "2.1.4",
+    "version": "2.1.5",
     "description": "Tracks GPS location updates regardless of the app state. Does not depend on Google Play Services.",
     "main": "gps",
     "sideEffects": false,
