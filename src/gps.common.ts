@@ -1,5 +1,5 @@
 import { DefaultLatLonKeys, GenericGeoLocation, GeoLocation } from './location';
-import { check, request, setDebug } from '@nativescript-community/perms';
+import { check, request } from '@nativescript-community/perms';
 import Observable from '@nativescript-community/observable';
 
 export type LatitudeKeys = 'latitude' | 'lat';
@@ -10,11 +10,11 @@ export { DefaultLatLonKeys, GenericGeoLocation, GeoLocation };
 
 export const defaultGetLocationTimeout = 5 * 60 * 1000; // 5 minutes
 
-let debug = false;
-export function setGPSDebug(value: boolean) {
-    debug = value;
-    setDebug(debug);
-}
+// let debug = false;
+// export function setGPSDebug(value: boolean) {
+// debug = value;
+// setDebug(debug);
+// }
 
 let mockEnabled = false;
 export function setMockEnabled(value: boolean) {
