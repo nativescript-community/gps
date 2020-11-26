@@ -13,3 +13,4 @@ node_modules
 plugin/*.d.ts
 plugin/**/*js.map
 plugin/**/*js
+pnpm-lock.yaml
