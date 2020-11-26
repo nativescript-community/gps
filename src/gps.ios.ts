@@ -15,7 +15,7 @@ const minRangeUpdate = 0; // 0 meters
 const defaultGetLocationTimeout = 5 * 60 * 1000; // 5 minutes
 
 @NativeClass
-export class LocationChangeListenerImpl extends NSObject implements CLLocationManagerDelegate {
+class LocationChangeListenerImpl extends NSObject implements CLLocationManagerDelegate {
     public static ObjCProtocols = [CLLocationManagerDelegate];
     owner: WeakRef<GPS>;
     public static initWithOwner(owner: WeakRef<GPS>) {
@@ -47,7 +47,7 @@ export class LocationChangeListenerImpl extends NSObject implements CLLocationMa
 }
 
 @NativeClass
-export class LocationListenerImpl<T = DefaultLatLonKeys> extends NSObject implements CLLocationManagerDelegate {
+class LocationListenerImpl<T = DefaultLatLonKeys> extends NSObject implements CLLocationManagerDelegate {
     public static ObjCProtocols = [CLLocationManagerDelegate];
 
     public authorizeAlways: boolean;
