@@ -256,6 +256,8 @@ export class GPS extends GPSCommon {
             } else {
                 throw new Error('location_service_not_enabled');
             }
+        } else {
+            return true;
         }
     }
     openGPSSettings() {
