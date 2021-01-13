@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.6](https://github.com/nativescript-community/gps/compare/v2.1.5...v2.1.6) (2021-01-13)
+
+
+### Bug Fixes
+
+* **android:** openSettings resolve with a boolean (isEnabled) ([db4d6d2](https://github.com/nativescript-community/gps/commit/db4d6d2bfdb5d135599b00021191d97e751243b5))
+
+
+
+
+
 ## [2.1.5](https://github.com/nativescript-community/gps/compare/v2.1.4...v2.1.5) (2020-11-26)
 
 
