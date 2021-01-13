@@ -244,7 +244,7 @@ export class GPS extends GPSCommon {
             CLog(CLogTypes.debug, 'prepareForRequest', options, this.isEnabled());
         }
         if (options.skipPermissionCheck === true) {
-            return;
+            return true;
         }
         const auth = await this.isAuthorized();
         if (!auth) {
