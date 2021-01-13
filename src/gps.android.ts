@@ -263,7 +263,7 @@ export class GPS extends GPSCommon {
             CLog(CLogTypes.debug, 'openGPSSettings', this.isEnabled());
         }
         const activity = andApp.foregroundActivity || andApp.startActivity;
-        return new Promise<void>((resolve, reject) => {
+        return new Promise<boolean>((resolve, reject) => {
             if (!this.isEnabled()) {
                 const onActivityResultHandler = (data: AndroidActivityResultEventData) => {
                     if (data.requestCode === 5340) {
@@ -271,18 +271,18 @@ export class GPS extends GPSCommon {
                         if (Trace.isEnabled()) {
                             CLog(CLogTypes.debug, 'openGPSSettingsCore done', data.requestCode, this.isEnabled());
                         }
-
-                        if (this.isEnabled()) {
-                            resolve();
-                        } else {
-                            reject('location_service_not_enabled');
-                        }
+                        resolve(this.isEnabled());
+                        // if (this.isEnabled()) {
+                        //     resolve();
+                        // } else {
+                        //     reject('location_service_not_enabled');
+                        // }
                     }
                 };
                 andApp.on(AndroidApplication.activityResultEvent, onActivityResultHandler);
                 activity.startActivityForResult(new android.content.Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 5340);
             } else {
-                resolve();
+                resolve(true);
             }
         });
     }
