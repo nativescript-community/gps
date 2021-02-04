@@ -444,6 +444,9 @@ export class LocationMonitor implements LocationMonitorDef {
             while (iterator.hasNext()) {
                 const provider = iterator.next() as string;
                 const tempLocation = getAndroidLocationManager().getLastKnownLocation(provider);
+                if (!tempLocation) {
+                    continue;
+                }
                 if (!androidLocation || tempLocation.getTime() > androidLocation.getTime()) {
                     androidLocation = tempLocation;
                 }
