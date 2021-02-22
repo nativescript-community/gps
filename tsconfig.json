@@ -32,7 +32,7 @@
           { "transform": "./node_modules/@nativescript/webpack/transformers/ns-transform-native-classes", "type": "raw" }
         ]
     },
-    "include": ["src/**/*", "./references.d.ts"],
+    "include": ["src/**/*", "./references.d.ts", "tsconfig.eslint.json"],
     "exclude": ["node_modules", "platforms"],
     "compileOnSave": false,
     "angularCompilerOptions": {
