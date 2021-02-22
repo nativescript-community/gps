@@ -465,9 +465,9 @@ export class LocationMonitor implements LocationMonitorDef {
         const updateDistance = options && typeof options.updateDistance === 'number' ? options.updateDistance : minRangeUpdate;
         const manager = getAndroidLocationManager();
 
-        const looper: android.os.Looper = null;
+        const looper: android.os.Looper = android.os.Looper.myLooper();
         if (Trace.isEnabled()) {
-            CLog(CLogTypes.debug, 'requestLocationUpdates', options.provider, updateTime, updateDistance, looper);
+            CLog(CLogTypes.debug, 'requestLocationUpdates', options.provider, updateTime, updateDistance, looper, looper=== android.os.Looper.getMainLooper());
         }
         if (options.provider) {
             manager.requestLocationUpdates(options.provider, updateTime, updateDistance, listener, looper);
