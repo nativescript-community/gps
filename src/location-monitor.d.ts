@@ -58,6 +58,7 @@ export interface Options {
         timeout: number;
     };
     onDeferred?: deferredCallbackType;
+    onLocationPaused?: () => void;
 
     /**
      * android only
@@ -86,4 +87,6 @@ export class LocationMonitor {
     static startLocationMonitoring(options: Options, locListener: any): void;
     static createListenerWithCallbackAndOptions<T = DefaultLatLonKeys>(successCallback: successCallbackType<T>, options: Options): any;
     static stopLocationMonitoring(locListenerId: number): void;
+
+    static getLocationMonitoring(locListenerId: number): any;
 }
