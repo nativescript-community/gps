@@ -55,6 +55,7 @@ class LocationListenerImpl<T = DefaultLatLonKeys> extends NSObject implements CL
     private _onLocation: successCallbackType<T>;
     private _onError: errorCallbackType;
     private _onDeferred: deferredCallbackType;
+    private _onLocationPaused: () => void;
     // private _resolve: () => void;
     // private _reject: (error: Error) => void;
 
@@ -65,6 +66,7 @@ class LocationListenerImpl<T = DefaultLatLonKeys> extends NSObject implements CL
         listener._onLocation = successCallback;
         listener._onError = error;
         listener._onDeferred = options && options.onDeferred;
+        listener._onLocationPaused = options && options.onLocationPaused;
 
         return listener;
     }
