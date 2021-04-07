@@ -8,7 +8,7 @@ export * from './gps.common';
 
 export { Options, successCallbackType, errorCallbackType, deferredCallbackType };
 
-const locationManagers = {};
+const locationManagers: {[k: string]: CLLocationManager} = {};
 const locationListeners = {};
 let watchId = 0;
 const minRangeUpdate = 0; // 0 meters
@@ -471,6 +471,9 @@ export class LocationMonitor implements LocationMonitorDef {
         iosLocManager.startUpdatingLocation();
     }
 
+    static getLocationMonitoring(iosLocManagerId: number) {
+        return locationManagers[iosLocManagerId];
+    }
     static stopLocationMonitoring(iosLocManagerId: number) {
         if (Trace.isEnabled()) {
             CLog(CLogTypes.info, `gps.LocationMonitor: stopLocationMonitoring(${iosLocManagerId})`);

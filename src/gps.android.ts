@@ -483,6 +483,9 @@ export class LocationMonitor implements LocationMonitorDef {
         return createLocationListener<T>(successCallback, options);
     }
 
+    static getLocationMonitoring(locListenerId: number)  {
+        return getAndroidLocationManager();
+    }
     static stopLocationMonitoring(locListenerId: number): void {
         const listener = locationListeners[locListenerId];
         if (listener) {
