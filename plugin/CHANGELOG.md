@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.8](https://github.com/nativescript-community/gps/compare/v2.1.7...v2.1.8) (2021-04-07)
+
+
+### Bug Fixes
+
+* dont force manifest and info.plist perms ([eefb9ae](https://github.com/nativescript-community/gps/commit/eefb9aef788ec17fcae3c1f34fd3436bad5f3a42))
+
+
+
+
+
 ## [2.1.7](https://github.com/nativescript-community/gps/compare/v2.1.6...v2.1.7) (2021-02-04)
 
 **Note:** Version bump only for package @nativescript-community/gps

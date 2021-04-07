@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.8](https://github.com/nativescript-community/gps/compare/v2.1.7...v2.1.8) (2021-04-07)
+
+
+### Bug Fixes
+
+* dont force manifest and info.plist perms ([eefb9ae](https://github.com/nativescript-community/gps/commit/eefb9aef788ec17fcae3c1f34fd3436bad5f3a42))
+* **ios:** locationManagerDidPauseLocationUpdates ([dcbd43d](https://github.com/nativescript-community/gps/commit/dcbd43d617a8209cc732cd45af0a040d3b82ce34))
+
+
+### Features
+
+* getLocationMonitoring to get native location manager ([3b84539](https://github.com/nativescript-community/gps/commit/3b8453989d9071fafc269932f54dc7e3071d767b))
+
+
+
+
+
 ## [2.1.7](https://github.com/nativescript-community/gps/compare/v2.1.6...v2.1.7) (2021-02-04)
 
 
