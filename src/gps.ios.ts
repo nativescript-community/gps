@@ -110,6 +110,15 @@ class LocationListenerImpl<T = DefaultLatLonKeys> extends NSObject implements CL
             this._onError(new Error(error.localizedDescription));
         }
     }
+    public locationManagerDidPauseLocationUpdates?(manager: CLLocationManager) {
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.info, 'LocationListenerImpl.locationManagerDidPauseLocationUpdates()');
+        }
+        if (this._onLocationPaused) {
+            this._onLocationPaused();
+        }
+    }
+
 
 }
 
