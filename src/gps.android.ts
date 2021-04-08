@@ -1,7 +1,6 @@
 import { request } from '@nativescript-community/perms';
-import { Trace } from '@nativescript/core';
+import { CoreTypes, Trace } from '@nativescript/core';
 import { AndroidActivityResultEventData, AndroidApplication, android as andApp } from '@nativescript/core/application';
-import { Accuracy } from '@nativescript/core/ui/enums';
 import { ad } from '@nativescript/core/utils/utils';
 import { AltitudeKey, CLog, CLogTypes, GPSCommon, GenericGeoLocation, LatitudeKey, LongitudeKey, defaultGetLocationTimeout } from './gps.common';
 import { DefaultLatLonKeys } from './location';
@@ -204,7 +203,7 @@ function androidLocationFromLocation<T = DefaultLatLonKeys>(location: GenericGeo
 
 function criteriaFromOptions(options: Options): android.location.Criteria {
     const criteria = new android.location.Criteria();
-    if (options && options.desiredAccuracy <= Accuracy.high) {
+    if (options && options.desiredAccuracy <= CoreTypes.Accuracy.high) {
         criteria.setAccuracy(android.location.Criteria.ACCURACY_FINE);
     } else {
         criteria.setAccuracy(android.location.Criteria.ACCURACY_COARSE);
