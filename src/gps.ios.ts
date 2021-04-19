@@ -1,8 +1,7 @@
-import { Accuracy } from '@nativescript/core/ui/enums';
 import { DefaultLatLonKeys, GenericGeoLocation, GeoLocation } from './location';
 import { LocationMonitor as LocationMonitorDef, Options, deferredCallbackType, errorCallbackType, successCallbackType } from './location-monitor';
 import { request } from '@nativescript-community/perms';
-import { Application, Trace } from '@nativescript/core';
+import { Application, CoreTypes, Trace } from '@nativescript/core';
 import { AltitudeKey, CLog, CLogTypes, GPSCommon, LatitudeKey, LongitudeKey } from './gps.common';
 export * from './gps.common';
 
@@ -489,7 +488,7 @@ export class LocationMonitor implements LocationMonitorDef {
     static createiOSLocationManager<T = DefaultLatLonKeys>(locListener: LocationListenerImpl<T>, options: Options): CLLocationManager {
         const iosLocManager = new CLLocationManager();
         iosLocManager.delegate = locListener;
-        iosLocManager.desiredAccuracy = options?.desiredAccuracy ?? Accuracy.high;
+        iosLocManager.desiredAccuracy = options?.desiredAccuracy ?? CoreTypes.Accuracy.high;
         iosLocManager.distanceFilter = options?.updateDistance ?? minRangeUpdate;
         locationManagers[locListener.id] = iosLocManager;
         locationListeners[locListener.id] = locListener;
