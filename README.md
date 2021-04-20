@@ -7,7 +7,11 @@ It differentiates itself from `nativescript-geolocation``` by NOT using google p
 
 ## Getting started
 
-1. `tns plugin add @nativescript-community/gps`
+If using N < 8.0:
+`tns plugin add @nativescript-community/gps@2.1.8`
+
+Else 
+`tns plugin add @nativescript-community/gps`
 
 You are responsible for updating permissions your `AndroidManifest.xml` and `Info.plist`
 
