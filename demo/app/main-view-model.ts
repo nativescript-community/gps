@@ -3,7 +3,6 @@ import { ObservableArray } from '@nativescript/core/data/observable-array';
 import * as application from '@nativescript/core/application';
 import { GPS } from '@nativescript-community/gps';
 const gps = new GPS();
-gps.debug = true;
 export class HelloWorldModel extends Observable {
     public message: string;
     public gpsPoints: ObservableArray<any>;

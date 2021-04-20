@@ -1,19 +1,22 @@
 {
     "compilerOptions": {
-        "module": "commonjs",
-        "target": "es5",
+        "module": "esnext",
+        "target": "es2017",
         "experimentalDecorators": true,
         "noEmitHelpers": true,
         "lib": [
             "es6",
-            "dom"
+            "dom",
+            "es2017"
         ],
         "baseUrl": ".",
         "paths": {
             "~/*": [
                 "app/*"
             ]
-        }
+        },
+        "moduleResolution": "node",
+        "removeComments": false
     },
     "exclude": [
         "node_modules",
