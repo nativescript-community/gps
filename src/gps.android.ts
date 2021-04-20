@@ -304,9 +304,9 @@ export class GPS extends GPSCommon {
                 CLog(CLogTypes.debug, 'watchLocationCore error', e);
             }
             LocationMonitor.stopLocationMonitoring((locListener as any).id);
+            errorCallback(e);
             throw e;
         }
-        // watchLocationCore(options, locListener);
         return (locListener as any).id;
     }
 

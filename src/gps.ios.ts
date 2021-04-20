@@ -342,7 +342,7 @@ export class GPS extends GPSCommon{
             } catch (e) {
                 LocationMonitor.stopLocationMonitoring(locListener.id);
                 errorCallback(e);
-                return null;
+                throw e;
             }
         });
     }
