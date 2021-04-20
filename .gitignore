@@ -16,3 +16,4 @@ plugin/**/*js
 pnpm-lock.yaml
 *.aar
 /plugin/README.md
+package-lock.json
