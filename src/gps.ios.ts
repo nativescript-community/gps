@@ -1,11 +1,11 @@
-import { DefaultLatLonKeys, GenericGeoLocation, GeoLocation } from './location';
-import { LocationMonitor as LocationMonitorDef, Options, deferredCallbackType, errorCallbackType, successCallbackType } from './location-monitor';
 import { request } from '@nativescript-community/perms';
 import { Application, CoreTypes, Trace } from '@nativescript/core';
 import { AltitudeKey, CLog, CLogTypes, GPSCommon, LatitudeKey, LongitudeKey } from './gps.common';
+import { DefaultLatLonKeys, GenericGeoLocation } from './location';
+import { LocationMonitor as LocationMonitorDef, Options, deferredCallbackType, errorCallbackType, successCallbackType } from './location-monitor';
 export * from './gps.common';
-
 export { Options, successCallbackType, errorCallbackType, deferredCallbackType };
+
 
 const locationManagers: {[k: string]: CLLocationManager} = {};
 const locationListeners = {};
@@ -70,17 +70,6 @@ class LocationListenerImpl<T = DefaultLatLonKeys> extends NSObject implements CL
         return listener;
     }
 
-    // public static initWithPromiseCallbacks(resolve: () => void, reject: (error: Error) => void, authorizeAlways: boolean = false): LocationListenerImpl {
-    //     const listener = LocationListenerImpl.new() as LocationListenerImpl;
-    //     watchId++;
-    //     listener.id = watchId;
-    //     listener._resolve = resolve;
-    //     listener._reject = reject;
-    //     listener.authorizeAlways = authorizeAlways;
-
-    //     return listener;
-    // }
-
     public locationManagerDidUpdateLocations(manager: CLLocationManager, locations: NSArray<CLLocation>): void {
         if (Trace.isEnabled()) {
             CLog(CLogTypes.info, `LocationListenerImpl.locationManagerDidUpdateLocations(${locations})`);
@@ -135,12 +124,9 @@ function locationFromCLLocation<T = DefaultLatLonKeys>(clLocation: CLLocation): 
         location.bearing = clLocation.course;
     }
     const ms = NSDate.dateWithTimeIntervalSinceDate(0, clLocation.timestamp).timeIntervalSince1970 * 1000;
-    // const bootElapsedms = (NSDate as any).bootTimeTimeIntervalSinceReferenceDate() * 1000;
     const deltams = Math.max(Date.now() - ms, 0);
     location.timestamp = ms;
     location.age = deltams;
-    // location.elapsedBoot = bootElapsedms - deltams;
-    // console.log('locationFromCLLocation', timeIntervalSince1970, ms, (NSDate as any).bootTimeTimeIntervalSinceReferenceDate, bootElapsed, delta, bootElapsed - delta);
     location.ios = clLocation;
     return location;
 }
@@ -287,8 +273,6 @@ export class GPS extends GPSCommon{
                     if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
                         resolve(location);
                         readyToStop = true;
-                        // } else {
-                        // reject(new Error('New location is older than requested maximum age!'));
                     }
                 } else {
                     resolve(location);
