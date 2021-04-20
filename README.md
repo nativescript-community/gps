@@ -9,8 +9,21 @@ It differentiates itself from `nativescript-geolocation``` by NOT using google p
 
 1. `tns plugin add @nativescript-community/gps`
 
-You are responsible for updating correction your `AndroidManifest.xml` and `Info.plist`
+You are responsible for updating permissions your `AndroidManifest.xml` and `Info.plist`
 
 ## Usage
 
-`import * as gps from '@nativescript-community/gps';`
+Here is a simple example. You can find more in the doc [here](https://nativescript-community.github.io/gps)
+
+```typescript
+import { GPS } from '@nativescript-community/gps';
+
+const gps = new GPS();
+const location = await gps.getCurrentLocation<LatLonKeys>({
+    minimumUpdateTime,
+    desiredAccuracy,
+    timeout,
+    skipPermissionCheck: true
+});
+```
+
