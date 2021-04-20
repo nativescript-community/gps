@@ -3,11 +3,11 @@
  */
 
 
-export type DefaultLatLonKeys = {
+export interface DefaultLatLonKeys {
     latitude: number;
     longitude: number;
     altitude?: number;
-};
+}
 
 type GenericGeoLocation<T = DefaultLatLonKeys> = {
     [P in keyof T]: number;
@@ -60,7 +60,7 @@ type GenericGeoLocation<T = DefaultLatLonKeys> = {
     /**
      * [android only]: nmea altitude
      */
-    mslAltitude?:number
+    mslAltitude?: number;
 
     /**
      * The android-specific [location](http://developer.android.com/reference/android/location/Location.html) object.

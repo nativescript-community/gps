@@ -20,6 +20,7 @@
         "demo.android": "npm run preparedemo && cd demo && tns run android",
         "preparedemo": "npm run build && cd demo && tns plugin remove @nativescript-community/gps && tns plugin add .. && tns install",
         "publish": "npm run setup && npm run build && lerna publish --create-release=github --force-publish",
+        "doc": "node builddoc && git add docs/* && git commit -m \"doc\"",
         "commitmsg": "commitlint -e $GIT_PARAMS"
     },
     "repository": {
@@ -54,11 +55,13 @@
         "@typescript-eslint/parser": "4.22.0",
         "cpy-cli": "^3.1.1",
         "eslint": "7.24.0",
+        "globby": "^11.0.3",
         "husky": "^6.0.0",
         "lerna": "^4.0.0",
         "prompt": "^1.1.0",
         "rimraf": "^3.0.2",
         "ts-patch": "1.3.2",
+        "typedoc": "^0.20.35",
         "typescript": "~4.2.4"
     },
     "dependencies": {
