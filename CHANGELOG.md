@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/nativescript-community/gps/compare/v2.1.8...v3.0.0) (2021-04-20)
+
+
+### Bug Fixes
+
+* getLastKnownLocation through GPS ([e2ab0ca](https://github.com/nativescript-community/gps/commit/e2ab0ca59a2658e0bbc8673380749f81ebb11a2f))
+* unify watchLocation Promise to throw on both platforms on error ([117e818](https://github.com/nativescript-community/gps/commit/117e818034a7b1faccfd31858086cd7cc0ba98d1))
+* use CoreType.Accuracy not Accuracy ([6c92875](https://github.com/nativescript-community/gps/commit/6c928752f998f717121856caf842b7d76e93b1b7))
+
+
+
+
+
 ## [2.1.8](https://github.com/nativescript-community/gps/compare/v2.1.7...v2.1.8) (2021-04-07)
 
 
