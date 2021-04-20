@@ -418,6 +418,9 @@ export class GPS extends GPSCommon{
         const iosLoc2 = loc2.android || clLocationFromLocation<T>(loc2);
         return iosdLoc1.distanceFromLocation(iosLoc2);
     }
+    getLastKnownLocation<T = DefaultLatLonKeys>(): GenericGeoLocation<T> {
+        return LocationMonitor.getLastKnownLocation();
+    }
 }
 export class LocationMonitor implements LocationMonitorDef {
     static getLastKnownLocation<T = DefaultLatLonKeys>(): GenericGeoLocation<T> {

@@ -358,8 +358,6 @@ export class GPS extends GPSCommon {
                     if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
                         resolve(location);
                         readyToStop = true;
-                        // } else {
-                        // reject(new Error('New location is older than requested maximum age!'));
                     }
                 } else {
                     resolve(location);
@@ -430,6 +428,9 @@ export class GPS extends GPSCommon {
         const andLoc1 = loc1.android || androidLocationFromLocation<T>(loc1);
         const andLoc2 = loc2.android || androidLocationFromLocation<T>(loc2);
         return andLoc1.distanceTo(andLoc2);
+    }
+    getLastKnownLocation<T = DefaultLatLonKeys>(): GenericGeoLocation<T> {
+        return LocationMonitor.getLastKnownLocation();
     }
 }
 
