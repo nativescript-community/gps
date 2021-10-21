@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.1.0](https://github.com/nativescript-community/gps/compare/v3.0.0...v3.1.0) (2021-10-21)
+
+
+### Features
+
+* **android:** native-api-usage ([ab6d5f0](https://github.com/nativescript-community/gps/commit/ab6d5f0525a376896b45c1130cf14d41d5a89d50))
+
+
+
+
+
 # [3.0.0](https://github.com/nativescript-community/gps/compare/v2.1.8...v3.0.0) (2021-04-20)
 
 
