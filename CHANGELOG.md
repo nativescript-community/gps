@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.1](https://github.com/nativescript-community/gps/compare/v3.1.0...v3.1.1) (2021-12-07)
+
+
+### Bug Fixes
+
+* **android:** prevent error on null location from native ([176cd74](https://github.com/nativescript-community/gps/commit/176cd747c16dde610f324674f74945c1a6b6c21e))
+
+
+
+
+
 # [3.1.0](https://github.com/nativescript-community/gps/compare/v3.0.0...v3.1.0) (2021-10-21)
 
 
