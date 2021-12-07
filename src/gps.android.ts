@@ -49,6 +49,9 @@ interface OnNmeaListener<T = DefaultLatLonKeys> extends android.location.OnNmeaM
 function createLocationListener<T = DefaultLatLonKeys>(successCallback: successCallbackType<T>, options: Options) {
     const locationListener = new android.location.LocationListener({
         onLocationChanged(location: android.location.Location) {
+            if (!location) {
+                return;
+            }
             if (Trace.isEnabled()) {
                 CLog(CLogTypes.debug, 'onLocationChanged', locationFromAndroidLocation<T>(location));
             }
