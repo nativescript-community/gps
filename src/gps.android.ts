@@ -167,15 +167,21 @@ function locationFromAndroidLocation<T = DefaultLatLonKeys>(androidLocation: and
     } else {
         location.verticalAccuracy = androidLocation.getAccuracy();
     }
-    // if (androidLocation.hasBearingAccuracy()) {
-    //     location.bearing = androidLocation.getBearing();
-    // }
-    const bootTime = java.lang.System.currentTimeMillis() - android.os.SystemClock.elapsedRealtime();
 
+    const bootTime = java.lang.System.currentTimeMillis() - android.os.SystemClock.elapsedRealtime();
     // we use elapseRealtime because getTime() is wrong on some devices
-    const sinceBoot = Math.round(androidLocation.getElapsedRealtimeNanos() / 1000000);
-    location.timestamp = bootTime + sinceBoot;
-    location.age = Math.max(Date.now() - location.timestamp);
+    let sinceBoot = androidLocation.getElapsedRealtimeNanos();
+    // sinceBoot can be returned as a NativeScriptLongNumber for which we need to parse the string `value`
+    if (sinceBoot['value']) {
+        sinceBoot = parseInt(sinceBoot['value'], 10);
+    }
+    sinceBoot = Math.round(sinceBoot / 1000000);
+    if (isNaN(sinceBoot)) {
+        location.timestamp = androidLocation.getTime();
+    } else {
+        location.timestamp = bootTime + sinceBoot;
+    }
+    location.age = Math.max(Date.now() - location.timestamp, 0);
     location.elapsedBoot = sinceBoot;
     location.android = androidLocation;
     return location;
