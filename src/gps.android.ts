@@ -184,10 +184,14 @@ function locationFromAndroidLocation<T = DefaultLatLonKeys>(androidLocation: and
     const bootTime = java.lang.System.currentTimeMillis() - android.os.SystemClock.elapsedRealtime();
     // we use elapseRealtime because getTime() is wrong on some devices
     let sinceBoot = androidLocation.getElapsedRealtimeNanos();
+    if (Trace.isEnabled()) {
+        CLog(CLogTypes.debug, 'locationFromAndroidLocation', {getTime:androidLocation.getTime(), elapsedRealtime:android.os.SystemClock.elapsedRealtime(), currentTimeMillis:java.lang.System.currentTimeMillis(), bootTime, sinceBoot, sinceBootValue:sinceBoot['value']});
+    }
     // sinceBoot can be returned as a NativeScriptLongNumber for which we need to parse the string `value`
     if (sinceBoot['value']) {
         sinceBoot = parseInt(sinceBoot['value'], 10);
     }
+
     sinceBoot = Math.round(sinceBoot / 1000000);
     if (isNaN(sinceBoot)) {
         location.timestamp = androidLocation.getTime();
