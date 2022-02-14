@@ -48,24 +48,37 @@ interface OnNmeaListener<T = DefaultLatLonKeys> extends android.location.OnNmeaM
 
 function createLocationListener<T = DefaultLatLonKeys>(successCallback: successCallbackType<T>, options: Options) {
     const locationListener = new android.location.LocationListener({
-        onLocationChanged(location: android.location.Location) {
+        onLocationChanged(location: android.location.Location | java.util.List<android.location.Location>) {
             if (!location) {
                 return;
             }
+            const locations: android.location.Location[] = [];
+            if (typeof location['getProvider'] === 'function') {
+                locations.push(location as android.location.Location);
+            } else {
+                // must be an List!
+                for (let index = 0; index < (location as java.util.List<android.location.Location>).size(); index++) {
+                    locations.push((location as java.util.List<android.location.Location>).get(index));
+
+                }
+            }
             if (Trace.isEnabled()) {
-                CLog(CLogTypes.debug, 'onLocationChanged', locationFromAndroidLocation<T>(location));
+                CLog(CLogTypes.debug, 'onLocationChanged', locations.map(locationFromAndroidLocation));
             }
             const that = this as LocationListener<T>;
             const locationCallback = that._onLocation;
             if (locationCallback) {
-                const loc = locationFromAndroidLocation<T>(location);
-                const updateTime = options && typeof options.minimumUpdateTime === 'number' ? options.minimumUpdateTime : minTimeUpdate;
-                if (that.mLastMslAltitudeTimestamp) {
-                    if (loc.timestamp - that.mLastMslAltitudeTimestamp <= updateTime) {
-                        loc.mslAltitude = that.mLastMslAltitude;
+                locations.forEach(location=>{
+                    const loc = locationFromAndroidLocation<T>(location);
+                    const updateTime = options && typeof options.minimumUpdateTime === 'number' ? options.minimumUpdateTime : minTimeUpdate;
+                    if (that.mLastMslAltitudeTimestamp) {
+                        if (loc.timestamp - that.mLastMslAltitudeTimestamp <= updateTime) {
+                            loc.mslAltitude = that.mLastMslAltitude;
+                        }
                     }
-                }
-                locationCallback(loc);
+                    locationCallback(loc);
+                });
+
             }
         },
 
