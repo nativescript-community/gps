@@ -12,10 +12,9 @@
     <uses-sdk
 		android:minSdkVersion="17"
 		android:targetSdkVersion="__APILEVEL__"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-feature android:name="android.hardware.type.watch" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
 		android:name="com.tns.NativeScriptApplication"
 		android:allowBackup="true"
