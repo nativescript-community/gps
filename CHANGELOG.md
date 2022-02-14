@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.2](https://github.com/nativescript-community/gps/compare/v3.1.1...v3.1.2) (2022-02-14)
+
+
+### Bug Fixes
+
+* **android:** add support for Android 12 ([0e4b668](https://github.com/nativescript-community/gps/commit/0e4b668c0bee8a62ca162bee546c2b0d5f356a62))
+* **android:** ensure location timestamp is always valid ([d169b35](https://github.com/nativescript-community/gps/commit/d169b359c18518fa408cc905037c8db55824836d))
+
+
+
+
+
 ## [3.1.1](https://github.com/nativescript-community/gps/compare/v3.1.0...v3.1.1) (2021-12-07)
 
 
