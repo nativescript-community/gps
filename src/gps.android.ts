@@ -462,28 +462,21 @@ export class GPS extends GPSCommon {
 
 export class LocationMonitor implements LocationMonitorDef {
     static getLastKnownLocation<T = DefaultLatLonKeys>(): GenericGeoLocation<T> {
-        const criteria = new android.location.Criteria();
-        criteria.setAccuracy(android.location.Criteria.ACCURACY_COARSE);
-        try {
-            const iterator = getAndroidLocationManager().getProviders(criteria, false).iterator();
-            let androidLocation;
-            while (iterator.hasNext()) {
-                const provider = iterator.next() as string;
-                const tempLocation = getAndroidLocationManager().getLastKnownLocation(provider);
-                if (!tempLocation) {
-                    continue;
-                }
-                if (!androidLocation || tempLocation.getTime() > androidLocation.getTime()) {
-                    androidLocation = tempLocation;
-                }
+        const providers = getAndroidLocationManager().getProviders(false);
+        let androidLocation: android.location.Location;
+        for (let index = 0; index < providers.size(); index++) {
+            const provider = providers.get(index);
+            const tempLocation = getAndroidLocationManager().getLastKnownLocation(provider);
+            if (!tempLocation) {
+                continue;
             }
-            if (androidLocation) {
-                return locationFromAndroidLocation<T>(androidLocation);
+            if (!androidLocation || tempLocation.getTime() > androidLocation.getTime() || tempLocation.getAccuracy() < androidLocation.getAccuracy()) {
+                androidLocation = tempLocation;
             }
-        } catch (e) {
-            Trace.write('Error: ' + e.message, 'Error');
         }
-        return null;
+        if (androidLocation) {
+            return locationFromAndroidLocation<T>(androidLocation);
+        }
     }
 
     static startLocationMonitoring<T = DefaultLatLonKeys>(options: Options, listener: LocationListener<T>): void {
