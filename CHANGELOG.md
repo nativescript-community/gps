@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.4](https://github.com/nativescript-community/gps/compare/v3.1.3...v3.1.4) (2022-04-09)
+
+
+### Bug Fixes
+
+* **android:** better getLastKnownLocation ([a52eaff](https://github.com/nativescript-community/gps/commit/a52eaffd3ccb0b1b0e34da57af6b397000fdd4f3))
+
+
+
+
+
 ## [3.1.3](https://github.com/nativescript-community/gps/compare/v3.1.2...v3.1.3) (2022-02-14)
 
 **Note:** Version bump only for package @nativescript-community/gps
