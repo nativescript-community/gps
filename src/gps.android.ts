@@ -477,6 +477,7 @@ export class LocationMonitor implements LocationMonitorDef {
         if (androidLocation) {
             return locationFromAndroidLocation<T>(androidLocation);
         }
+        return null;
     }
 
     static startLocationMonitoring<T = DefaultLatLonKeys>(options: Options, listener: LocationListener<T>): void {
