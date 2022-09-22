@@ -238,32 +238,64 @@ function criteriaFromOptions(options: Options): android.location.Criteria {
 }
 
 export class GPS extends GPSCommon {
-    enabled = false;
-    constructor() {
-        super();
-        this.enabled = this.isEnabled();
-        andApp.registerBroadcastReceiver(android.location.LocationManager.PROVIDERS_CHANGED_ACTION, this.onBroadcastReceiver);
-    }
-    onBroadcastReceiver = (context: android.content.Context, intent: android.content.Intent) => {
-        if (intent.getAction() !== 'android.location.PROVIDERS_CHANGED') {
+    enabled = this.isEnabled();
+    broadcastRegistered = false;
+    registerBroadcast() {
+        if (this.broadcastRegistered) {
             return;
         }
-        const oldValue = this.enabled;
+        this.broadcastRegistered = true;
         if (Trace.isEnabled()) {
-            CLog(CLogTypes.debug, 'onBroadcastReceiver', oldValue);
+            CLog(CLogTypes.info, 'Android Bluetooth  registering for state change');
         }
-        const newValue = this.isEnabled();
-        if (oldValue !== newValue) {
-            this.enabled = newValue;
-            this.notify({
-                eventName: GPSCommon.gps_status_event,
-                object: this,
-                data: {
-                    enabled: newValue,
-                },
-            });
+
+        const onBroadcastReceiver = () => {
+            const oldValue = this.enabled;
+            if (Trace.isEnabled()) {
+                CLog(CLogTypes.debug, 'onBroadcastReceiver', oldValue);
+            }
+            const newValue = this.isEnabled();
+            if (oldValue !== newValue) {
+                this.enabled = newValue;
+                this.notify({
+                    eventName: GPSCommon.gps_status_event,
+                    object: this,
+                    data: {
+                        enabled: newValue,
+                    },
+                });
+            }
+        };
+        andApp.registerBroadcastReceiver(android.location.LocationManager.PROVIDERS_CHANGED_ACTION, onBroadcastReceiver);
+        andApp.registerBroadcastReceiver(android.location.LocationManager.MODE_CHANGED_ACTION, onBroadcastReceiver);
+    }
+    unregisterBroadcast() {
+        if (!this.broadcastRegistered) {
+            return;
         }
-    };
+        this.broadcastRegistered = false;
+        andApp.unregisterBroadcastReceiver(android.location.LocationManager.PROVIDERS_CHANGED_ACTION);
+        andApp.unregisterBroadcastReceiver(android.location.LocationManager.MODE_CHANGED_ACTION);
+    }
+    onListenerAdded(eventName, count) {
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.info, 'onListenerAdded', eventName, count);
+        }
+        if (eventName === GPSCommon.gps_status_event) {
+            this.registerBroadcast();
+        }
+    }
+    onListenerRemoved(eventName, count) {
+        if (Trace.isEnabled()) {
+            CLog(CLogTypes.info, 'onListenerRemoved', eventName, count);
+        }
+        if (eventName === GPSCommon.gps_status_event && count === 0) {
+            this.unregisterBroadcast();
+        }
+    }
+    stop() {
+        this.unregisterBroadcast();
+    }
     async prepareForRequest(options: Options) {
         if (Trace.isEnabled()) {
             CLog(CLogTypes.debug, 'prepareForRequest', options, this.isEnabled());
