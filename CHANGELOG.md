@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.5](https://github.com/nativescript-community/gps/compare/v3.1.4...v3.1.5) (2022-09-22)
+
+
+### Bug Fixes
+
+* **android:** gps status events not beeing sent ([3d5ee63](https://github.com/nativescript-community/gps/commit/3d5ee63f7d49612bd965a45ffdd5861b26fa633a))
+
+
+
+
+
 ## [3.1.4](https://github.com/nativescript-community/gps/compare/v3.1.3...v3.1.4) (2022-04-09)
 
 
