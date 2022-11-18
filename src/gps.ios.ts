@@ -10,7 +10,7 @@ export { Options, successCallbackType, errorCallbackType, deferredCallbackType }
 const locationManagers: {[k: string]: CLLocationManager} = {};
 const locationListeners = {};
 let watchId = 0;
-const minRangeUpdate = 0; // 0 meters
+const minRangeUpdate = kCLDistanceFilterNone;
 const defaultGetLocationTimeout = 5 * 60 * 1000; // 5 minutes
 
 @NativeClass
