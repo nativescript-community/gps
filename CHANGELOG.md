@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.6](https://github.com/nativescript-community/gps/compare/v3.1.5...v3.1.6) (2022-11-18)
+
+
+### Bug Fixes
+
+* **ios:** default distanceFilter to none to ensure we get locations ([2bd9295](https://github.com/nativescript-community/gps/commit/2bd9295b665bbb1f3735b0c759e9d9f402be9411))
+
+
+### Features
+
+* **ios:** support for `minimumUpdateTime` ([125778f](https://github.com/nativescript-community/gps/commit/125778fc4fe399bd0e1bb7eec39ea1637f086651))
+
+
+
+
+
 ## [3.1.5](https://github.com/nativescript-community/gps/compare/v3.1.4...v3.1.5) (2022-09-22)
 
 
