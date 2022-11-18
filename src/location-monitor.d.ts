@@ -15,7 +15,7 @@ export interface Options {
     updateDistance?: number;
 
     /**
-     * Minimum time interval between location updates, in milliseconds (ignored on iOS)
+     * Minimum time interval between location updates, in milliseconds.
      */
     minimumUpdateTime?: number;
 

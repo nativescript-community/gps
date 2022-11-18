@@ -270,7 +270,7 @@ export class GPS extends GPSCommon{
             const successCallback = function (location: GenericGeoLocation<T>) {
                 let readyToStop = false;
                 if (typeof options.maximumAge === 'number') {
-                    if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
+                    if (location.timestamp + options.maximumAge > Date.now()) {
                         resolve(location);
                         readyToStop = true;
                     }
@@ -303,7 +303,22 @@ export class GPS extends GPSCommon{
     watchLocation<T = DefaultLatLonKeys>(successCallback: successCallbackType<T>, errorCallback: errorCallbackType, options: Options) {
         return this.prepareForRequest(options).then(() => {
             options = options || {};
-            const locListener = LocationListenerImpl.initWithLocationError(successCallback, errorCallback, options);
+            let lastUpdateTime = null;
+            const maxAge =typeof options.maximumAge === 'number' ? options.maximumAge : null;
+            const minimumUpdateTime =typeof options.minimumUpdateTime === 'number' ? options.minimumUpdateTime : null;
+            const actualSuccessCallback = function (location: GenericGeoLocation<T>) {
+                const now = Date.now();
+                const timestamp = location.timestamp;
+                if (minimumUpdateTime && lastUpdateTime &&  timestamp - lastUpdateTime <  minimumUpdateTime) {
+                    return;
+                }
+                if (maxAge && now - location.timestamp >=  maxAge ) {
+                    return;
+                }
+                lastUpdateTime = timestamp;
+                successCallback(location);
+            };
+            const locListener = LocationListenerImpl.initWithLocationError(actualSuccessCallback, errorCallback, options);
             try {
                 const iosLocManager = LocationMonitor.createiOSLocationManager<T>(locListener, options);
                 // if (options.background) {
