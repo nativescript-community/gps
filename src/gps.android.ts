@@ -1,7 +1,6 @@
 import { request } from '@nativescript-community/perms';
-import { CoreTypes, Trace } from '@nativescript/core';
+import { CoreTypes, Trace, Utils } from '@nativescript/core';
 import { AndroidActivityResultEventData, AndroidApplication, android as andApp } from '@nativescript/core/application';
-import { ad } from '@nativescript/core/utils/utils';
 import { AltitudeKey, CLog, CLogTypes, GPSCommon, GenericGeoLocation, LatitudeKey, LongitudeKey, defaultGetLocationTimeout } from './gps.common';
 import { DefaultLatLonKeys } from './location';
 import { LocationMonitor as LocationMonitorDef, Options, errorCallbackType, successCallbackType } from './location-monitor';
@@ -27,7 +26,7 @@ const minRangeUpdate = 0; // 0 meters
 
 function getAndroidLocationManager(): android.location.LocationManager {
     if (!androidLocationManager) {
-        androidLocationManager = ad.getApplicationContext().getSystemService(android.content.Context.LOCATION_SERVICE) as android.location.LocationManager;
+        androidLocationManager = Utils.ad.getApplicationContext().getSystemService(android.content.Context.LOCATION_SERVICE) as android.location.LocationManager;
     }
     return androidLocationManager;
 }
