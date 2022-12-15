@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.8](https://github.com/nativescript-community/gps/compare/v3.1.7...v3.1.8) (2022-12-15)
+
+**Note:** Version bump only for package @nativescript-community/gps
+
+
+
+
+
 ## [3.1.7](https://github.com/nativescript-community/gps/compare/v3.1.6...v3.1.7) (2022-12-01)
 
 **Note:** Version bump only for package @nativescript-community/gps
