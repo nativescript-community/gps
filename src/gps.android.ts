@@ -1,6 +1,6 @@
 import { request } from '@nativescript-community/perms';
-import { CoreTypes, Trace, Utils } from '@nativescript/core';
-import { AndroidActivityResultEventData, AndroidApplication, android as andApp } from '@nativescript/core/application';
+import { AndroidActivityResultEventData, Application, CoreTypes, Trace, Utils } from '@nativescript/core';
+import { AndroidApplication } from '@nativescript/core/application';
 import { AltitudeKey, CLog, CLogTypes, GPSCommon, GenericGeoLocation, LatitudeKey, LongitudeKey, defaultGetLocationTimeout } from './gps.common';
 import { DefaultLatLonKeys } from './location';
 import { LocationMonitor as LocationMonitorDef, Options, errorCallbackType, successCallbackType } from './location-monitor';
@@ -58,7 +58,6 @@ function createLocationListener<T = DefaultLatLonKeys>(successCallback: successC
                 // must be an List!
                 for (let index = 0; index < (location as java.util.List<android.location.Location>).size(); index++) {
                     locations.push((location as java.util.List<android.location.Location>).get(index));
-
                 }
             }
             if (Trace.isEnabled()) {
@@ -67,7 +66,7 @@ function createLocationListener<T = DefaultLatLonKeys>(successCallback: successC
             const that = this as LocationListener<T>;
             const locationCallback = that._onLocation;
             if (locationCallback) {
-                locations.forEach(location=>{
+                locations.forEach((location) => {
                     const loc = locationFromAndroidLocation<T>(location);
                     const updateTime = options && typeof options.minimumUpdateTime === 'number' ? options.minimumUpdateTime : minTimeUpdate;
                     if (that.mLastMslAltitudeTimestamp) {
@@ -77,7 +76,6 @@ function createLocationListener<T = DefaultLatLonKeys>(successCallback: successC
                     }
                     locationCallback(loc);
                 });
-
             }
         },
 
@@ -97,7 +95,7 @@ function createLocationListener<T = DefaultLatLonKeys>(successCallback: successC
             if (Trace.isEnabled()) {
                 CLog(CLogTypes.debug, 'onStatusChanged', arg1, arg2, arg3);
             }
-        },
+        }
     }) as LocationListener<T>;
     watchId++;
     locationListener._onLocation = successCallback;
@@ -107,7 +105,7 @@ function createLocationListener<T = DefaultLatLonKeys>(successCallback: successC
         CLog(CLogTypes.debug, 'createLocationListener', options.nmeaAltitude, getAndroidSDK());
     }
     if (options.nmeaAltitude === true) {
-        if ( getAndroidSDK() >= NOUGAT ) {
+        if (getAndroidSDK() >= NOUGAT) {
             locationListener._nmeaListener = new android.location.OnNmeaMessageListener({
                 onNmeaMessage(nmea: string, timestamp: number) {
                     const locationListener = (this as NmeaListener<T>).locationListener && (this as NmeaListener<T>).locationListener.get();
@@ -127,7 +125,7 @@ function createLocationListener<T = DefaultLatLonKeys>(successCallback: successC
                             }
                         }
                     }
-                },
+                }
             }) as OnNmeaListener<T>;
         } else {
             // TODO: bring back when https://github.com/NativeScript/android-runtime/issues/1645 is fixed
@@ -138,7 +136,6 @@ function createLocationListener<T = DefaultLatLonKeys>(successCallback: successC
             //             const tokens = nmea.split(',');
             //             const type = tokens[0];
             //             const alt = tokens[9];
-
             //             // Parse altitude above sea level, Detailed description of NMEA string here http://aprs.gids.nl/nmea/#gga
             //             if (type.endsWith('GGA')) {
             //                 if (alt && alt.length > 0) {
@@ -184,7 +181,14 @@ function locationFromAndroidLocation<T = DefaultLatLonKeys>(androidLocation: and
     // we use elapseRealtime because getTime() is wrong on some devices
     let sinceBoot = androidLocation.getElapsedRealtimeNanos();
     if (Trace.isEnabled()) {
-        CLog(CLogTypes.debug, 'locationFromAndroidLocation', {getTime:androidLocation.getTime(), elapsedRealtime:android.os.SystemClock.elapsedRealtime(), currentTimeMillis:java.lang.System.currentTimeMillis(), bootTime, sinceBoot, sinceBootValue:sinceBoot['value']});
+        CLog(CLogTypes.debug, 'locationFromAndroidLocation', {
+            getTime: androidLocation.getTime(),
+            elapsedRealtime: android.os.SystemClock.elapsedRealtime(),
+            currentTimeMillis: java.lang.System.currentTimeMillis(),
+            bootTime,
+            sinceBoot,
+            sinceBootValue: sinceBoot['value']
+        });
     }
     // sinceBoot can be returned as a NativeScriptLongNumber for which we need to parse the string `value`
     if (sinceBoot['value']) {
@@ -248,33 +252,32 @@ export class GPS extends GPSCommon {
             CLog(CLogTypes.info, 'Android Bluetooth  registering for state change');
         }
 
-        const onBroadcastReceiver = () => {
+        const onBroadcastReceiver = (context: android.content.Context, intent: android.content.Intent) => {
             const oldValue = this.enabled;
-            if (Trace.isEnabled()) {
-                CLog(CLogTypes.debug, 'onBroadcastReceiver', oldValue);
-            }
             const newValue = this.isEnabled();
+            if (Trace.isEnabled()) {
+                CLog(CLogTypes.debug, 'onBroadcastReceiver', oldValue, newValue);
+            }
             if (oldValue !== newValue) {
-                this.enabled = newValue;
                 this.notify({
                     eventName: GPSCommon.gps_status_event,
                     object: this,
                     data: {
-                        enabled: newValue,
-                    },
+                        enabled: newValue
+                    }
                 });
             }
         };
-        andApp.registerBroadcastReceiver(android.location.LocationManager.PROVIDERS_CHANGED_ACTION, onBroadcastReceiver);
-        andApp.registerBroadcastReceiver(android.location.LocationManager.MODE_CHANGED_ACTION, onBroadcastReceiver);
+        Application.android.registerBroadcastReceiver(android.location.LocationManager.PROVIDERS_CHANGED_ACTION, onBroadcastReceiver);
+        // andApp.registerBroadcastReceiver(android.location.LocationManager.MODE_CHANGED_ACTION, onBroadcastReceiver);
     }
     unregisterBroadcast() {
         if (!this.broadcastRegistered) {
             return;
         }
         this.broadcastRegistered = false;
-        andApp.unregisterBroadcastReceiver(android.location.LocationManager.PROVIDERS_CHANGED_ACTION);
-        andApp.unregisterBroadcastReceiver(android.location.LocationManager.MODE_CHANGED_ACTION);
+        Application.android.unregisterBroadcastReceiver(android.location.LocationManager.PROVIDERS_CHANGED_ACTION);
+        // andApp.unregisterBroadcastReceiver(android.location.LocationManager.MODE_CHANGED_ACTION);
     }
     onListenerAdded(eventName, count) {
         if (Trace.isEnabled()) {
@@ -320,12 +323,12 @@ export class GPS extends GPSCommon {
         if (Trace.isEnabled()) {
             CLog(CLogTypes.debug, 'openGPSSettings', this.isEnabled());
         }
-        const activity = andApp.foregroundActivity || andApp.startActivity;
+        const activity = Application.android.foregroundActivity || Application.android.startActivity;
         return new Promise<boolean>((resolve, reject) => {
             if (!this.isEnabled()) {
                 const onActivityResultHandler = (data: AndroidActivityResultEventData) => {
                     if (data.requestCode === 5340) {
-                        andApp.off(AndroidApplication.activityResultEvent, onActivityResultHandler);
+                        Application.android.off(AndroidApplication.activityResultEvent, onActivityResultHandler);
                         if (Trace.isEnabled()) {
                             CLog(CLogTypes.debug, 'openGPSSettingsCore done', data.requestCode, this.isEnabled());
                         }
@@ -337,7 +340,7 @@ export class GPS extends GPSCommon {
                         // }
                     }
                 };
-                andApp.on(AndroidApplication.activityResultEvent, onActivityResultHandler);
+                Application.android.on(AndroidApplication.activityResultEvent, onActivityResultHandler);
                 activity.startActivityForResult(new android.content.Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 5340);
             } else {
                 resolve(true);
@@ -368,7 +371,7 @@ export class GPS extends GPSCommon {
     }
 
     hasGPS() {
-        const currentContext = andApp.context as android.content.Context;
+        const currentContext = Utils.android.getApplicationContext() as android.content.Context;
         if (!currentContext) {
             return false;
         }
@@ -401,45 +404,48 @@ export class GPS extends GPSCommon {
             });
         }
 
-        return this.prepareForRequest(options).then(() => new Promise<GenericGeoLocation<T>>(function (resolve, reject) {
-            let timerId;
-            const stopTimerAndMonitor = function (locListenerId: number) {
-                if (timerId !== undefined) {
-                    clearTimeout(timerId);
-                }
-                LocationMonitor.stopLocationMonitoring(locListenerId);
-            };
-            const successCallback = function (location: GenericGeoLocation<T>) {
-                let readyToStop = false;
-                if (options && typeof options.maximumAge === 'number') {
-                    if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
-                        resolve(location);
-                        readyToStop = true;
+        return this.prepareForRequest(options).then(
+            () =>
+                new Promise<GenericGeoLocation<T>>(function (resolve, reject) {
+                    let timerId;
+                    const stopTimerAndMonitor = function (locListenerId: number) {
+                        if (timerId !== undefined) {
+                            clearTimeout(timerId);
+                        }
+                        LocationMonitor.stopLocationMonitoring(locListenerId);
+                    };
+                    const successCallback = function (location: GenericGeoLocation<T>) {
+                        let readyToStop = false;
+                        if (options && typeof options.maximumAge === 'number') {
+                            if (location.timestamp.valueOf() + options.maximumAge > new Date().valueOf()) {
+                                resolve(location);
+                                readyToStop = true;
+                            }
+                        } else {
+                            resolve(location);
+                            readyToStop = true;
+                        }
+                        if (readyToStop) {
+                            stopTimerAndMonitor((locListener as any).id);
+                        }
+                    };
+
+                    const locListener = LocationMonitor.createListenerWithCallbackAndOptions<T>(successCallback, options);
+                    try {
+                        LocationMonitor.startLocationMonitoring<T>(options, locListener);
+                    } catch (e) {
+                        stopTimerAndMonitor((locListener as any).id);
+                        reject(e);
                     }
-                } else {
-                    resolve(location);
-                    readyToStop = true;
-                }
-                if (readyToStop) {
-                    stopTimerAndMonitor((locListener as any).id);
-                }
-            };
 
-            const locListener = LocationMonitor.createListenerWithCallbackAndOptions<T>(successCallback, options);
-            try {
-                LocationMonitor.startLocationMonitoring<T>(options, locListener);
-            } catch (e) {
-                stopTimerAndMonitor((locListener as any).id);
-                reject(e);
-            }
-
-            if (options && typeof options.timeout === 'number') {
-                timerId = setTimeout(function () {
-                    LocationMonitor.stopLocationMonitoring((locListener as any).id);
-                    resolve(null);
-                }, options.timeout || defaultGetLocationTimeout);
-            }
-        }));
+                    if (options && typeof options.timeout === 'number') {
+                        timerId = setTimeout(function () {
+                            LocationMonitor.stopLocationMonitoring((locListener as any).id);
+                            resolve(null);
+                        }, options.timeout || defaultGetLocationTimeout);
+                    }
+                })
+        );
     }
 
     clearWatch(watchId: number): void {
@@ -478,7 +484,8 @@ export class GPS extends GPSCommon {
         if (Trace.isEnabled()) {
             CLog(CLogTypes.debug, 'isLocationServiceEnabled', enabledProviders.size(), nbProviders, acceptableProviders);
         }
-        return acceptableProviders > 0;
+        this.enabled = acceptableProviders > 0;
+        return this.enabled;
     }
 
     distance<T = DefaultLatLonKeys>(loc1: GenericGeoLocation<T>, loc2: GenericGeoLocation<T>): number {
@@ -518,7 +525,7 @@ export class LocationMonitor implements LocationMonitorDef {
 
         const looper: android.os.Looper = android.os.Looper.myLooper();
         if (Trace.isEnabled()) {
-            CLog(CLogTypes.debug, 'requestLocationUpdates', options.provider, updateTime, updateDistance, looper, looper=== android.os.Looper.getMainLooper());
+            CLog(CLogTypes.debug, 'requestLocationUpdates', options.provider, updateTime, updateDistance, looper, looper === android.os.Looper.getMainLooper());
         }
         if (options.provider) {
             manager.requestLocationUpdates(options.provider, updateTime, updateDistance, listener, looper);
@@ -534,7 +541,7 @@ export class LocationMonitor implements LocationMonitorDef {
         return createLocationListener<T>(successCallback, options);
     }
 
-    static getLocationMonitoring(locListenerId: number)  {
+    static getLocationMonitoring(locListenerId: number) {
         return getAndroidLocationManager();
     }
     static stopLocationMonitoring(locListenerId: number): void {
