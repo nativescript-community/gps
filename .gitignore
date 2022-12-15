@@ -1,5 +1,7 @@
-*.js
-*.js.map
+plugin/*.js
+plugin/*.js.map
+src/*.js
+src/*.js.map
 *.log
 !scripts/*.js
 demo/app/*.js
