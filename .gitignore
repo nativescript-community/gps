@@ -1,5 +1,6 @@
 plugin/*.js
 plugin/*.js.map
+hooks
 src/*.js
 src/*.js.map
 *.log
@@ -21,3 +22,4 @@ pnpm-lock.yaml
 package-lock.json
 yarn.lock
 .yarn
+pnpm-lock.yaml

@@ -6,5 +6,8 @@ import { HelloWorldModel } from './main-view-model';
 export function pageLoaded(args: observable.EventData) {
     // Get the event sender
     const page = args.object as pages.Page;
-    page.bindingContext = new HelloWorldModel();
+    if (!page.bindingContext) {
+        page.bindingContext = new HelloWorldModel();
+
+    }
 }

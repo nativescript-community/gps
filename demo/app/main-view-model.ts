@@ -1,6 +1,5 @@
 import { Observable } from '@nativescript/core/data/observable';
 import { ObservableArray } from '@nativescript/core/data/observable-array';
-import * as application from '@nativescript/core/application';
 import { GPS } from '@nativescript-community/gps';
 const gps = new GPS();
 export class HelloWorldModel extends Observable {
@@ -11,8 +10,7 @@ export class HelloWorldModel extends Observable {
 
     constructor() {
         super();
-
-        // this.uiApplication = application.ios.nativeApp;
+        console.log('HelloWorldModel');
 
         this.message = 'Tracking location';
 
@@ -22,9 +20,9 @@ export class HelloWorldModel extends Observable {
             .then(() => {
                 console.log('enableLocation done');
                 gps.watchLocation(this.locationReceived, this.error, {
-                    provider:'gps',
+                    provider: 'gps',
                     minimumUpdateTime: 1000
-                }).then(watchId => (this.watchId = watchId));
+                }).then((watchId) => (this.watchId = watchId));
             })
             .catch(this.error);
     }
@@ -32,10 +30,7 @@ export class HelloWorldModel extends Observable {
     enableLocation() {
         if (!gps.isEnabled()) {
             console.log('Location not enabled, requesting.');
-            return gps
-                .authorize(true)
-                .then(() => gps.enable())
-                .then(() => gps.isEnabled());
+            return gps.authorize(true).then(() => gps.enable());
         } else {
             return Promise.resolve(true);
         }
