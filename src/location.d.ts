@@ -2,7 +2,6 @@
  * A data class that encapsulates common properties for a geolocation.
  */
 
-
 export interface DefaultLatLonKeys {
     latitude: number;
     longitude: number;
@@ -55,7 +54,6 @@ type GenericGeoLocation<T = DefaultLatLonKeys> = {
      * [android only]: the provider of the location
      */
     provider?: string;
-
 
     /**
      * [android only]: nmea altitude

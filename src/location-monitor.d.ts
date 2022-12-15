@@ -65,7 +65,6 @@ export interface Options {
      */
     provider?: 'gps' | 'network' | 'passive';
 
-
     nmeaAltitude?: boolean;
 }
 

@@ -6,8 +6,7 @@ import { LocationMonitor as LocationMonitorDef, Options, deferredCallbackType, e
 export * from './gps.common';
 export { Options, successCallbackType, errorCallbackType, deferredCallbackType };
 
-
-const locationManagers: {[k: string]: CLLocationManager} = {};
+const locationManagers: { [k: string]: CLLocationManager } = {};
 const locationListeners = {};
 let watchId = 0;
 const minRangeUpdate = kCLDistanceFilterNone;
@@ -35,8 +34,8 @@ class LocationChangeListenerImpl extends NSObject implements CLLocationManagerDe
                 object: owner,
                 data: {
                     enabled,
-                    authorizationStatus: status,
-                },
+                    authorizationStatus: status
+                }
             });
         }
         if (Trace.isEnabled()) {
@@ -106,8 +105,6 @@ class LocationListenerImpl<T = DefaultLatLonKeys> extends NSObject implements CL
             this._onLocationPaused();
         }
     }
-
-
 }
 
 function locationFromCLLocation<T = DefaultLatLonKeys>(clLocation: CLLocation): GenericGeoLocation<T> {
@@ -150,7 +147,7 @@ function clLocationFromLocation<T>(location: GenericGeoLocation<T>): CLLocation 
     return iosLocation;
 }
 
-export class GPS extends GPSCommon{
+export class GPS extends GPSCommon {
     enabled = false;
     iosChangeLocManager: CLLocationManager;
     iosChangeLocListener: LocationChangeListenerImpl;
@@ -253,66 +250,69 @@ export class GPS extends GPSCommon{
                 }
             });
         }
-        return this.prepareForRequest(options).then(() => new Promise<GenericGeoLocation<T>>((resolve, reject) => {
-            let timerId;
-            if (!this.isEnabled()) {
-                reject(new Error('Location service is disabled'));
-            }
-
-            const stopTimerAndMonitor = function (locListenerId) {
-                if (timerId !== undefined) {
-                    clearTimeout(timerId);
-                }
-
-                LocationMonitor.stopLocationMonitoring(locListenerId);
-            };
-
-            const successCallback = function (location: GenericGeoLocation<T>) {
-                let readyToStop = false;
-                if (typeof options.maximumAge === 'number') {
-                    if (location.timestamp + options.maximumAge > Date.now()) {
-                        resolve(location);
-                        readyToStop = true;
+        return this.prepareForRequest(options).then(
+            () =>
+                new Promise<GenericGeoLocation<T>>((resolve, reject) => {
+                    let timerId;
+                    if (!this.isEnabled()) {
+                        reject(new Error('Location service is disabled'));
                     }
-                } else {
-                    resolve(location);
-                    readyToStop = true;
-                }
-                if (readyToStop) {
-                    stopTimerAndMonitor(locListener.id);
-                }
-            };
 
-            const locListener = LocationListenerImpl.initWithLocationError<T>(successCallback, null, options);
-            try {
-                LocationMonitor.startLocationMonitoring<T>(options, locListener);
-            } catch (e) {
-                stopTimerAndMonitor(locListener.id);
-                reject(e);
-            }
+                    const stopTimerAndMonitor = function (locListenerId) {
+                        if (timerId !== undefined) {
+                            clearTimeout(timerId);
+                        }
 
-            if (typeof options.timeout === 'number') {
-                timerId = setTimeout(function () {
-                    LocationMonitor.stopLocationMonitoring(locListener.id);
-                    resolve(null);
-                }, options.timeout || defaultGetLocationTimeout);
-            }
-        }));
+                        LocationMonitor.stopLocationMonitoring(locListenerId);
+                    };
+
+                    const successCallback = function (location: GenericGeoLocation<T>) {
+                        let readyToStop = false;
+                        if (typeof options.maximumAge === 'number') {
+                            if (location.timestamp + options.maximumAge > Date.now()) {
+                                resolve(location);
+                                readyToStop = true;
+                            }
+                        } else {
+                            resolve(location);
+                            readyToStop = true;
+                        }
+                        if (readyToStop) {
+                            stopTimerAndMonitor(locListener.id);
+                        }
+                    };
+
+                    const locListener = LocationListenerImpl.initWithLocationError<T>(successCallback, null, options);
+                    try {
+                        LocationMonitor.startLocationMonitoring<T>(options, locListener);
+                    } catch (e) {
+                        stopTimerAndMonitor(locListener.id);
+                        reject(e);
+                    }
+
+                    if (typeof options.timeout === 'number') {
+                        timerId = setTimeout(function () {
+                            LocationMonitor.stopLocationMonitoring(locListener.id);
+                            resolve(null);
+                        }, options.timeout || defaultGetLocationTimeout);
+                    }
+                })
+        );
     }
 
     watchLocation<T = DefaultLatLonKeys>(successCallback: successCallbackType<T>, errorCallback: errorCallbackType, options: Options) {
         return this.prepareForRequest(options).then(() => {
             options = options || {};
             let lastUpdateTime = null;
-            const maxAge =typeof options.maximumAge === 'number' ? options.maximumAge : null;
-            const minimumUpdateTime =typeof options.minimumUpdateTime === 'number' ? options.minimumUpdateTime : null;
+            const maxAge = typeof options.maximumAge === 'number' ? options.maximumAge : null;
+            const minimumUpdateTime = typeof options.minimumUpdateTime === 'number' ? options.minimumUpdateTime : null;
             const actualSuccessCallback = function (location: GenericGeoLocation<T>) {
                 const now = Date.now();
                 const timestamp = location.timestamp;
-                if (minimumUpdateTime && lastUpdateTime &&  timestamp - lastUpdateTime <  minimumUpdateTime) {
+                if (minimumUpdateTime && lastUpdateTime && timestamp - lastUpdateTime < minimumUpdateTime) {
                     return;
                 }
-                if (maxAge && now - location.timestamp >=  maxAge ) {
+                if (maxAge && now - location.timestamp >= maxAge) {
                     return;
                 }
                 lastUpdateTime = timestamp;
