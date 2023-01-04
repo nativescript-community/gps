@@ -1,0 +1,11 @@
+{
+    "extends": "../../tsconfig.json",
+    "compilerOptions": {
+        "rootDir": "../../src/gps",
+        "outDir": "./",
+        "paths": {
+        }
+    },
+    "include": ["../../src/gps/**/*", "../../references.d.ts", "../../tools/references.d.ts", "../../src/references.d.ts"],
+    "exclude": ["../../src/gps/angular/**"]
+}

@@ -1,7 +1,0 @@
-node_modules/
-pnpm-global/
-demo/
-*.png
-*.log
-*.ts
-!*.d.ts

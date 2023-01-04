@@ -1,5 +1,4 @@
 {
-    "name": "@nativescript-community/gps",
     "version": "1.0.0",
     "description": "Track GPS location updates",
     "main": "src/gps.js",
@@ -11,17 +10,27 @@
         }
     },
     "scripts": {
-        "setup": "ts-patch install",
-        "prepare": "npm run setup",
-        "tsc": "cpy '**/*.d.ts' '../plugin' --parents --cwd=src && tsc -skipLibCheck -d ",
-        "build": " cp README.md plugin/ && rm -f .tsbuildinfo && npm run tsc",
-        "demo.ios": "npm run preparedemo && cd demo && tns emulate ios",
-        "demo.ios.device": "npm run preparedemo && cd demo && tns run ios",
-        "demo.android": "npm run preparedemo && cd demo && tns run android",
-        "preparedemo": "npm run build && cd demo && tns plugin remove @nativescript-community/gps && tns plugin add .. && tns install",
-        "publish": "npm run setup && npm run build && lerna publish --create-release=github --force-publish",
-        "doc": "node builddoc && git add docs/* && git commit -m \"doc\"",
-        "commitmsg": "commitlint -e $GIT_PARAMS"
+        "build": "lerna run build",
+        "build.watch": "lerna run build.watch",
+        "build.all": "npm run build",
+        "build.all.win": "lerna run build.all.win",
+        "clean": "rimraf 'packages/**/*.d.ts' 'packages/**/*.js' 'packages/**/*.js.map' 'packages/**/*.metada' 'packages/**/angular/ng-package.json'",
+        "fullclean": "npm run clean && rimraf 'packages/**/node_modules' 'demo-*/hooks' 'demo-*/node_modules' 'package-lock.json' 'pnpm-lock.yaml' 'node_modules'",
+        "commitmsg": "commitlint -e $GIT_PARAMS",
+        "postinstall": "npm run setup",
+        "publish": "npm run clean && npm run build.all && npm run readme && lerna publish --no-private --create-release=github --force-publish",
+        "readme": "node ./tools/readme.js",
+        "setup": "npm run submodules && ts-patch install",
+        "start": "./node_modules/.bin/ntl -A -s 15 -o",
+        "submodules": "git submodule update --init",
+        "sync": "node ./tools/sync.js",
+        "sync.test": "node ./tools/sync.js",
+        "tsc": "cpy '**/*.d.ts' '../plugin' --parents --cwd=src && tsc -skipLibCheck -d",
+        "update": "node ./tools/update.js",
+        "doc": "node tools/builddoc.mjs",
+        "demo.vue.android": "cd ./demo-vue && ns run android --no-hmr --env.watchNodeModules",
+        "demo.vue.clean": "cd ./demo-vue && ns clean",
+        "demo.vue.ios": "cd ./demo-vue && ns run ios --no-hmr --env.watchNodeModules"
     },
     "repository": {
         "type": "git",
@@ -44,32 +53,36 @@
     "homepage": "https://github.com/nativescript-community/gps",
     "readmeFilename": "../README.md",
     "devDependencies": {
-        "@commitlint/cli": "^17.3.0",
-        "@nativescript-community/observable": "^2.0.11",
-        "@nativescript-community/perms": "^2.2.21",
-        "@nativescript/core": "8.4.1",
-        "@nativescript/types-android": "8.4.0",
-        "@nativescript/types-ios": "8.4.0",
-        "@nativescript/webpack": "5.0.12",
-        "@typescript-eslint/eslint-plugin": "5.46.1",
-        "@typescript-eslint/parser": "5.46.1",
-        "cpy-cli": "^3.1.1",
-        "eslint": "8.29.0",
-        "eslint-config-prettier": "^8.5.0",
-        "eslint-plugin-prettier": "^4.2.1",
-        "husky": "^8.0.2",
-        "lerna": "^6.1.0",
-        "rimraf": "^3.0.2",
-        "ts-patch": "2.1.0",
-        "typedoc": "^0.23.22",
-        "typescript": "~4.8.4"
-    },
-    "dependencies": {
-        "ts-node": "^9.1.1"
+        "@nativescript-community/plugin-seed-tools": "file:tools",
+        "@nativescript-community/template-snippet": "file:demo-snippets"
     },
     "commitlint": {
         "extends": [
             "@commitlint/config-conventional"
         ]
+    },
+    "ntl": {
+        "descriptions": {
+            "build": "Build the plugin",
+            "build.all": "Build the plugin for all platforms",
+            "clean": "Clean the local environment.",
+            "demo.vue.android": "Runs the Vue demo on Android.",
+            "demo.vue.ios": "Runs the Vue demo on iOS.",
+            "watch": "Watch for changes in the plugin source and re-build."
+        }
+    },
+    "workspaces": [
+        "packages/*",
+        "demo-vue",
+        "demo-ng",
+        "demo-svelte",
+        "demo-react",
+        "demo-snippets"
+    ],
+    "engines": {
+        "npm": "please use yarn or pnpm",
+        "yarn": ">=1.19.1",
+        "pnpm": ">=7.0.0",
+        "node": "^14.20.0 || ^16.13.0 || >=18.10.0"
     }
 }

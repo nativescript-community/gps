@@ -2,14 +2,21 @@
     "name": "@nativescript-community/gps",
     "version": "3.1.8",
     "description": "Tracks GPS location updates regardless of the app state. Does not depend on Google Play Services.",
-    "main": "gps",
+    "main": "index",
     "sideEffects": false,
-    "typings": "gps.d.ts",
+    "typings": "index.d.ts",
     "nativescript": {
         "platforms": {
             "android": "2.3.0",
             "ios": "2.3.0"
         }
+    },
+    "scripts": {
+        "build": "npm run tsc && npm run readme",
+        "build.all": "npm run build",
+        "readme": "readme generate -c ../../tools/readme/blueprint.json",
+        "tsc": "cpy '**/*.d.ts' '../../packages/gps' --parents --cwd=../../src/gps && tsc -skipLibCheck -d",
+        "clean": "rimraf ./*.d.ts ./*.js ./*.js.map"
     },
     "repository": {
         "type": "git",

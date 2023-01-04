@@ -1,9 +1,9 @@
 import { request } from '@nativescript-community/perms';
 import { Application, CoreTypes, Trace } from '@nativescript/core';
-import { AltitudeKey, CLog, CLogTypes, GPSCommon, LatitudeKey, LongitudeKey } from './gps.common';
+import { AltitudeKey, CLog, CLogTypes, GPSCommon, LatitudeKey, LongitudeKey } from './index.common';
 import { DefaultLatLonKeys, GenericGeoLocation } from './location';
 import { LocationMonitor as LocationMonitorDef, Options, deferredCallbackType, errorCallbackType, successCallbackType } from './location-monitor';
-export * from './gps.common';
+export * from './index.common';
 export { Options, successCallbackType, errorCallbackType, deferredCallbackType };
 
 const locationManagers: { [k: string]: CLLocationManager } = {};

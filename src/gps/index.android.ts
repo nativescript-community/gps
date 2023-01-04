@@ -1,11 +1,11 @@
 import { request } from '@nativescript-community/perms';
 import { AndroidActivityResultEventData, Application, CoreTypes, Trace, Utils } from '@nativescript/core';
 import { AndroidApplication } from '@nativescript/core/application';
-import { AltitudeKey, CLog, CLogTypes, GPSCommon, GenericGeoLocation, LatitudeKey, LongitudeKey, defaultGetLocationTimeout } from './gps.common';
+import { AltitudeKey, CLog, CLogTypes, GPSCommon, GenericGeoLocation, LatitudeKey, LongitudeKey, defaultGetLocationTimeout } from './index.common';
 import { DefaultLatLonKeys } from './location';
 import { LocationMonitor as LocationMonitorDef, Options, errorCallbackType, successCallbackType } from './location-monitor';
 
-export * from './gps.common';
+export * from './index.common';
 
 let ANDROID_SDK = -1;
 function getAndroidSDK() {
@@ -95,7 +95,8 @@ function createLocationListener<T = DefaultLatLonKeys>(successCallback: successC
             if (Trace.isEnabled()) {
                 CLog(CLogTypes.debug, 'onStatusChanged', arg1, arg2, arg3);
             }
-        }
+        },
+        onFlushComplete(para) {}
     }) as LocationListener<T>;
     watchId++;
     locationListener._onLocation = successCallback;
