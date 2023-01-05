@@ -1,19 +1,79 @@
-# Nativescript GPS Plugin
+<!-- ⚠️ This README has been generated from the file(s) "blueprint.md" ⚠️--><!-- ⚠️ This README has been generated from the file(s) "blueprint.md" ⚠️-->
+<!--  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      DO NOT EDIT THIS READEME DIRECTLY! Edit "bluesprint.md" instead.
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+      !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+<h1 align="center">@nativescript-community/gps</h1>
+<p align="center">
+		<a href="https://npmcharts.com/compare/@nativescript-community/gps?minimal=true"><img alt="Downloads per month" src="https://img.shields.io/npm/dm/@nativescript-community/gps.svg" height="20"/></a>
+<a href="https://www.npmjs.com/package/@nativescript-community/gps"><img alt="NPM Version" src="https://img.shields.io/npm/v/@nativescript-community/gps.svg" height="20"/></a>
+	</p>
 
-## NOTE
+<p align="center">
+  <b>Tracks GPS location updates regardless of the app state. Does not depend on Google Play Services.</b></br>
+  <sub><sub>
+</p>
 
-This is a plugin to receive gps location updates regardless of the app state.
-It differentiates itself from `nativescript-geolocation``` by NOT using google play services
+<br />
 
-## Getting started
 
-If using N < 8.0:
-`tns plugin add @nativescript-community/gps@2.1.8`
+| <img src="https://raw.githubusercontent.com/nativescript-community/gps/master/images/demo-ios.gif" height="500" /> | <img src="https://raw.githubusercontent.com/nativescript-community/gps/master/images/demo-android.gif" height="500" /> |
+| --- | ----------- |
+| iOS Demo | Android Demo |
 
-Else 
-`tns plugin add @nativescript-community/gps`
 
-You are responsible for updating permissions your `AndroidManifest.xml` and `Info.plist`
+[](#table-of-contents)
+
+
+[](#table-of-contents)
+
+## Table of Contents
+
+* [Installation](#installation)
+* [Usage](#usage)
+	* [Examples:](#examples)
+* [Demos and Development](#demos-and-development)
+	* [Repo Setup](#repo-setup)
+	* [Build](#build)
+	* [Demos](#demos)
+* [Contributing](#contributing)
+	* [Update repo ](#update-repo-)
+	* [Update readme ](#update-readme-)
+	* [Update doc ](#update-doc-)
+	* [Publish](#publish)
+* [Questions](#questions)
+
+
+[](#installation)
+
+
+[](#installation)
+
+## Installation
+Run the following command from the root of your project:
+
+`ns plugin add @nativescript-community/gps`
+
+
+[](#usage)
+
+
+[](#usage)
 
 ## Usage
 
@@ -31,3 +91,100 @@ const location = await gps.getCurrentLocation<LatLonKeys>({
 });
 ```
 
+### Examples:
+
+- [Basic](demo-snippets/vue/Basic.vue)
+  - A basic sliding drawer.
+
+[](#demos-and-development)
+
+
+[](#demos-and-development)
+
+## Demos and Development
+
+
+### Repo Setup
+
+The repo uses submodules. If you did not clone with ` --recursive` then you need to call
+```
+git submodule update --init
+```
+
+The package manager used to install and link dependencies must be `pnpm` or `yarn`. `npm` wont work.
+
+To develop and test:
+if you use `yarn` then run `yarn`
+if you use `pnpm` then run `pnpm i`
+
+**Interactive Menu:**
+
+To start the interactive menu, run `npm start` (or `yarn start` or `pnpm start`). This will list all of the commonly used scripts.
+
+### Build
+
+```bash
+npm run build.all
+```
+
+### Demos
+
+```bash
+npm run demo.[ng|react|svelte|vue].[ios|android]
+
+npm run demo.svelte.ios # Example
+```
+
+
+[](#contributing)
+
+
+[](#contributing)
+
+## Contributing
+
+### Update repo 
+
+You can update the repo files quite easily
+
+First update the submodules
+
+```bash
+npm run update
+```
+
+Then commit the changes
+Then update common files
+
+```bash
+npm run sync
+```
+Then you can run `yarn|pnpm`, commit changed files if any
+
+### Update readme 
+```bash
+npm run readme
+```
+
+### Update doc 
+```bash
+npm run doc
+```
+
+### Publish
+
+The publishing is completely handled by `lerna` (you can add `-- --bump major` to force a major release)
+Simply run 
+```shell
+npm run publish
+```
+
+
+[](#questions)
+
+
+[](#questions)
+
+## Questions
+
+If you have any questions/issues/comments please feel free to create an issue or start a conversation in the [NativeScript Community Discord](https://nativescript.org/discord).
