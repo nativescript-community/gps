@@ -24,8 +24,6 @@
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
-	<key>UIRequiresFullScreen</key>
-	<true/>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
@@ -43,5 +41,16 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+  <key>NSAppTransportSecurity</key>  
+  <dict>  
+      <key>NSAllowsArbitraryLoads</key>
+      <true />  
+  </dict>
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>audio</string>
+  </array>
+  <key>NSMicrophoneUsageDescription</key>
+  <string>The Audio Recorder needs to access your Microphone to record.</string>
 </dict>
 </plist>

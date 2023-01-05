@@ -2,8 +2,8 @@ import { request } from '@nativescript-community/perms';
 import { AndroidActivityResultEventData, Application, CoreTypes, Trace, Utils } from '@nativescript/core';
 import { AndroidApplication } from '@nativescript/core/application';
 import { AltitudeKey, CLog, CLogTypes, GPSCommon, GenericGeoLocation, LatitudeKey, LongitudeKey, defaultGetLocationTimeout } from './index.common';
-import { DefaultLatLonKeys } from './location';
-import { LocationMonitor as LocationMonitorDef, Options, errorCallbackType, successCallbackType } from './location-monitor';
+import type { DefaultLatLonKeys } from './location';
+import type { LocationMonitor as LocationMonitorDef, Options, errorCallbackType, successCallbackType } from './location-monitor';
 
 export * from './index.common';
 

@@ -3,6 +3,12 @@
     "private": true,
     "version": "0.0.1",
     "dependencies": {
-        "@nativescript-community/gps": "file:../packages/gps"
+        "@nativescript-community/gps": "3.1.8"
+    },
+    "nativescript": {
+        "platforms": {
+            "android": "2.3.0",
+            "ios": "2.3.0"
+        }
     }
 }

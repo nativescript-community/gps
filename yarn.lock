@@ -2191,27 +2191,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nativescript-community/gps@file:../packages/gps::locator=%40nativescript-community%2Ftemplate-snippet%40file%3Ademo-snippets%23demo-snippets%3A%3Ahash%3D4a9d86%26locator%3Droot-workspace-0b6124%2540workspace%253A.":
-  version: 3.1.8
-  resolution: "@nativescript-community/gps@file:../packages/gps#../packages/gps::hash=74254b&locator=%40nativescript-community%2Ftemplate-snippet%40file%3Ademo-snippets%23demo-snippets%3A%3Ahash%3D4a9d86%26locator%3Droot-workspace-0b6124%2540workspace%253A."
-  dependencies:
-    "@nativescript-community/observable": ^2.0.11
-    "@nativescript-community/perms": ^2.2.21
-  checksum: ae6672ac7aca41dc33ba2e4b63f3aef087edaf323f8e6d323e7c307363ab6376e43dd617980dd257f57e5e4b6a269b0fe393236e2a17a2a0646e097074bb6041
-  languageName: node
-  linkType: hard
-
-"@nativescript-community/gps@file:../packages/gps::locator=%40nativescript-community%2Ftemplate-snippet%40workspace%3Ademo-snippets":
-  version: 3.1.8
-  resolution: "@nativescript-community/gps@file:../packages/gps#../packages/gps::hash=74254b&locator=%40nativescript-community%2Ftemplate-snippet%40workspace%3Ademo-snippets"
-  dependencies:
-    "@nativescript-community/observable": ^2.0.11
-    "@nativescript-community/perms": ^2.2.21
-  checksum: ae6672ac7aca41dc33ba2e4b63f3aef087edaf323f8e6d323e7c307363ab6376e43dd617980dd257f57e5e4b6a269b0fe393236e2a17a2a0646e097074bb6041
-  languageName: node
-  linkType: hard
-
-"@nativescript-community/gps@workspace:packages/gps":
+"@nativescript-community/gps@3.1.8, @nativescript-community/gps@workspace:packages/gps":
   version: 0.0.0-use.local
   resolution: "@nativescript-community/gps@workspace:packages/gps"
   dependencies:
@@ -2302,16 +2282,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@nativescript-community/template-snippet@workspace:demo-snippets"
   dependencies:
-    "@nativescript-community/gps": "file:../packages/gps"
+    "@nativescript-community/gps": 3.1.8
   languageName: unknown
   linkType: soft
 
 "@nativescript-community/template-snippet@file:demo-snippets::locator=root-workspace-0b6124%40workspace%3A.":
   version: 0.0.1
-  resolution: "@nativescript-community/template-snippet@file:demo-snippets#demo-snippets::hash=4a9d86&locator=root-workspace-0b6124%40workspace%3A."
+  resolution: "@nativescript-community/template-snippet@file:demo-snippets#demo-snippets::hash=2a3af0&locator=root-workspace-0b6124%40workspace%3A."
   dependencies:
-    "@nativescript-community/gps": "file:../packages/gps"
-  checksum: f2142a0ad8d46f57074b488b6fa5f5574ecc7ea1cd28e92392a29d2956361bbeefbf62a80e363e398d4311cbaa644ca7c4c994c90d0720e18a86760019fcd351
+    "@nativescript-community/gps": 3.1.8
+  checksum: d4e442764dab77cc3b29645974a458797a33b1a080ede0c92311547e16172280ed42656329e4951fb2813c6e8fc544a9d563ce9e5033ec9042a74b0e890a769a
   languageName: node
   linkType: hard
 
@@ -13271,6 +13251,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root-workspace-0b6124@workspace:."
   dependencies:
+    "@nativescript-community/observable": ^2.0.11
+    "@nativescript-community/perms": ^2.2.21
     "@nativescript-community/plugin-seed-tools": "file:tools"
     "@nativescript-community/template-snippet": "file:demo-snippets"
   languageName: unknown

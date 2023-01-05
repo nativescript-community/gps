@@ -1,8 +1,8 @@
 import { request } from '@nativescript-community/perms';
 import { Application, CoreTypes, Trace } from '@nativescript/core';
 import { AltitudeKey, CLog, CLogTypes, GPSCommon, LatitudeKey, LongitudeKey } from './index.common';
-import { DefaultLatLonKeys, GenericGeoLocation } from './location';
-import { LocationMonitor as LocationMonitorDef, Options, deferredCallbackType, errorCallbackType, successCallbackType } from './location-monitor';
+import type { DefaultLatLonKeys, GenericGeoLocation } from './location';
+import type { LocationMonitor as LocationMonitorDef, Options, deferredCallbackType, errorCallbackType, successCallbackType } from './location-monitor';
 export * from './index.common';
 export { Options, successCallbackType, errorCallbackType, deferredCallbackType };
 
