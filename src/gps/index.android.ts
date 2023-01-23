@@ -129,24 +129,23 @@ function createLocationListener<T = DefaultLatLonKeys>(successCallback: successC
                 }
             }) as OnNmeaListener<T>;
         } else {
-            // TODO: bring back when https://github.com/NativeScript/android-runtime/issues/1645 is fixed
-            // locationListener._nmeaListener = new android.location.GpsStatus.NmeaListener({
-            //     onNmeaReceived(timestamp: number, nmea: string) {
-            //         const locationListener = (this as NmeaListener<T>).locationListener && (this as NmeaListener<T>).locationListener.get();
-            //         if (locationListener && nmea[0] === '$') {
-            //             const tokens = nmea.split(',');
-            //             const type = tokens[0];
-            //             const alt = tokens[9];
-            //             // Parse altitude above sea level, Detailed description of NMEA string here http://aprs.gids.nl/nmea/#gga
-            //             if (type.endsWith('GGA')) {
-            //                 if (alt && alt.length > 0) {
-            //                     locationListener.mLastMslAltitudeTimestamp = timestamp;
-            //                     locationListener.mLastMslAltitude = parseFloat(alt);
-            //                 }
-            //             }
-            //         }
-            //     },
-            // }) as NmeaListener<T>;
+            locationListener._nmeaListener = new android.location.GpsStatus.NmeaListener({
+                onNmeaReceived(timestamp: number, nmea: string) {
+                    const locationListener = (this as NmeaListener<T>).locationListener && (this as NmeaListener<T>).locationListener.get();
+                    if (locationListener && nmea[0] === '$') {
+                        const tokens = nmea.split(',');
+                        const type = tokens[0];
+                        const alt = tokens[9];
+                        // Parse altitude above sea level, Detailed description of NMEA string here http://aprs.gids.nl/nmea/#gga
+                        if (type.endsWith('GGA')) {
+                            if (alt && alt.length > 0) {
+                                locationListener.mLastMslAltitudeTimestamp = timestamp;
+                                locationListener.mLastMslAltitude = parseFloat(alt);
+                            }
+                        }
+                    }
+                }
+            }) as NmeaListener<T>;
         }
         if (locationListener._nmeaListener) {
             locationListener._nmeaListener.locationListener = new WeakRef(locationListener);

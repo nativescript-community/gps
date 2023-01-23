@@ -1,14 +1,6 @@
 {
     "version": "1.0.0",
     "description": "Track GPS location updates",
-    "main": "src/gps.js",
-    "typings": "src/gps.d.ts",
-    "nativescript": {
-        "platforms": {
-            "android": "2.3.0",
-            "ios": "2.3.0"
-        }
-    },
     "scripts": {
         "build": "lerna run build",
         "build.watch": "lerna run build.watch",
@@ -24,7 +16,6 @@
         "start": "./node_modules/.bin/ntl -A -s 15 -o",
         "submodules": "git submodule update --init",
         "sync": "node ./tools/sync.js",
-        "sync.test": "node ./tools/sync.js",
         "tsc": "cpy '**/*.d.ts' '../plugin' --parents --cwd=src && tsc -skipLibCheck -d",
         "update": "node ./tools/update.js",
         "doc": "node tools/builddoc.mjs",
