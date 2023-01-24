@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.10](https://github.com/nativescript-community/gps/compare/v3.1.9...v3.1.10) (2023-01-24)
+
+
+### Bug Fixes
+
+* **android:** native-api-usage fix ([fb7d3d9](https://github.com/nativescript-community/gps/commit/fb7d3d99a86caca233cf2691f2c02d2787babc82))
+
+
+
+
+
 ## [3.1.9](https://github.com/nativescript-community/gps/compare/v3.1.8...v3.1.9) (2023-01-23)
 
 
