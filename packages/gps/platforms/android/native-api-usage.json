@@ -1,6 +1,6 @@
 {
     "uses": [
-        "android.location.GpsStatus:NmeaListener",
+        "android.location:GpsStatus.NmeaListener",
         "android.location:Location",
         "android.location:LocationManager",
         "android.location:LocationProvider",
@@ -9,6 +9,6 @@
         "android.location:Criteria",
         "java.util:List",
         "java.lang:System",
-        "android.os:SystemClock*"
+        "android.os:SystemClock"
     ]
 }
